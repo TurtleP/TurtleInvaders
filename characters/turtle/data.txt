@@ -1,0 +1,11 @@
+{
+	"shieldinspeed": 0.25,
+	"shieldoutspeed": 0.25,
+	"ability": "tank",
+	"shieldincount": 8,
+	"shieldoutcount": 8,
+	"shieldinwidth": 34,
+	"shieldinheight": 34,
+	"shieldoutwidth": 34,
+	"shieldoutheight": 34
+}
