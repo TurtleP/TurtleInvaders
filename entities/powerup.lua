@@ -106,6 +106,8 @@ function shoop:onCollide(name, data)
 				
 			earthquake = 40
 			playsound("evaporate")
+
+			addScore(100)
 				
 			table.insert(fizzles, fizzle:new(data))
 
