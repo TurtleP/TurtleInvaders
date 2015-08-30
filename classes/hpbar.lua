@@ -30,7 +30,7 @@ function hpbar:damage(bDamage, relay)
 	end
 	
 	self.hp = self.hp - bDamage
-	self.width = math.max(216*scale*(self.hp/self.hpmax), 0)
+	self.width = math.max(216*(self.hp/self.hpmax), 0)
 	
 	if not relay then
 		table.insert(onlinetriggers, "bosshit;" .. bDamage .. ";")
