@@ -103,6 +103,10 @@ function addScore(n, reason)
 			val = combovalue --we've multiplied by fuckin uh combos.. LEGIT!
 		end
 
+		if combo == 7 then
+			unlockAchievement("combomadness")
+		end
+
 		score = score + combovalue
 
 		if score < 0 then

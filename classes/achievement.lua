@@ -12,7 +12,7 @@ function loadAchievementsData()
 		{name = "Average gamer", description = "Clear the game on Medium", internal = "gameclearedmedium"},
 		{name = "Hardship trial", description = "Clear the game on Hard", internal = "gameclearedhard"},
 		{name = "Murder time, fun time!", description = "Kill 1000 bats", internal = "batskilled"},
-		{name = "Combo madness", description = "Get a 20-hit combo", internal = "combomadness"},
+		{name = "Combo madness", description = "Get a 7-hit combo", internal = "combomadness"},
 		{name = "Super Turtle", description = "Do not lose a life", internal = "noliveslost"},
 		{name = "Spaaaaace", description = "Shoot the space core", internal = "coreshot"},
 		{name = "Healing helper", description = "Revive a team mate", internal = "revivedmember"},
