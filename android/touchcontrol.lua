@@ -236,6 +236,7 @@ function touchcontrol:update(dt)
 			if state == "game" and not paused then
 				if self.controls:getX() > 0.5 then
 					love.keypressed("d")
+					love.keyreleased("a")
 				end
 
 				if self.controls:getX() >= 0 and self.controls:getX() <= 0.5 then
@@ -244,6 +245,7 @@ function touchcontrol:update(dt)
 
 				if self.controls:getX() < -0.5 then
 					love.keypressed("a")
+					love.keyreleased("d")
 				end
 
 				if self.controls:getX() >= -0.5 and self.controls:getX() <= 0 then

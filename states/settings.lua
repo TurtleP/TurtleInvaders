@@ -83,18 +83,6 @@ function settings_load(tabi, selectioni)
 		["audio / video"] = {
 			{"Sound Volume", "volume", "soundvolume"},
 			{"Music Volume", "volume", "musicvolume"},
-		--[[	{"Custom Music Tracks", "toggle", "customMusicBool", function() 
-				if customMusicBool and not customWarn then 
-					love.window.showMessageBox("Notice", "This feature only supports *.wav, *.mp3 and *.ogg!", "info", "OK") 
-					customWarn = true 
-				end
-
-				if customMusicBool then
-					music:play()
-				else
-					music:stop()
-				end
-			end},]]
 			{"Game Scale", "value", "scale", 1, changescale, "scale"},
 			{"Vertical Sync", "toggle", "vsyncbool"}
 		},
@@ -123,25 +111,30 @@ function settings_load(tabi, selectioni)
 	for k = 1, #achievementsData do
 		table.insert(settings["achievements"], {"achievement", achievements[achievementsData[k].internal]})
 	end
+
+	inputkeyDelay = 0.2
 end
 
-function settings_keyInput(t, ...)
-	local arg = {...}
+function settings_keyInput(t, val, axis)
+	if inputkeyDelay > 0 then
+		return
+	end
 
-	if arg[1] ~= "escape" then
+	if val ~= "escape" then
 		local inputString = ""
+
 		if t == "keyboard" then
-			inputString = arg[1]
+			inputString = "gamepad:" .. val
 		else
-			if arg[1] == "button" then
-				inputString = arg[2]
-			else
+			if t == "joystickbutton" then
+				inputString = val
+			elseif t == "joystickaxis" then
 				local dir = "neg"
-				if arg[2] > 0.2 then
+				if val > 0.2 then
 					dir = "pos"
 				end
 
-				inputString = inputString .. arg[2] .. ":" .. dir
+				inputString = inputString .. axis .. ":" .. dir
 			end
 		end
 		
@@ -155,14 +148,20 @@ function settings_keyInput(t, ...)
 		settings["controls"][settings_selectioni-1] = {controlTypes[settings_selectioni-2], "textfunction", data, function()
 			setControls = true
 		end}
+
+		setControls = false
+	else
+		setControls = false
 	end
 
-	setControls = false
+	inputkeyDelay = 0.4
 end
 
 function settings_joystickaxis(joystick, axis, value)
 	if setControls then
-		settings_keyInput("joystick", axis)
+		if value > gamepaddeadzone or value < -gamepaddeadzone then
+			settings_keyInput("joystickaxis", value, axis)
+		end
 	end
 end
 
@@ -198,7 +197,7 @@ function settings_joystickpressed(joystick, button)
 			settings_movecursor(nil, nil, true)
 		end
 	else
-		setControls("button", button)
+		settings_keyInput("joystickbutton", button)
 	end	
 end
 
@@ -216,6 +215,12 @@ function settings_update(dt)
 		--negative 0 or something. HNNNNNNG
 		if slideTime < 0 then 
 			slideTime = 0 
+		end
+	end
+
+	if setControls then
+		if inputkeyDelay > 0 then
+			inputkeyDelay = inputkeyDelay - dt
 		end
 	end
 end

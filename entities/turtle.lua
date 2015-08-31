@@ -422,13 +422,13 @@ function turtle:joystickaxis(joystick, axis, value)
 	if joyid == self.num then
 		if axis == ctrlleft[1] then
 			if ctrlleft[2] == "neg" then
-				if value < -0.2 then
+				if value < -gamepaddeadzone then
 					self:moveleft()
 				else
 					self:stopleft()
 				end
 			else
-				if value > 0.2 then
+				if value > gamepaddeadzone then
 					self:moveleft()
 				else
 					self:stopleft()
@@ -438,13 +438,13 @@ function turtle:joystickaxis(joystick, axis, value)
 
 		if axis == ctrlright[1] then
 			if ctrlright[2] == "pos" then
-				if value > 0.2 then
+				if value > gamepaddeadzone then
 					self:moveright()
 				else
 					self:stopright()
 				end
 			else
-				if value < -0.2 then
+				if value < -gamepaddeadzone then
 					self:moveright()
 				else
 					self:stopright()

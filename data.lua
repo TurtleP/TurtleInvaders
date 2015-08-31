@@ -24,14 +24,13 @@ gamecompleted = false
 
 maxpowershots = 1
 
-invicibleblinktime = 0.02
-invincibletime = 3.2
-
 phoenixspeed = 280
 
 emanceSpeed = 0.5
 
 onlinetriggers = {}
+
+gamepaddeadzone = 0.2
 
 bossHP =
 {
