@@ -75,11 +75,11 @@ function wave()
 
 	wavetext = "WAVE " .. waven
 
+	wavefade = 1
+	
 	if gamemodei ~= 2 then
 		checkforBoss()
 	end
-
-	wavefade = 1
 end
 
 function checkforBoss()

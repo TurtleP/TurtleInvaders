@@ -213,13 +213,6 @@ function changescale(s, first)
 		end
 	end
 
-	--[[if fullscreenbool then
-		background = { img = love.graphics.newImage("gfx/UI/background.png") }
-
-		background["width"] = background["img"]:getWidth() / 16
-		background["height"] = background["img"]:getHeight() / 16
-	end]]
-
 	missingX, missingY = 0, 0
 	if fullscreenbool then
 		missingY = (desktopH - (300 * scale)) / 2

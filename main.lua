@@ -480,6 +480,8 @@ function defaultSettings()
 		controli = 1
 	end
 
+	changescale(scale)
+
 	controls[1] = {"a", "d", " " , "lshift"}
 	controls[2] = {"left", "right", "up" , "rctrl"}
 
@@ -490,7 +492,8 @@ function defaultSettings()
 	vsyncbool = true 
 	musicvolume = 1
 	soundvolume = 1
-	customMusicBool = false
+
+	changeVolume(soundvolume, musicvolume)
 
 	love.filesystem.remove("saveData.txt")
 
@@ -501,6 +504,7 @@ function defaultSettings()
 	for k = 1, #logs do
 		love.filesystem.remove("errors/" .. logs[k])
 	end
+
 	newNotice("Settings set to default; " .. comma_value(logcount) .. " error logs were removed.")
 end
 
