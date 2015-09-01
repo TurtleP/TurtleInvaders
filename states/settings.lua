@@ -3,6 +3,8 @@ function settings_load(tabi, selectioni)
 	highlightMax = 1
 	highlightTimer = 0
 
+	love.audio.stop(audio["credits"])
+
 	--	{minimum distance from text, oscilation distance, bar size}
 	highlightOsc = {2, 5, 5}
 	
@@ -102,8 +104,13 @@ function settings_load(tabi, selectioni)
 		settings["general"][5][1] = "Reset cache and settings"
 	end
 
+	local text = controls[currentply]
+
 	for k = 1, #controlTypes do
-		table.insert(settings["controls"], {controlTypes[k], "textfunction", controls[currentply][k], function()
+		if text[k] == " " then
+			text[k] = "spacebar"
+		end
+		table.insert(settings["controls"], {controlTypes[k], "textfunction", text[k], function()
 			setControls = true
 		end})
 	end
@@ -124,10 +131,10 @@ function settings_keyInput(t, val, axis)
 		local inputString = ""
 
 		if t == "keyboard" then
-			inputString = "gamepad:" .. val
+			inputString = val
 		else
 			if t == "joystickbutton" then
-				inputString = val
+				inputString = "gamepad:" .. val
 			elseif t == "joystickaxis" then
 				local dir = "neg"
 				if val > 0.2 then

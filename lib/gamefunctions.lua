@@ -204,7 +204,7 @@ function changescale(s, first)
 		scale = math.max(s, 1)
 
 		if not first then
-			if gameH > desktopH or gameW > desktopW then 
+			if gameH * scale > desktopH or gameW * scale > desktopW then 
 				fullscreenbool = true
 				scale = getFullScale()
 			else 

@@ -5,8 +5,6 @@ function menu_load(fromsettings, fromhighscore, fromcoop)
 
 	suspended = false 
 
-	love.audio.stop(audio["credits"])
-
 	menu_selectioni = 1
 	minselecti = 1
 

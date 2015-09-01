@@ -107,7 +107,7 @@ function newTab(name, x, y, w, h)
 		love.graphics.setColor(255, 255, 255)
 
 		love.graphics.setFont(font4)
-		love.graphics.print(self.name, (self.x * scale + self.width / 2) - font4:getWidth(self.name) / 2, ((self.y + 2) * scale + (self.height / 2) * scale) - font4:getHeight(self.name) / 2)
+		love.graphics.print(self.name, (self.x + self.width / 2) * scale - font4:getWidth(self.name) / 2, ((self.y + 2) * scale + (self.height / 2) * scale) - font4:getHeight(self.name) / 2)
 	end
 
 	return tab
@@ -156,20 +156,20 @@ function newBar(name, address, port, y, isLAN)
 		love.graphics.rectangle("fill", self.x * scale, self.y * scale, self.width * scale, 24 * scale)
 
 		love.graphics.setColor(255, 255, 255)
-		love.graphics.draw(graphics["types"], typequads[self.quadi], (searchtabs[1].x + (searchtabs[1].width /2) - 11) * scale, ( (search_boxY + 27 + (24 / 2) - 11) + (k - 1) * 26 ) * scale)
+		love.graphics.draw(graphics["types"], typequads[self.quadi], (searchtabs[1].x + (searchtabs[1].width /2) - 11) * scale, ( (search_boxY + 27 + (24 / 2) - 11) + (k - 1) * 26 ) * scale, 0, scale, scale)
 
 		love.graphics.setFont(font5)
 		local name = self.name
 		if self.name == "" then
 			name = self.address
 		end
-		love.graphics.print(name, searchtabs[2].x + (searchtabs[2].width /2) - font5:getWidth(name) / 2, ( (search_boxY + 30 + (24 / 2)) * scale - font5:getHeight(name) / 2 ) + (k - 1) * 26 * scale)
+		love.graphics.print(name, (searchtabs[2].x + (searchtabs[2].width /2)) * scale - font5:getWidth(name) / 2, ( (search_boxY + 30 + (24 / 2)) * scale - font5:getHeight(name) / 2 ) + (k - 1) * 26 * scale)
 
-		love.graphics.print(self.ply .. "/4", searchtabs[3].x + (searchtabs[3].width /2) - font5:getWidth(self.ply .. "/4") / 2, ( (search_boxY + 30 + (24 / 2)) * scale - font5:getHeight(self.ply .. "/4") / 2 ) + (k - 1) * 26 * scale)
+		love.graphics.print(self.ply .. "/4", (searchtabs[3].x + (searchtabs[3].width /2)) * scale - font5:getWidth(self.ply .. "/4") / 2, ( (search_boxY + 30 + (24 / 2)) * scale - font5:getHeight(self.ply .. "/4") / 2 ) + (k - 1) * 26 * scale)
 
-		love.graphics.print(self.diff, searchtabs[4].x + (searchtabs[4].width /2) - font5:getWidth(self.diff) / 2, ( (search_boxY + 30 + (24 / 2)) * scale - font5:getHeight(self.diff) / 2 ) + (k - 1) * 26 * scale)
+		love.graphics.print(self.diff, (searchtabs[4].x + (searchtabs[4].width /2)) * scale - font5:getWidth(self.diff) / 2, ( (search_boxY + 30 + (24 / 2)) * scale - font5:getHeight(self.diff) / 2 ) + (k - 1) * 26 * scale)
 
-		love.graphics.print(self.ping, searchtabs[5].x + (searchtabs[5].width /2) - font5:getWidth(self.ping) / 2, ( (search_boxY + 30 + (24 / 2)) * scale - font5:getHeight(self.ping) / 2 ) + (k - 1) * 26 * scale)
+		love.graphics.print(self.ping, (searchtabs[5].x + (searchtabs[5].width /2)) * scale - font5:getWidth(self.ping) / 2, ( (search_boxY + 30 + (24 / 2)) * scale - font5:getHeight(self.ping) / 2 ) + (k - 1) * 26 * scale)
 
 		if not searchScroll.dragging then
 			self.hover = CheckCollision(self.x + self.delete.width, self.y, self.width - self.delete.width, self.height, mouse.X(), mouse.Y(), 4, 4)

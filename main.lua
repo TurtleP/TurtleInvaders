@@ -67,6 +67,10 @@ function love.load()
 
 	if love.filesystem.exists("saveData.txt") then
 		loadData("settings")
+
+		if love.joystick.getJoysticks() == 0 then
+			controls[1] = {}
+		end
 	else
 		scale = 1  
 		fullscreenbool = false
@@ -1137,9 +1141,6 @@ function love.joystickadded( joystick )
 
 		newNotice("Joystick number " .. id .. " connected.")
 
-	
-		controls[id] = {unpack(gamepad_default)}
-
 		if _G[state .. "_joystickadded"] then
 			_G[state .. "_joystickadded"]( joystick )
 		end
@@ -1149,7 +1150,7 @@ end
 function love.joystickremoved( joystick )
 	local id = joystick:getID()
 
-	controls[id] = {unpack(default_controls[id])}
+	newNotice("Joystick number " .. id .. " removed.")
 
 	if _G[state .. "_joystickremoved"] then
 		_G[state .. "_joystickremoved"]( joystick )
