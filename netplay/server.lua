@@ -126,20 +126,19 @@ function server:update(dt)
     	netplay = false
     elseif ip == "timeout" then
 	   
-	elseif not data then
-		--[[timer = timer + dt
+	elseif ip == "closing" then
+		server:sendDataToClients("disconnect;Server shutting down!;true", ip)
 
-		if timer > 20 then
-		   	netplay = false
-		   	if not notices[2] then
-		   		notices[2] = notice:new("Server shutting down..", true, true)
-		   	end
-		   	menu_load()
-		elseif math.floor(timer)%6 == 0 and math.floor(timer) ~= 0 then
-		   	if not notices[1] then
-		   		notices[1] = notice:new("No response in " .. math.floor(timer) .. " seconds!", true, true)
-		   	end
-		end]]
+		--remove the host, make sure they disconnect you dolt!
+		self.udp:sendto("disconnect;", ip, port)
+
+		for k = 1, #clients do
+			table.remove(clients, k)
+		end
+		
+		self.udp:close()
+
+		netplay = false
 	end
 
 	if resynctimer >= 0 then

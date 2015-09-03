@@ -259,12 +259,6 @@ function game_draw()
 		end
 	end
 
-	if #combotext > 0 then
-		for i, v in pairs(combotext) do
-			v:draw()
-		end
-	end
-
 	for i, v in pairs(objects) do
 		for j, w in pairs(v) do
 
@@ -442,12 +436,6 @@ function game_update(dt)
 			if w.update then
 				w:update(dt)
 			end
-		end
-	end
-
-	if #combotext > 0 then
-		for i, v in pairs(combotext) do
-			v:update(dt)
 		end
 	end
 				

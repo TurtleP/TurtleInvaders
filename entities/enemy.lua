@@ -398,7 +398,7 @@ function enemy:die(antiB, emanced, relay, player)
 			names = nameData
 		end
 
-		table.remove(deadturtles, #deadturtles)
+		table.remove(deadturtles, self.ply)
 
 		objects.turtle[k] = turtle:new((25+(k-1)*80), 256, k, health[k], gameData[k], names[k])
 	

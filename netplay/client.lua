@@ -17,7 +17,7 @@ local pingtime = 0
 local maxping = 1
 
 local enemysync = 0
-local enemymaxsync = 0.20
+local enemymaxsync = 0.03
 
 clpingtimer = 0
 clping = 0
@@ -235,7 +235,7 @@ function client:netUpdate(dt)
 	if objects then
 		if isnetworkhost then
 			enemysync = enemysync + dt
-			if enemysync >= enemymaxsync then
+			if enemysync > enemymaxsync then
 
 				for k, v in pairs(objects["enemies"]) do
 					udp:send("batdata;" .. v.id .. ";" .. round(v.x, 2) .. ";" .. round(v.y, 2) .. ";" .. v.speedx .. ";" .. v.speedy .. ";" .. v.direction ..

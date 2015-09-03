@@ -9,6 +9,8 @@ function lobby_load(hostname, char, hosting)
 	lobby_chat = {}
 	offset = 0
 
+	gamestarting = false
+
 	lobby_playerlist[1] = {connected = true, nick = hostname, char = char, hosting = (hosting or false)}
 
 	chattext = ""

@@ -261,8 +261,8 @@ function turtle:update(dt)
 	end
 	
 	if self.shouldupdate then
-		if self.lives == 0 then
-			self.dead = true
+		if self.health == 0 then
+			self:die("rip")
 		end
 
 		if not self.start then
@@ -329,10 +329,6 @@ function turtle:addLife(n, relay, dontSound)
 					playsound(injurysounds[love.math.random(3)])
 					self.invincible = true
 				end
-
-				if self.health == 0 then
-					self:die("")
-				end
 			end
 
 			self.ui.maxhp = self.health
@@ -379,6 +375,7 @@ function turtle:die(reason)
 	end
 
 	self.dead = true
+	self.shouldupdate = false
 end
 
 function turtle:joystickpressed(joystick, button)

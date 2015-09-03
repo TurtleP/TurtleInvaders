@@ -1064,13 +1064,15 @@ function love.draw()
 		end
 	end
 
-	if achievements then
-		for k, v in pairs(achievements) do
-			v:draw()
+	if not netplay and not clientonline then
+		if achievements then
+			for k, v in pairs(achievements) do
+				v:draw()
+			end
 		end
 	end
 
-	--drawBetaBanner()
+	drawBetaBanner()
 end
 
 function drawBetaBanner()
@@ -1100,14 +1102,16 @@ function love.update(dt)
 	if netplay then
 		server:update(dt)
 	else
+		if not clientonline then
+			HBD:updateRecording(dt)
+		end
+	end
+
+	if not clientonline and not netplay then
 		if achievements then
 			for k, v in pairs(achievements) do
 				v:update(dt)
 			end
-		end
-		
-		if not clientonline then
-			HBD:updateRecording(dt)
 		end
 	end
 
