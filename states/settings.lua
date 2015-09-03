@@ -104,13 +104,8 @@ function settings_load(tabi, selectioni)
 		settings["general"][5][1] = "Reset cache and settings"
 	end
 
-	local text = controls[currentply]
-
 	for k = 1, #controlTypes do
-		if text[k] == " " then
-			text[k] = "spacebar"
-		end
-		table.insert(settings["controls"], {controlTypes[k], "textfunction", text[k], function()
+		table.insert(settings["controls"], {controlTypes[k], "textfunction", controls[currentply][k], function()
 			setControls = true
 		end})
 	end

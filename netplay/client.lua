@@ -113,7 +113,7 @@ function client:connect(address, port)
 	local err, msg = udp:setpeername(address, port)
 
 	if err ~= nil then
-   	 udp:send("connect;" .. client:getName() .. ";" .. client:getChar() .. ";" .. tostring(isnetworkhost))
+   		udp:send("connect;" .. client:getName() .. ";" .. client:getChar() .. ";" .. tostring(isnetworkhost))
     else
     	newNotice("Failed to connect to " .. address .. ":" .. port, true)
     	udp:close()
@@ -294,12 +294,8 @@ end
 function client:playerSync(cmd)
 	local id = tonumber(cmd[2])
 
-	if cmd[1] == "move" then
-		client:movePlayers(id, cmd[3])
-	elseif cmd[1] == "stop" then
-		client:stopMovingPlayers(id, cmd[3])
-	elseif cmd[1] == "shoot" then
-		client:shootBullet(id, cmd[4])
+	if cmd[1] == "shoot" then
+		client:shootBullet(id, cmd[3])
 	elseif cmd[1] == "bullettype" then
 		client:setBulletType(cmd)
 	elseif cmd[1] == "powerup" then
@@ -307,17 +303,12 @@ function client:playerSync(cmd)
 	elseif cmd[1] == "health" then
 		client:giveLife(cmd)
 	elseif cmd[1] == "specialabilitykeypress" then
-		if id == networkclientid then
-			return
-		end
-
 		objects["turtle"][id]:specialUp(true)
 	elseif cmd[1] == "specialability" then
-		if id == networkclientid then
-			return
-		end
-
 		objects["turtle"][id]:specialUp(true)
+	elseif cmd[1] == "speedx" then
+		print(cmd[3])
+		objects["turtle"][id].speed = tonumber(cmd[3])
 	end
 end
 
@@ -329,12 +320,6 @@ end
 function client_generallobbysyncs(cmd)
 	if cmd[1] == "connected" then
 		client_connectToLobby()
-
-		local t = ""
-		for k = 1, #gamechars do
-			t = t .. gamechars[k] .. ";"
-		end
-		udp:send("chars;" .. t)
 	elseif cmd[1] == "startgame" then
 		players = tonumber(cmd[2])
 		game_load()
@@ -363,10 +348,10 @@ function client_generallobbysyncs(cmd)
 		end
 
 		controls[networkclientid] = clientcontrols[networkclientid]
-
 	elseif cmd[1] == "playerdata" then
 		playerid = convertclienttoplayer(tonumber(cmd[2]))
 
+		print(tostring(isnetworkhost), "[PLAYERDATA] My ID is :: " .. playerid)
 		if not lobby_playerlist then
 			newNotice("Failed to connect to lobby!", true)
 			client:disconnect()
@@ -433,16 +418,6 @@ function client:parseChat(cmd)
 	table.insert(lobby_chat, cmd[2])
 end
 
-function client:parseMic(cmd)
-	--print("Obtaining microphone data from client " .. cmd[6])
-
-	local samples, frequency, bits, thing = tonumber(cmd[2]), tonumber(cmd[3]), tonumber(cmd[4]), tonumber(cmd[5])
-
-	local audio = love.sound.newSoundData(samples, frequency, bits, thing)
-	local micsound = love.audio.newSource(audio)
-	love.audio.play(micsound)
-end
-
 function client:spawnEnemy(cmd)
 	if not isnetworkhost then
 		newenemy(tonumber(cmd[2]), tonumber(cmd[3]), tonumber(cmd[4]), true)
@@ -478,40 +453,28 @@ function client:parseNotify(cmd)
 end
 
 function client:movePlayers(plyId, dir)
-	if plyId == networkclientid then
-		return
-	end
-
 	if objects["turtle"][plyId] then
 		if dir == "right" then
-			objects["turtle"][plyId]:moveright()
+			objects["turtle"][plyId]:moveright(true)
 		else
-			objects["turtle"][plyId]:moveleft()
+			objects["turtle"][plyId]:moveleft(true)
 		end
 	end
 end
 
 function client:stopMovingPlayers(plyId, dir)
-	if plyId == networkclientid then
-		return
-	end
-
 	if objects["turtle"][plyId] then
 		if dir == "right" then
-			objects["turtle"][plyId]:stopright()
+			objects["turtle"][plyId]:stopright(true)
 		else
-			objects["turtle"][plyId]:stopleft()
+			objects["turtle"][plyId]:stopleft(true)
 		end
 	end
 end
 
 function client:shootBullet(plyId, powerup)
-	if plyId == networkclientid then
-		return
-	end
-
 	if objects["turtle"][plyId] then
-		objects["turtle"][plyId]:shootbullet(powerup:lower())
+		objects["turtle"][plyId]:shootbullet(powerup:lower(), true)
 	end
 end
 
@@ -589,10 +552,6 @@ end
 
 function client:sendStopMove(string)
 	udp:send("stop;" .. string)
-end
-
-function client:sendMic(data)
-	udp:send("microphone;" .. tostring(data))
 end
 
 function client:sendChat(string)

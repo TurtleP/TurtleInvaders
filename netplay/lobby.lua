@@ -185,14 +185,14 @@ function lobby_draw()
 
 			love.graphics.push()
 			
-			local offset = #lobby_chat*font:getHeight() + #lobby_chat*spacer
+			local offset = #lobby_chat*(font:getHeight()/scale) + #lobby_chat*spacer
 			offset = math.min(offset, 130*scale) + math.max(0, (offset-130*scale)*lobbyscrollbar.value)
 			love.graphics.translate( 0, 130*scale - offset)
 
 			local t = lobby_chat[k]:split("\n")
 			for i, v in ipairs(t) do
 				love.graphics.print(v, 142*scale, 111*scale + yy*scale)
-				yy = yy + font:getHeight() + spacer
+				yy = yy + (font:getHeight()/scale) + spacer
 			end
 			love.graphics.pop()
 

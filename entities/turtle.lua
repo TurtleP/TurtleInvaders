@@ -174,32 +174,23 @@ function turtle:specialUp(relay)
 end
 
 function turtle:moveright()
-	if clientonline then
-		client:sendMove(self.num .. ";right;")
-	end
-
 	self.rightkey = true
+	self.speed = self.xspeed
 end
 
 function turtle:moveleft()
-	if clientonline then
-		client:sendMove(self.num .. ";left")
-	end
 	self.leftkey = true 
+	self.speed = -self.xspeed
 end
 
 function turtle:stopleft()
-	if clientonline then
-		client:sendStopMove(self.num .. ";left")
-	end
 	self.leftkey = false
+	self.speed = 0
 end
 
 function turtle:stopright()
-	if clientonline then
-		client:sendStopMove(self.num .. ";right;")
-	end
 	self.rightkey = false
+	self.speed = 0
 end
 
 function turtle:onCollide(name, data)
@@ -286,12 +277,8 @@ function turtle:update(dt)
 			end
 		end
 
-		if self.rightkey then
-			self.speed = self.xspeed
-		elseif self.leftkey then
-			self.speed = -self.xspeed
-		else
-			self.speed = 0
+		if clientonline then
+			client:sendUDP("speedx;" .. playerid .. ";" .. self.speed .. ";")
 		end
 
 		self.x = self.x + self.speed * dt
@@ -351,7 +338,7 @@ function turtle:addLife(n, relay, dontSound)
 			self.ui.maxhp = self.health
 
 			if clientonline and not relay and not dontSound then
-				table.insert(onlinetriggers, "health;" .. n .. ";" .. self.num)
+				table.insert(onlinetriggers, "health;" .. n .. ";" .. playerid)
 			end
 		end
 	end
@@ -511,9 +498,9 @@ function turtle:specialPressed(key)
 	end
 end
 
-function turtle:shootbullet(p)
-	if clientonline then
-		client:sendShoot(self.num .. ";shoot;" .. p)
+function turtle:shootbullet(p, relay)
+	if clientonline and not relay then
+		client:sendUDP("shoot;" .. playerid .. ";" .. p)
 	end
 
 	if p ~= "nobullets" then

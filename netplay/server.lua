@@ -44,9 +44,9 @@ function server:update(dt)
 		        self.udp:sendto("connected", ip, port)
 				self.udp:sendto("clientnumber;" .. #clients, ip, port)
 				self.udp:sendto("playsound;coopconnect;", ip, port)
-		        resyncconfig = true
+		        resynctimer = 0
 
-		        return
+		      --  return
 		    else
 	        	self.udp:sendto("lobbyfull;", ip, port)
 
@@ -123,6 +123,8 @@ function server:update(dt)
 		timer = 0
 	elseif ip ~= 'timeout' then
     	newNotice("Unknown network error: " .. tostring(ip))
+
+    	self.udp:close()
     elseif ip == "timeout" then
 	   
 	elseif not data then
@@ -150,17 +152,8 @@ function server:update(dt)
 	end
 
 	if resyncconfig then
-		local hasdata = true
-		for i, v in ipairs(clients) do
-			if not v.nickname or not v.character then
-				hasdata = false
-				break
-			end
-		end
-		if hasdata then
-			server:syncData()
-			resyncconfig = false
-		end
+		server:syncData()
+		resyncconfig = false
 	end
 end
 
@@ -177,12 +170,10 @@ function server:removeClient(cmd)
 end
 
 function server:syncPlayers(cmd, ip)
-	if cmd[1] == "move" then
-		server:movePlayers("move;" .. cmd[2] .. ";" .. cmd[3], ip)
-	elseif cmd[1] == "stop" then
-		server:stopPlayerMovement("stop;" .. cmd[2] .. ";" .. cmd[3], ip)
+	if cmd[1] == "speedx" then
+		server:sendDataToClients("speedx;" .. cmd[2] .. ";" .. cmd[3], ip)
 	elseif cmd[1] == "shoot" then
-		server:shootBullets("shoot;" .. cmd[2] .. ";" .. cmd[3], ip)
+		server:sendDataToClients("shoot;" .. cmd[2] .. ";" .. cmd[3], ip)
 	elseif cmd[1] == "powerup" then
 		server:sendDataToClients("powerup;" .. cmd[2] .. ";" .. cmd[3], ip)
 	elseif cmd[1] == "bullettype" then
@@ -194,6 +185,8 @@ function server:syncPlayers(cmd, ip)
 	elseif cmd[1] == "specialabilitykeypress" then
 		server:sendDataToClients("specialabilitykeypress;" .. cmd[2] .. ";")
 	end
+
+	return
 end
 
 function server:syncBats(data, ip)
@@ -224,7 +217,8 @@ end
 
 function server:syncData()
 	for k, v in pairs(clients) do
-		server:sendDataToClients("playerdata;" .. k .. ";" .. v.nickname .. ";" .. v.character .. ";" .. v.hosting .. ";", ip)
+		self.udp:sendto("playerdata;" .. k .. ";" .. v.nickname .. ";" .. v.character .. ";" .. v.hosting .. ";", v.ip, v.port)
+		server:sendDataToClients("playerdata;" .. k .. ";" .. v.nickname .. ";" .. v.character .. ";" .. v.hosting .. ";", v.ip)
 	end
 end
 
@@ -236,6 +230,8 @@ function server:addClient(nick, char, host, ip, port)
 	if not host then
 		playsound("coopconnect")
 	end
+
+	--server:sendDataToClients("connectionsuccessful;", ip)
 end
 
 function server:parseChat(cmd, ip)
@@ -258,35 +254,11 @@ function server:parseClientMic(cmd, ip)
 	server:sendDataToClients("microphone;" .. samples .. ";" .. frequency .. ";" .. rate .. ";" .. thing .. ";" .. cmd[6], ip)
 end
 
-function server:movePlayers(cmd, ip)
-	local cmd = cmd:split(";")
-	local id = cmd[2]
-	local dir = cmd[3]
-
-	server:sendDataToClients("move;" .. id .. ";" .. dir, ip)
-end
-
 function server:parseBatAbilities(cmd, ip)
 	local a = cmd[2]
 	local b = cmd[3]
 
 	server:sendDataToClients("batabilities;" .. cmd[1] .. ";" .. a .. ";" .. b, ip)
-end
-
-function server:stopPlayerMovement(cmd, ip)
-	local cmd = cmd:split(";")
-	local id = cmd[2]
-	local dir = cmd[3]
-
-	server:sendDataToClients("stop;" .. id .. ";" .. dir, ip)
-end
-
-function server:shootBullets(cmd, ip)
-	local cmd = cmd:split(";")
-	local id = cmd[2]
-	local powerup = cmd[3]
-
-	server:sendDataToClients("shoot;" .. id .. ";shoot;" .. powerup, ip)
 end
 
 function server:sendNotify(cmd, ip)

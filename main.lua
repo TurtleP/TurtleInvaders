@@ -57,6 +57,7 @@ function love.load()
 
 	requireFiles("", {"cron.lua", "Json.lua", "android", "32log.lua", "gamefunctions.lua", "gfx", "sound", "fonts", "characters", "script"})
 
+	missingX, missingY = 0, 0
 	if love.system.getOS() == "Android" or love.system.getOS() == "iOS" then
 		require "android/touchcontrol"
 		
@@ -754,6 +755,10 @@ function inside(x1, y1, w1, h1, x2, y2, w2, h2)
 end
 
 function love.errhand(msg)
+	if netplay or clientonline then
+		client:disconnect()
+	end
+	
 	if not scale then
 		if not mobileMode then
 			scale = 1

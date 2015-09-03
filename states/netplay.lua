@@ -24,7 +24,7 @@ function netplay_load()
 
 	netgui =
 	{
-		["nick"] = gui:new("textfield", rectx+(142*scale), (recty+82*scale), 8, nickstr),
+		["nick"] = gui:new("textfield", rectx+(142*scale), (recty+82*scale), 12, nickstr),
 		["backchar"] = gui:new("imagebutton", rectx+(20*scale), recty+(75*scale), 16*scale, 16*scale, graphics["arrows"], arrowquads[1], netplay_changeChar, {false}),
 		["nextchar"] = gui:new("imagebutton", rectx+(124*scale), recty+(75*scale), 16*scale, 16*scale, graphics["arrows"], arrowquads[2], netplay_changeChar, {true}),
 		["favorites"] = gui:new("button", rectx+(291*scale), recty+(198*scale), "Favorite Servers", netplaysearch_load),
