@@ -151,7 +151,7 @@ function turtle:specialUp(relay)
 
 			if clientonline then
 				if not relay then
-					table.insert(onlinetriggers, "specialability;" .. self.num .. ";")
+					table.insert(onlinetriggers, "specialability;" .. networkclientid .. ";")
 				end
 			end
 		end
@@ -164,7 +164,7 @@ function turtle:specialUp(relay)
 					self.ability:keypress()
 
 					if clientonline and not relay then
-						table.insert(onlinetriggers, "specialabilitykeypress;" .. self.num .. ";")
+						table.insert(onlinetriggers, "specialabilitykeypress;" .. networkclientid .. ";")
 					end
 				end
 			end
@@ -173,24 +173,20 @@ function turtle:specialUp(relay)
 	end
 end
 
-function turtle:moveright()
+function turtle:moveright(relay)
 	self.rightkey = true
-	self.speed = self.xspeed
 end
 
-function turtle:moveleft()
-	self.leftkey = true 
-	self.speed = -self.xspeed
+function turtle:moveleft(relay)
+	self.leftkey = true
 end
 
 function turtle:stopleft()
 	self.leftkey = false
-	self.speed = 0
 end
 
-function turtle:stopright()
+function turtle:stopright(relay)
 	self.rightkey = false
-	self.speed = 0
 end
 
 function turtle:onCollide(name, data)
@@ -277,8 +273,12 @@ function turtle:update(dt)
 			end
 		end
 
-		if clientonline then
-			client:sendUDP("speedx;" .. playerid .. ";" .. self.speed .. ";")
+		if self.rightkey then
+			self.speed = self.xspeed
+		elseif self.leftkey then
+			self.speed = -self.xspeed
+		else
+			self.speed = 0
 		end
 
 		self.x = self.x + self.speed * dt
@@ -338,7 +338,7 @@ function turtle:addLife(n, relay, dontSound)
 			self.ui.maxhp = self.health
 
 			if clientonline and not relay and not dontSound then
-				table.insert(onlinetriggers, "health;" .. n .. ";" .. playerid)
+				table.insert(onlinetriggers, "health;" .. n .. ";" .. networkclientid)
 			end
 		end
 	end
@@ -348,7 +348,7 @@ function turtle:setPowerup(powerup, isBullet, relay)
 	if not self.ui.megacannonthing and self.powerup:lower() ~= "remove" then
 		if isBullet then
 			if clientonline and not relay then
-				table.insert(onlinetriggers, "bullettype;" .. powerup .. ";" .. self.num .. ";")
+				table.insert(onlinetriggers, "bullettype;" .. powerup .. ";" .. networkclientid .. ";")
 			end
 
 			self.bullettype = powerup --should prevent some bugs with the timer resetting while using it
@@ -356,7 +356,7 @@ function turtle:setPowerup(powerup, isBullet, relay)
 		else
 			if powerup:lower() ~= "oneup" then
 				if clientonline and not relay then
-					table.insert(onlinetriggers, "powerup;" .. powerup .. ";" .. self.num .. ";")
+					table.insert(onlinetriggers, "powerup;" .. powerup .. ";" .. networkclientid .. ";")
 				end
 
 				self.powerup = powerup
@@ -500,7 +500,7 @@ end
 
 function turtle:shootbullet(p, relay)
 	if clientonline and not relay then
-		client:sendUDP("shoot;" .. playerid .. ";" .. p)
+		client:sendUDP("shoot;" .. networkclientid .. ";" .. p)
 	end
 
 	if p ~= "nobullets" then

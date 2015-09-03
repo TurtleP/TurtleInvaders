@@ -44,12 +44,10 @@ function server:update(dt)
 		        self.udp:sendto("connected", ip, port)
 				self.udp:sendto("clientnumber;" .. #clients, ip, port)
 				self.udp:sendto("playsound;coopconnect;", ip, port)
-		        resynctimer = 0
 
-		      --  return
+		        resynctimer = 0
 		    else
 	        	self.udp:sendto("lobbyfull;", ip, port)
-
 	        	return
 	        end
 	    elseif cmd[1] == "chars" then
@@ -58,7 +56,7 @@ function server:update(dt)
 	    	server:parseChat(cmd, ip)
 	    elseif cmd[1] == "closing" then
 			if cmd[4] == "true" then
-				server:sendDataToClients("disconnect;server shutting down;")
+				server:sendDataToClients("disconnect;Server shutting down!;true", ip)
 
 				--remove the host, make sure they disconnect you dolt!
 				self.udp:sendto("disconnect;", ip, port)
@@ -125,6 +123,7 @@ function server:update(dt)
     	newNotice("Unknown network error: " .. tostring(ip))
 
     	self.udp:close()
+    	netplay = false
     elseif ip == "timeout" then
 	   
 	elseif not data then
@@ -157,7 +156,7 @@ function server:update(dt)
 	end
 end
 
-function server:removeClient(cmd)
+function server:removeClient(cmd, ip)
 	if lobby_playerlist[tonumber(cmd[2])] then
 		table.remove(lobby_playerlist, tonumber(cmd[2]))
 	end
@@ -170,8 +169,8 @@ function server:removeClient(cmd)
 end
 
 function server:syncPlayers(cmd, ip)
-	if cmd[1] == "speedx" then
-		server:sendDataToClients("speedx;" .. cmd[2] .. ";" .. cmd[3], ip)
+	if cmd[1] == "move" then
+		server:sendDataToClients("move;" .. cmd[2] .. ";" .. cmd[3] .. ";" .. cmd[4], ip)
 	elseif cmd[1] == "shoot" then
 		server:sendDataToClients("shoot;" .. cmd[2] .. ";" .. cmd[3], ip)
 	elseif cmd[1] == "powerup" then
@@ -185,8 +184,6 @@ function server:syncPlayers(cmd, ip)
 	elseif cmd[1] == "specialabilitykeypress" then
 		server:sendDataToClients("specialabilitykeypress;" .. cmd[2] .. ";")
 	end
-
-	return
 end
 
 function server:syncBats(data, ip)
@@ -201,24 +198,13 @@ function server:syncBats(data, ip)
 	end
 end
 
-function server:compareChars(charList)
-	for k = 1, #charList do
-		local v = charList[k]
-
-		if v ~= nil then
-			if v == gamechars[k]  then
-				table.insert(common_chars, v)
-			elseif gamechars[k] ~= nil and v ~= gamechars[k] then
-				--print("Both do not have: " .. charList[k])
+function server:syncData()
+	for k, s in ipairs(clients) do
+		for j, v in pairs(clients) do
+			if j ~= k then --self.udp:sendto("playerdata;" .. k .. ";" .. v.nickname .. ";" .. v.character .. ";" .. v.hosting .. ";", v.ip, v.port)
+				self.udp:sendto("playerdata;" .. k .. ";" .. s.nickname .. ";" .. s.character .. ";" .. s.hosting .. ";", v.ip, v.port)
 			end
 		end
-	end
-end
-
-function server:syncData()
-	for k, v in pairs(clients) do
-		self.udp:sendto("playerdata;" .. k .. ";" .. v.nickname .. ";" .. v.character .. ";" .. v.hosting .. ";", v.ip, v.port)
-		server:sendDataToClients("playerdata;" .. k .. ";" .. v.nickname .. ";" .. v.character .. ";" .. v.hosting .. ";", v.ip)
 	end
 end
 
@@ -246,12 +232,6 @@ end
 
 function server:getCharName()
 	return gamechars[chari]
-end
-
-function server:parseClientMic(cmd, ip)
-	local samples, frequency, rate, thing = cmd[2], cmd[3], cmd[4], cmd[5]
-
-	server:sendDataToClients("microphone;" .. samples .. ";" .. frequency .. ";" .. rate .. ";" .. thing .. ";" .. cmd[6], ip)
 end
 
 function server:parseBatAbilities(cmd, ip)

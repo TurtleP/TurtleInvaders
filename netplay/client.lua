@@ -22,6 +22,9 @@ local enemymaxsync = 0.20
 clpingtimer = 0
 clping = 0
 
+local playersync = 0
+local playersyncmax = 0.03
+
 function client:newUDP()
 	udp = socket.udp()
 	udp:settimeout(0) --don't buffer wait for data
@@ -110,15 +113,19 @@ function client:searchForServers()
 end
 
 function client:connect(address, port)
-	local err, msg = udp:setpeername(address, port)
+	udp:setpeername(address, port)
 
-	if err ~= nil then
+	local udpString = tostring(udp)
+
+	local split = udpString:split(":")
+
+	if split[1] == "udp{connected}" then
    		udp:send("connect;" .. client:getName() .. ";" .. client:getChar() .. ";" .. tostring(isnetworkhost))
     else
     	newNotice("Failed to connect to " .. address .. ":" .. port, true)
     	udp:close()
 
-    	return
+    --	return
    	end
 end
 
@@ -191,6 +198,14 @@ function client:update(dt)
 		end
 	end
 
+	if not data and msg ~= 'timeout' and msg ~= "closed" then
+		print(msg)
+		newNotice("Server is down or does not exist!", true)
+		udp:close()
+		clientonline = false
+		return
+	end
+
    --[[	if msg ~= 'timeout' then
         client:disconnect()
         newNotice("Server says: " .. msg)
@@ -199,10 +214,17 @@ function client:update(dt)
 end
 
 function client:removeClient(cmd)
-	if lobby_playerlist[tonumber(cmd[2])] then
-		table.remove(lobby_playerlist, tonumber(cmd[2]))
+
+	local i = convertclienttoplayer(tonumber(cmd[2]))
+
+	if lobby_playerlist[i] then
+		table.remove(lobby_playerlist, i)
 	end
-	
+
+	if objects then
+		objects["turtle"][i]:die()
+	end
+
 	playsound("coopdisconnect")
 					
 	newNotice("Client " .. cmd[3] .. " has disconnected.")
@@ -240,6 +262,13 @@ function client:netUpdate(dt)
 				enemysync = 0
 			end
 		end
+
+		if playersync < playersyncmax then
+			playersync = playersync + dt
+		else
+			udp:send("move;" .. networkclientid .. ";" .. tostring(objects["turtle"][networkclientid].rightkey) .. ";" .. tostring(objects["turtle"][networkclientid].leftkey))
+			playersync = 0
+		end
 	end
 
 	for k = #onlinetriggers, 1, -1 do
@@ -270,7 +299,7 @@ function client:syncCoonBoss(cmd)
 	end
 end
 
-function client:disconnect(reason)
+function client:disconnect(reason, warn)
 	if networkclientid then
 		udp:send("closing;" .. networkclientid .. ";" .. nickstr .. ";" .. tostring(isnetworkhost) .. ";")
 
@@ -282,7 +311,7 @@ function client:disconnect(reason)
 		r = " Reason: " .. reason
 	end
 
-	newNotice("Disconnected." .. r)
+	newNotice("Disconnected." .. r, warn)
 	
 	controls = {unpack(clientcontrols)}
 
@@ -294,21 +323,25 @@ end
 function client:playerSync(cmd)
 	local id = tonumber(cmd[2])
 
-	if cmd[1] == "shoot" then
-		client:shootBullet(id, cmd[3])
-	elseif cmd[1] == "bullettype" then
-		client:setBulletType(cmd)
-	elseif cmd[1] == "powerup" then
-		client:powerup(cmd)
-	elseif cmd[1] == "health" then
-		client:giveLife(cmd)
-	elseif cmd[1] == "specialabilitykeypress" then
-		objects["turtle"][id]:specialUp(true)
-	elseif cmd[1] == "specialability" then
-		objects["turtle"][id]:specialUp(true)
-	elseif cmd[1] == "speedx" then
-		print(cmd[3])
-		objects["turtle"][id].speed = tonumber(cmd[3])
+	print("client: " .. networkclientid, id)
+
+	if objects["turtle"][id] then
+		if cmd[1] == "move" then
+			objects["turtle"][id].rightkey = toboolean(cmd[3])
+			objects["turtle"][id].leftkey = toboolean(cmd[4])
+		elseif cmd[1] == "shoot" then
+			client:shootBullet(id, cmd[3])
+		elseif cmd[1] == "bullettype" then
+			client:setBulletType(cmd)
+		elseif cmd[1] == "powerup" then
+			client:powerup(cmd)
+		elseif cmd[1] == "health" then
+			client:giveLife(cmd)
+		elseif cmd[1] == "specialabilitykeypress" then
+			objects["turtle"][id]:specialUp(true)
+		elseif cmd[1] == "specialability" then
+			objects["turtle"][id]:specialUp(true)
+		end
 	end
 end
 
@@ -318,6 +351,10 @@ function client_connectToLobby()
 end
 
 function client_generallobbysyncs(cmd)
+	if state == "netplay" and cmd[1] ~= "connected" then
+		newNotice("Server is down. Try again later.", true)
+	end
+
 	if cmd[1] == "connected" then
 		client_connectToLobby()
 	elseif cmd[1] == "startgame" then
@@ -325,6 +362,8 @@ function client_generallobbysyncs(cmd)
 		game_load()
 	elseif cmd[1] == "clientnumber" then
 		networkclientid = tonumber(cmd[2])
+
+		print("ayy lmao network id: ", networkclientid)
 
 		clientcontrols[networkclientid] = controls[playerconfig]
 		controls = {}
@@ -351,7 +390,7 @@ function client_generallobbysyncs(cmd)
 	elseif cmd[1] == "playerdata" then
 		playerid = convertclienttoplayer(tonumber(cmd[2]))
 
-		print(tostring(isnetworkhost), "[PLAYERDATA] My ID is :: " .. playerid)
+		--print(tostring(isnetworkhost), "[PLAYERDATA] My ID is :: " .. playerid)
 		if not lobby_playerlist then
 			newNotice("Failed to connect to lobby!", true)
 			client:disconnect()
@@ -366,7 +405,7 @@ function client_generallobbysyncs(cmd)
 		lobby_playerlist[playerid].hosting = toboolean(cmd[5])
 		lobby_playerlist[playerid].id = playerid
 	elseif cmd[1] == "disconnect" then
-		client:disconnect(cmd[2])
+		client:disconnect(cmd[2], toboolean(cmd[3]))
 	elseif cmd[1] == "playsound" then
 		playsound(cmd[2])
 	end
@@ -449,26 +488,6 @@ function client:parseNotify(cmd)
 		gamemode = gamemodes[tonumber(cmd[3])]
 
 		shared:timeEvent(1, game_load)
-	end
-end
-
-function client:movePlayers(plyId, dir)
-	if objects["turtle"][plyId] then
-		if dir == "right" then
-			objects["turtle"][plyId]:moveright(true)
-		else
-			objects["turtle"][plyId]:moveleft(true)
-		end
-	end
-end
-
-function client:stopMovingPlayers(plyId, dir)
-	if objects["turtle"][plyId] then
-		if dir == "right" then
-			objects["turtle"][plyId]:stopright(true)
-		else
-			objects["turtle"][plyId]:stopleft(true)
-		end
 	end
 end
 
