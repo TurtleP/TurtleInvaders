@@ -46,6 +46,13 @@ function client:load(address, port, nick)
 	client:connect(address, port)
 
 	clientcontrols = {}
+
+	clientTimesouts = {}
+	for k = 1, 4 do
+		clientTimesouts[k] = 0
+	end
+	clientTimeout = 0
+	networkwarningssent = 0
 end
 
 function client:searchForServerInit()
@@ -196,6 +203,8 @@ function client:update(dt)
 
 			return
 		end
+
+		clientTimeout = 0
 	end
 
 	if not data and msg ~= 'timeout' and msg ~= "closed" then
@@ -206,11 +215,16 @@ function client:update(dt)
 		return
 	end
 
-   --[[	if msg ~= 'timeout' then
-        client:disconnect()
-        newNotice("Server says: " .. msg)
-        menu_load()
-    end]]
+   	if msg == 'timeout' then
+   		clientTimeout = clientTimeout + dt
+
+   		if clientTimeout > 10 then
+			newNotice("Connection re-established.", true)
+			clientTimeout = 0
+		elseif clientTimeout > 20 then
+			client:disconnect("Timed out", true)
+		end
+    end
 end
 
 function client:removeClient(cmd)
@@ -266,8 +280,10 @@ function client:netUpdate(dt)
 		if playersync < playersyncmax then
 			playersync = playersync + dt
 		else
-			udp:send("move;" .. networkclientid .. ";" .. tostring(objects["turtle"][networkclientid].rightkey) .. ";" .. tostring(objects["turtle"][networkclientid].leftkey))
-			playersync = 0
+			if objects["turtle"][networkclientid] then
+				udp:send("playerinfo;" .. networkclientid .. ";" .. round(objects["turtle"][networkclientid].x, 2) .. ";" .. objects["turtle"][networkclientid].health .. ";")
+				playersync = 0
+			end
 		end
 	end
 
@@ -313,9 +329,10 @@ function client:disconnect(reason, warn)
 
 	newNotice("Disconnected." .. r, warn)
 	
-	controls = {unpack(clientcontrols)}
+	loadData("settings")
 
 	clientonline = false
+
 	udp:close()
 	menu_load()
 end
@@ -326,9 +343,9 @@ function client:playerSync(cmd)
 	print("client: " .. networkclientid, id)
 
 	if objects["turtle"][id] then
-		if cmd[1] == "move" then
-			objects["turtle"][id].rightkey = toboolean(cmd[3])
-			objects["turtle"][id].leftkey = toboolean(cmd[4])
+		if cmd[1] == "playerinfo" then
+			objects["turtle"][id].x = tonumber(cmd[3])
+			objects["turtle"][id].health = tonumber(cmd[4])
 		elseif cmd[1] == "shoot" then
 			client:shootBullet(id, cmd[3])
 		elseif cmd[1] == "bullettype" then
@@ -416,9 +433,7 @@ function client:sendUDP(string)
 end
 
 function client:spawnPowerup(cmd)
-	if objects["enemies"][tonumber(cmd[2])] then
-		objects["enemies"][tonumber(cmd[2])]:droppowerup(false, true, cmd[3])
-	end
+	dropPowerup(tonumber(cmd[3]), tonumber(cmd[4]), cmd[2], true)
 end
 
 function convertclienttoplayer(clientnumber)

@@ -483,13 +483,6 @@ function defaultSettings()
 
 	changescale(scale)
 
-	controls[1] = {"a", "d", " " , "lshift"}
-	controls[2] = {"left", "right", "up" , "rctrl"}
-
-	for k = 3, 4 do
-		controls[k] = {unpack(gamepad_default)}
-	end
-
 	vsyncbool = true 
 	musicvolume = 1
 	soundvolume = 1
@@ -507,6 +500,15 @@ function defaultSettings()
 	end
 
 	newNotice("Settings set to default; " .. comma_value(logcount) .. " error logs were removed.")
+end
+
+function defaultControls()
+	controls[1] = {"a", "d", " " , "lshift"}
+	controls[2] = {"left", "right", "up" , "rctrl"}
+
+	for k = 3, 4 do
+		controls[k] = {unpack(gamepad_default)}
+	end
 end
 
 function loading(p)
@@ -1072,7 +1074,7 @@ function love.draw()
 		end
 	end
 
-	drawBetaBanner()
+	--drawBetaBanner()
 end
 
 function drawBetaBanner()

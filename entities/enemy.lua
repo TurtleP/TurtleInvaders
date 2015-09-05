@@ -389,20 +389,20 @@ function enemy:die(antiB, emanced, relay, player)
 		end
 	end
 
-	if self.ply ~= 0 and not objects["turtle"][self.ply] then
-		local k = self.ply
+	if self.ply ~= 0 and objects["turtle"][self.ply] then
+		if objects["turtle"][self.ply].dead then
+			local k = self.ply
 
-		local names = gameData
+			local names = gameData
 
-		if clientonline or netplay then
-			names = nameData
+			if clientonline or netplay then
+				names = nameData
+			end
+
+			objects.turtle[k] = turtle:new((25+(k-1)*80), 256, k, 3, gameData[k], names[k])
+		
+			unlockAchievement("revivedmember")
 		end
-
-		table.remove(deadturtles, self.ply)
-
-		objects.turtle[k] = turtle:new((25+(k-1)*80), 256, k, health[k], gameData[k], names[k])
-	
-		unlockAchievement("revivedmember")
 	end
 
 	if clientonline and not relay then
@@ -456,7 +456,7 @@ function enemy:emancipate()
 	self.kill = true
 end
 
-function enemy:droppowerup(rand, p)
+function enemy:droppowerup(rand, relay, p)
 	local poweruptype = ""
 
 	if not p then
@@ -471,6 +471,6 @@ function enemy:droppowerup(rand, p)
 
 	if poweruptype ~= "" then
 		local x, y = self.x+(self.width/2)-(16)/2, self.y+(self.height/2)-(16/2)
-		dropPowerup(x, y, poweruptype)
+		dropPowerup(x, y, poweruptype, relay)
 	end
 end

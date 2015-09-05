@@ -83,11 +83,6 @@ function server:update(dt)
 			end
 
 			server:sendNotify(cmd[1] .. ";" .. #clients .. ";" .. t, ip)
-		elseif cmd[1] == "isup" then
-			self.udp:sendto("yes;" .. #clients .. ";" .. gamemodes[gameModei] .. ";" .. difficultytypes[gameDifficulty] .. ";", ip, port)
-			return
-		elseif cmd[1] == "ping" then
-			self.udp:sendto("pingback;" .. cmd[2] .. ";" .. #clients .. ";", ip, port)
 		elseif cmd[1] == "batboss" then
 			server:sendDataToClients(data, ip)
 		elseif cmd[1] == "coonboss" then
@@ -168,8 +163,8 @@ function server:removeClient(cmd, ip)
 end
 
 function server:syncPlayers(cmd, ip)
-	if cmd[1] == "move" then
-		server:sendDataToClients("move;" .. cmd[2] .. ";" .. cmd[3] .. ";" .. cmd[4], ip)
+	if cmd[1] == "playerinfo" then
+		server:sendDataToClients("playerinfo;" .. cmd[2] .. ";" .. cmd[3] .. ";" .. cmd[4] .. ";", ip)
 	elseif cmd[1] == "shoot" then
 		server:sendDataToClients("shoot;" .. cmd[2] .. ";" .. cmd[3], ip)
 	elseif cmd[1] == "powerup" then

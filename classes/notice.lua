@@ -4,13 +4,13 @@ class "notice" {
 
 notices = {}
 
-function notice:__init(text, isWarn, dontinsert)
+function notice:__init(text, isWarn, maxtime)
 	self.width = font3:getWidth(text) + 6 * scale
 	self.height = font3:getHeight(text) + 6 * scale
 	self.x = 0
 	self.y = 0-font3:getHeight(text)
 	self.timer = 0
-	self.maxtime = 2
+	self.maxtime = maxtime or 2
 	self.offset = 0
 	self.text = text
 	self.stateoldfont = love.graphics.getFont()
@@ -22,11 +22,7 @@ function notice:__init(text, isWarn, dontinsert)
 		self.fontcolor = {255, 255, 255}
 	end
 
-	self.dontinsert = dontinsert
-
-	if not dontinsert then
-		table.insert(notices, self)
-	end
+	table.insert(notices, self)
 end
 
 function notice:getPos()

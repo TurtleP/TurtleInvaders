@@ -51,7 +51,7 @@ function turtle:__init(x, y, i, hp, char, name)
 
 	self.invincible = false
 
-	self.ui = shipui:new(self.num, self.health, name, characters[char])
+	self.ui = shipui:new(self.num, name, characters[char], self)
 	self.batskilled = 0
 
 	self.blinktimer = 0
@@ -330,12 +330,6 @@ function turtle:addLife(n, relay, dontSound)
 					self.invincible = true
 				end
 			end
-
-			self.ui.maxhp = self.health
-
-			if clientonline and not relay and not dontSound then
-				table.insert(onlinetriggers, "health;" .. n .. ";" .. networkclientid)
-			end
 		end
 	end
 end
@@ -367,15 +361,27 @@ end
 
 function turtle:die(reason)
 	table.insert(objects.explosions, explosion:new(self.x+(self.width/2)-((16)/2), self.y+(self.height/2)-((16)/2), false, true))
-	
-	table.insert(deadturtles, reason)
-
-	if #deadturtles == players then
-		gameover = true
-	end
 
 	self.dead = true
 	self.shouldupdate = false
+
+	for k, v in pairs(objects.powerup) do
+		if v.parent == self then
+			v.kill = true
+		end
+	end
+
+	local alive = false
+	for k = #objects["turtle"], 1, -1 do
+		if not objects["turtle"][k].dead then
+			alive = true
+			break
+		end
+	end
+
+	if not alive then
+		gameover = true
+	end
 end
 
 function turtle:joystickpressed(joystick, button)

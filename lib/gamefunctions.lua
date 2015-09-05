@@ -2,14 +2,13 @@ function randompowerupchance(chance)
 	local name = ""
 	
 	if chance < 6 and chance > 2 then
-		name = powerups[love.math.random(2, 10)]  
+		name = powerups[love.math.random(2, 9)]  
 	elseif chance == 1 then
-		name = powerups[11]
+		name = powerups[10]
 	end
 
-	if name then
-		return name
-	end
+	
+	return name
 end
 
 function round(num, idp) --Not by me
@@ -170,8 +169,8 @@ function love.graphics.setScissor(x, y, w, h)
 	_scissor(x, y, w, h)
 end
 
-function newNotice(t, isWarn)
-	table.insert(notices, notice:new(t, isWarn))
+function newNotice(t, isWarn, life)
+	table.insert(notices, notice:new(t, isWarn, life))
 end
 
 function getPowerColor(p)

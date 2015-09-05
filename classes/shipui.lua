@@ -2,11 +2,10 @@ class "shipui" {
 	x = 0, y = 0, i = 1
 }
 
-function shipui:__init(i, n, name, char)
+function shipui:__init(i, name, char, parent)
 	self.x = 4
 	self.y = 22
 	self.num = i
-	self.maxhp = n
 	self.colors = colors
 	self.name = name
 	self.graphic = char.graphic
@@ -50,6 +49,8 @@ function shipui:__init(i, n, name, char)
 	else
 		self.abilityPassive = true
 	end
+
+	self.parent = parent
 
 	--8 spaces, dawg
 	self.width = 110
@@ -105,10 +106,6 @@ function shipui:draw()
 	love.graphics.setFont(font3)
 	love.graphics.print(self.name, self.x * scale, (self.y - font3:getHeight(name) / scale) * scale)
 
-	if self.maxhp == 0 then
-		return
-	end
-
 	local y = (self.y - 18)
 	local timery = (self.y - 6)
 	if not self.abilityPassive then
@@ -120,12 +117,12 @@ function shipui:draw()
 		love.graphics.setColor(255, 255, 255)
 	end
 
-	if self.maxhp < 5 then
-		for k = 1, self.maxhp do
+	if self.parent.health < 5 then
+		for k = 1, self.parent.health do
 			love.graphics.draw(graphics["hitpoint"], self.x * scale + font3:getWidth(self.name) + 4 * scale + (k - 1) * 12 * scale, y * scale, 0, scale, scale)
 		end
 	else
-		love.graphics.print(self.maxhp, self.x * scale + font3:getWidth(self.name) + 8 * scale + font3:getWidth(self.num), y * scale)
+		love.graphics.print(self.parent.health, self.x * scale + font3:getWidth(self.name) + 8 * scale + font3:getWidth(self.num), y * scale)
 		love.graphics.draw(graphics["hitpoint"], self.x * scale + font3:getWidth(self.name) + 4 * scale, y * scale, 0, scale, scale)
 	end
 
