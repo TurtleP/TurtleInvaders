@@ -84,6 +84,7 @@ function client:tryConnection()
     else
     	newNotice("Failed to connect to " .. address .. ":" .. port, true)
     	udp:close()
+    	clientonline = false
    	end
 end
 
