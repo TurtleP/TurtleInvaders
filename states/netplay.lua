@@ -24,20 +24,20 @@ function netplay_load()
 
 	netgui =
 	{
-		["nick"] = gui:new("textfield", rectx+(142*scale), (recty+82*scale), 12, nickstr),
-		["backchar"] = gui:new("imagebutton", rectx+(20*scale), recty+(75*scale), 16*scale, 16*scale, graphics["arrows"], arrowquads[1], netplay_changeChar, {false}),
-		["nextchar"] = gui:new("imagebutton", rectx+(124*scale), recty+(75*scale), 16*scale, 16*scale, graphics["arrows"], arrowquads[2], netplay_changeChar, {true}),
-		["favorites"] = gui:new("button", rectx+(291*scale), recty+(198*scale), "Favorite Servers", netplaysearch_load),
+		["nick"] = gui:new("textfield", rectx+(142*scale), (recty+170*scale), 12, nickstr),
+		["backchar"] = gui:new("imagebutton", rectx+(16*scale), recty+(176*scale), 16*scale, 16*scale, graphics["arrows"], arrowquads[1], netplay_changeChar, {false}),
+		["nextchar"] = gui:new("imagebutton", rectx+(120*scale), recty+(176*scale), 16*scale, 16*scale, graphics["arrows"], arrowquads[2], netplay_changeChar, {true}),
+		--["favorites"] = gui:new("button", rectx+(291*scale), recty+(198*scale), "Favorite Servers", netplaysearch_load),
 		["ip"] = gui:new("textfield", rectx+(291*scale), recty+(82*scale), 15, ip),
 		["port"] = gui:new("textfield", rectx+(349*scale), recty+(111*scale), 5, port),
-		["name"] = gui:new("textfield", rectx+(350*scale), recty+(142*scale), 7, favoritename),
+		--["name"] = gui:new("textfield", rectx+(350*scale), recty+(142*scale), 7, favoritename),
 
-		["hostport"] = gui:new("textfield", rectx+(73*scale), recty+(167*scale), 5, hostport),
-		["servname"] = gui:new("textfield", rectx+(73*scale), recty+(194*scale), 10, server_name),
+		["hostport"] = gui:new("textfield", rectx+(73*scale), recty+(58*scale), 5, hostport),
+		--["servname"] = gui:new("textfield", rectx+(73*scale), recty+(194*scale), 10, server_name),
 		["hostnow"] = gui:new("button", rectx+(21*scale), recty+(232*scale), "Host Now", netplay_connect, {true}),
 		["joinnow"] = gui:new("button", rectx+(414*scale), recty+(232*scale), "Join Now", netplay_connect, {false}),
-		["configadd"] = gui:new("imagebutton", rectx+(250*scale), recty+(112*scale), 16*scale, 16*scale, graphics["arrows"], arrowquads[2], netplay_changeConfig, {true}),
-		["configminus"] = gui:new("imagebutton", rectx+(220*scale), recty+(112*scale), 16*scale, 16*scale, graphics["arrows"], arrowquads[1], netplay_changeConfig, {false})
+		["configadd"] = gui:new("imagebutton", rectx+(306*scale), recty+(199*scale), 16*scale, 16*scale, graphics["arrows"], arrowquads[2], netplay_changeConfig, {true}),
+		["configminus"] = gui:new("imagebutton", rectx+(268*scale), recty+(199*scale), 16*scale, 16*scale, graphics["arrows"], arrowquads[1], netplay_changeConfig, {false})
 	}
 
 	netgui["hostnow"].unHighlightColor = {0, 255, 0}
@@ -77,7 +77,7 @@ function netplay_draw()
 		love.graphics.rectangle("line", x+(14*scale), y+(28*scale), 497*scale, 0.5*scale)
 
 		--Join section
-		love.graphics.rectangle("line", x+(291*scale), y+(56*scale), 131*scale, 0.5*scale)
+		love.graphics.rectangle("line", x+(291*scale), y+(54*scale), 131*scale, 0.5*scale)
 
 		love.graphics.setColor(0, 127, 127)
 		love.graphics.print("JOIN A GAME", x+(294*scale), y+(37*scale))
@@ -87,35 +87,29 @@ function netplay_draw()
 
 		love.graphics.print("PORT:", x+(294*scale), y+(116*scale))
 
-		love.graphics.print("NAME:", x+(294*scale), y+(146*scale))
+		--love.graphics.rectangle("line", x+(291*scale), y+(170*scale), 223*scale, 0.5*scale)
 
-		love.graphics.rectangle("line", x+(291*scale), y+(170*scale), 223*scale, 0.5*scale)
-
-		--FAVES
-		love.graphics.print("LOAD A FAVORITE:", x+(294*scale), y+(179*scale))
 		--PLAYAH SECTION, DAWG
-		love.graphics.rectangle("line", x+(40*scale), (y+43*scale), 80*scale, 80*scale)
+		--love.graphics.rectangle("line", x+(36*scale), (y+141*scale), 80*scale, 80*scale)
 
-		love.graphics.print("NICKNAME:", x+(142*scale), (y+59*scale))
+		love.graphics.print("NICKNAME:", x+(144*scale), (y+150*scale))
 
-		love.graphics.print("CONFIG:", x+(142*scale), y+(115*scale))
-		love.graphics.print(playerconfig, x+(238*scale), y+(115*scale))
+		love.graphics.print("Control Set:  " .. playerconfig, x+(142*scale), y+(202*scale))
+		--love.graphics.print(playerconfig, x+(238*scale), y+(202*scale))
 
 		--UI BAR FOR SERVER CRAP
-		love.graphics.rectangle("line", x+(14*scale), (y+136*scale), 262*scale, 0.5*scale)
+		love.graphics.rectangle("line", x+(14*scale), (y+136*scale), 496*scale, 0.5*scale)
 
 		love.graphics.setColor(0, 127, 127)
-		love.graphics.print("HOST A GAME", x+(20*scale), y+(143*scale))
+		love.graphics.print("HOST A GAME", x+(20*scale), y+(37*scale))
 
 		love.graphics.setColor(255, 255, 255)
 
-		love.graphics.print("PORT:", x+(20*scale), y+(174*scale))
-
-		love.graphics.print("NAME:", x+(20*scale), y+(201*scale))
+		love.graphics.print("PORT:", x+(20*scale), y+(63*scale))
 
 		love.graphics.setColor(240, 56, 56)
 
-		love.graphics.print("PORT MUST\nBE UDP\nFORWARDED!", x+(174*scale), y+(146*scale))
+		love.graphics.print("MUST BE UDP FORWARDED!", x+(20*scale), y+(90*scale))
 
 		--[[if serverupi == 2 then
 			love.graphics.setFont(font9)
@@ -132,10 +126,10 @@ function netplay_draw()
 
 		love.graphics.setColor(255, 255, 255)
 
-		love.graphics.rectangle("line", x+(15*scale), (y+160*scale), 131*scale, 0.5*scale)
+		love.graphics.rectangle("line", x+(15*scale), (y+54*scale), 131*scale, 0.5*scale)
 
 		--dividing bar thingy
-		love.graphics.rectangle("line", x+(283*scale), y+(35*scale), 0.5*scale, 220*scale)
+		love.graphics.rectangle("line", x+(283*scale), y+(35*scale), 0.5*scale, 98*scale)
 
 		--bar before host button
 		love.graphics.rectangle("line", x+(15*scale), y+(226*scale), 262*scale, 0.5*scale)
@@ -146,12 +140,13 @@ function netplay_draw()
 
 		--love.graphics.draw(graphics["save"], savequads[savei], x+(490*scale), y+(83*scale), 0, scale, scale)
 
+	--	love.graphics.print("Character:\n" .. gamechars[charconfigi], x+(144*scale), y+(160*scale))
 		local v = characters[gamechars[charconfigi]]
 
 		if v.isAnimated then
-			love.graphics.draw(v.graphic, v.animationQuads[v.animationQuad], x+(40*scale)+((80*scale)/2)-((v.width/2)*(scale+1)), y+(41*scale)+(80*scale)/2-((v.height/2)*(scale+1)), 0, scale+1, scale+1)
+			love.graphics.draw(v.graphic, v.animationQuads[v.animationQuad], x+(36*scale)+((80*scale)/2)-((v.width/2)*(scale+1)), y+(41*scale)+(280*scale)/2-((v.height/2)*(scale+1)), 0, scale+1, scale+1)
 		else
-			love.graphics.draw(v.graphic, x+(40*scale)+((80*scale)/2)-((v.width/2)*(scale+1)), y+(41*scale)+(80*scale)/2-((v.height/2)*(scale+1)), 0, scale+1, scale+1)
+			love.graphics.draw(v.graphic, x+(36*scale)+((80*scale)/2)-((v.width/2)*(scale+1)), y+(41*scale)+(280*scale)/2-((v.height/2)*(scale+1)), 0, scale+1, scale+1)
 		end
 
 		love.graphics.setColor(255, 255, 255)
@@ -163,8 +158,6 @@ end
 
 function netplay_textinput(t)
 	netgui["nick"]:textinput(t)
-	netgui["name"]:textinput(t)
-	netgui["servname"]:textinput(t)
 
 	if tonumber(t) or t == "." then
 		netgui["ip"]:textinput(t)

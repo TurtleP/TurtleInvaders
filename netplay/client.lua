@@ -68,60 +68,13 @@ function client:searchForServerInit()
 	udp:settimeout(.1)
 end
 
-function client:searchForServers()
-	local shake = "Turtle-Invaders"
-
-	local err = false
-
-	local serv_address = ""
-	local serv_port = ""
-
-	if not err then
-		message, address, port, err = udp:receivefrom()
-
-		if message then
-			local data = message:split(";")
-
-			if data[1] == shake then
-				serv_address = address
-				serv_port = port
-
-				local found = false
-				if #searchBoxData > 0 then
-					for k = 1, #searchBoxData do
-						if searchBoxData[k].address == address and searchBoxData[k].port == port then
-							found = true
-						end
-					end
-				end
-
-				if not found then
-					table.insert(searchBoxData, newBar(data[2], address, port, #searchBoxData+1, true))
-				end
-
-				for k, v in pairs(searchBoxData) do
-					if v.address == address and v.port == port then
-						v:setPlayers(data[3])
-						v:setDifficulty(data[5])
-						v:setPing(math.floor( love.timer.getTime() / 1000 ))
-					end
-				end
-
-				return
-			end
-		end
-
-		if err then
-			error(err)
-		end
-
-		udp:sendto(shake, "255.255.255.255", 25545)
-	end
-end
-
 function client:connect(address, port)
 	udp:setpeername(address, port)
 
+	client:tyConnection()
+end
+
+function client:tryConnection()
 	local udpString = tostring(udp)
 
 	local split = udpString:split(":")
@@ -131,8 +84,6 @@ function client:connect(address, port)
     else
     	newNotice("Failed to connect to " .. address .. ":" .. port, true)
     	udp:close()
-
-    --	return
    	end
 end
 

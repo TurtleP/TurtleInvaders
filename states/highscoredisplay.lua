@@ -50,13 +50,21 @@ function highscoredisplay_load(from_menu, score)
 			highscorestable[high] = {"", difficultytypes[difficultyi], score}
 		else
 			if not from_menu then
-				menu_load()
+				if not clientonline then
+					menu_load()
+				else
+					client:tryConnection()
+				end
 			end
 		end
 	else
 		high = nil --in case it was set, we don't want that
 		if not from_menu then
-			menu_load()
+			if not clientonline then
+				menu_load()
+			else
+				client:tryConnection()
+			end	
 		end
 	end
 
@@ -257,7 +265,7 @@ function highscoredisplay_movecursor(up, back, del, right)
 				if not clientonline then 
 					menu_load(false, true)
 				else
-					client_connectToLobby() --hopefully works yay
+					client:tryConnection()
 				end
 			end
 		end
@@ -279,7 +287,7 @@ function highscoredisplay_movecursor(up, back, del, right)
 			if not clientonline then 
 				menu_load(false, true)
 			else
-				client_connectToLobby() --hopefully works yay
+				client:tryConnection()
 			end
 		end
 	end
