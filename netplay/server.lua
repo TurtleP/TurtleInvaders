@@ -33,11 +33,6 @@ function server:update(dt)
 
 	    cmd = data:split(";")
 
-	    --[[if data == shake then
-	    	print("We're not alone. Fuck..")
-	    	self.udp:sendto(shake .. ";" .. server_name .. ";" .. #clients .. ";" .. gamemodes[gameModei] .. ";" .. difficultytypes[gameDifficulty] .. ";", ip, port)
-	    end]]
-
 	    if cmd[1] == "connect" then
 	    	if #clients < 4 then
 		        server:addClient(cmd[2], cmd[3], cmd[4], ip, port)

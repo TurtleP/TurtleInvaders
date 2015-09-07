@@ -279,7 +279,7 @@ function debugLoadTime(description)
 		return
 	end
 
-	print(">>> Loaded " .. description .. " in " .. round((love.timer.getTime()-startTime)*1000) .. "ms.")
+	--print(">>> Loaded " .. description .. " in " .. round((love.timer.getTime()-startTime)*1000) .. "ms.")
 	startTime = love.timer.getTime()
 end
 

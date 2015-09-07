@@ -160,7 +160,6 @@ function client:update(dt)
 	end
 
 	if not data and msg ~= 'timeout' and msg ~= "closed" then
-		print(msg)
 		newNotice("Server is down or does not exist!", true)
 		udp:close()
 		clientonline = false
@@ -292,8 +291,6 @@ end
 function client:playerSync(cmd)
 	local id = tonumber(cmd[2])
 
-	print("client: " .. networkclientid, id)
-
 	if objects["turtle"][id] then
 		if cmd[1] == "playerinfo" then
 			objects["turtle"][id].x = tonumber(cmd[3])
@@ -332,8 +329,6 @@ function client_generallobbysyncs(cmd)
 	elseif cmd[1] == "clientnumber" then
 		networkclientid = tonumber(cmd[2])
 
-		print("ayy lmao network id: ", networkclientid)
-
 		clientcontrols[networkclientid] = controls[playerconfig]
 		controls = {}
 
@@ -359,7 +354,6 @@ function client_generallobbysyncs(cmd)
 	elseif cmd[1] == "playerdata" then
 		playerid = convertclienttoplayer(tonumber(cmd[2]))
 
-		--print(tostring(isnetworkhost), "[PLAYERDATA] My ID is :: " .. playerid)
 		if not lobby_playerlist then
 			newNotice("Failed to connect to lobby!", true)
 			client:disconnect()
