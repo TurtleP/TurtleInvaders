@@ -129,11 +129,10 @@ function netplay_draw()
 		love.graphics.rectangle("line", x+(15*scale), (y+54*scale), 131*scale, 0.5*scale)
 
 		--dividing bar thingy
-		love.graphics.rectangle("line", x+(283*scale), y+(35*scale), 0.5*scale, 98*scale)
+		love.graphics.rectangle("line", x+(rectwidth / 2) - (0.5 * scale) / 2, y+(35*scale), 0.5*scale, 94*scale)
 
 		--bar before host button
-		love.graphics.rectangle("line", x+(15*scale), y+(226*scale), 262*scale, 0.5*scale)
-		love.graphics.rectangle("line", x+(291*scale), y+(226*scale), 223*scale, 0.5*scale)
+		love.graphics.rectangle("line", x+(15*scale), y+(226*scale), rectwidth - (30 * scale), 0.5*scale)
 
 		--draw the check or x if a server is up or down. The 'or' is because it becomes nil
 		--love.graphics.draw(graphics["serverexists"], serverupquads[(serverupi or 1)], x+(466*scale), y+(83*scale), 0, scale, scale)
