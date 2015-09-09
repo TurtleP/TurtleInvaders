@@ -351,7 +351,7 @@ function settings_drawtab()
 				
 				
 				love.graphics.setColor(55, 55, 55, 255)
-				if _G[ v[3] ] >= (1/volumeSteps)*i and _G[ v[3] ] > 0 then
+				if _G[ v[3] ] >= i/volumeSteps and _G[ v[3] ] > 0 then
 					love.graphics.setColor(0, 155, 255, 255)
 				end
 				love.graphics.line(x1, y1, x1, y1+(h/volumeSteps)*i)
@@ -591,7 +591,12 @@ function settings_movecursor(right, up, enter)
 				end
 			end
 		else
-			menu_load(true)
+			if settingstab == "controls" then
+				settingstabi = 1
+				settingstab = "general"
+			else
+				menu_load(true)
+			end
 		end
 	end
 end

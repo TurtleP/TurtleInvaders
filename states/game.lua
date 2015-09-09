@@ -240,17 +240,19 @@ function game_draw()
 	end
 
 	for i = #starfield, 1, -1 do
-		love.graphics.setPointSize(i/2)
-		local yadd = starfield[i].position
-		love.graphics.setColor(255, 255, 255)
-		for a = 1, 2 do
-			local p = 0
-			if a == 1 then p = -gameH end
-			for j = 1, #starfield[i].chunks[a] do
-				local v = starfield[i].chunks[a][j]
-				love.graphics.point(v.x*scale+.5, (v.y+yadd+p)*scale+.5)
+		love.graphics.setScissor(0, 0, gameW * scale, gameH * scale)
+			love.graphics.setPointSize(i/2)
+			local yadd = starfield[i].position
+			love.graphics.setColor(255, 255, 255)
+			for a = 1, 2 do
+				local p = 0
+				if a == 1 then p = -gameH end
+				for j = 1, #starfield[i].chunks[a] do
+					local v = starfield[i].chunks[a][j]
+					love.graphics.point(v.x*scale+.5, (v.y+yadd+p)*scale+.5)
+				end
 			end
-		end
+		love.graphics.setScissor()
 	end
 
 	if #phantoments > 0 then

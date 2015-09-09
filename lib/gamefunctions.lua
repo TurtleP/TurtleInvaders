@@ -280,9 +280,9 @@ end
 
 function changeVolume(sound, music)
 	if sound then
-		sound = round( math.clamp(sound, 0, 1) , 2 )
+		soundvolume = round( math.clamp(sound, 0, 1) , 2 )
 	elseif music then
-		music = round( math.clamp(music, 0, 1) , 2 )
+		musicvolume = round( math.clamp(music, 0, 1) , 2 )
 	end
 
 	for k, v in pairs(audio) do

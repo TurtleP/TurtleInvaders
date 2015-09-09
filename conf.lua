@@ -2,7 +2,7 @@ function love.conf(t)
 	t.identity = "TurtleInvaders"
 	t.author = "Tiny Turtle Industries"
 	t.version = "0.9.2"
-	t.console = true
+	t.console = false
 	t.window.vsync = true
 	t.window.title = "Turtle: Invaders"
 	t.window.width = 600
