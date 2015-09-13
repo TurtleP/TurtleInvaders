@@ -71,7 +71,7 @@ end
 function client:connect(address, port)
 	udp:setpeername(address, port)
 
-	client:tyConnection()
+	client:tryConnection()
 end
 
 function client:tryConnection()
@@ -147,6 +147,8 @@ function client:update(dt)
 				if objects.phoenixshield then
 					objects.phoenixshield[1]:shotted(true)
 				end
+			elseif cmd[1] == "spawncore" then
+				objects.core[1] = core:new()
 			end
 		end
 
@@ -478,7 +480,7 @@ function client:giveLife(cmd)
 	local i = tonumber(cmd[3])
 
 	if objects["turtle"][i] then
-		objects["turtle"][i]:addLife(tonumber(cmd[2]), true)
+		objects["turtle"][i]:addLife(tonumber(cmd[2]))
 	end
 end
 

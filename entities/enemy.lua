@@ -56,13 +56,18 @@ function enemy:__init(x, y, id, leaderdata)
 	self.md = 0
 	self.tr = 0
 
-	if players then
-		if players > 1 then
-			if #objects.turtle < players then
-				if love.math.random(25) == 1 then
-					self.ply = love.math.random(1, players)
-				end
+	self.knownDead = {}
+	if #objects.turtle > 1 then
+		for k = #objects.turtle, 1, -1 do
+			if objects.turtle[k].dead then
+				table.insert(self.knownDead, k)
 			end
+		end
+	end
+
+	if #self.knownDead > 0 then
+		if love.math.random(100) < 25 then
+			self.ply = self.knownDead[love.math.random(#self.knownDead)]
 		end
 	end
 	
@@ -108,7 +113,21 @@ function enemy:__init(x, y, id, leaderdata)
 		self.abilityB = b 
 	end
 
-	self.eyecolor = getPowerColor(self.powerup or "none")
+	local colors = getPowerColor(self.powerup or "none")
+
+	if self.ply > 0 then
+		local revive = getPowerColor("revive")
+
+		if self.powerup ~= "none" then
+			for k = 1, #colors do
+				colors[k] = colors[k] + revive[k]
+			end
+		else
+			colors = revive
+		end
+	end
+
+	self.eyecolor = colors
 
 	self.phantomtime = love.math.random(0, 2.5)
 
@@ -399,7 +418,7 @@ function enemy:die(antiB, emanced, relay, player)
 				names = nameData
 			end
 
-			objects.turtle[k] = turtle:new((25+(k-1)*80), 256, k, 3, gameData[k], names[k])
+			objects.turtle[k]:revive()
 		
 			unlockAchievement("revivedmember")
 		end

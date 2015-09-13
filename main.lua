@@ -11,6 +11,9 @@
 	return love.filesystem.isFile(dir) or love.filesystem.isDirectory(dir)
 end]]
 
+--FUCK YOU SET THE ICON
+love.window.setIcon(love.image.newImageData("gfx/icon.png"))
+
 function love.load()
 
 	loadingDebug = false
@@ -66,12 +69,10 @@ function love.load()
 		touchcontrols = touchcontrol:new()
 	end
 
+
+	local first = false
 	if love.filesystem.exists("saveData.txt") then
 		loadData("settings")
-
-		if love.joystick.getJoysticks() == 0 then
-			controls[1] = {}
-		end
 	else
 		scale = 1  
 		fullscreenbool = false
@@ -84,10 +85,16 @@ function love.load()
 		highscore = 0
 		
 		saveData("settings", true, true)
+
+		first = true
 	end
 	
 	if mobileMode then
 		changescale()
+
+		if first then
+			touchcontrols:gyroCheck()
+		end
 	end
 
 	cron = require("lib/cron")
@@ -125,10 +132,6 @@ function love.load()
 	loadFonts()
 	
 	loading(7)
-
-	iconimg = love.image.newImageData(graphics .. "icon.png")
-	
-	love.window.setIcon(iconimg)
 	
 	bosshpbarimg = love.graphics.newImage(graphics .. "UI/bosshpbar.png")
 	bosshpquads = {}
@@ -1054,15 +1057,15 @@ function love.draw()
 		love.graphics.translate(missingX, missingY)
 	end
 
+	love.graphics.setScissor(0, 0, 600 * scale, 300 * scale)
+
 	if _G[state .. "_draw"] then
 		_G[state .. "_draw"]()
 	end
 
 	if notices then
 		for k, v in pairs(notices) do
-			love.graphics.setScissor(0, 0, 600 * scale, 300 * scale)
 			v:draw()
-			love.graphics.setScissor()
 		end
 	end
 
@@ -1073,6 +1076,8 @@ function love.draw()
 			end
 		end
 	end
+
+	love.graphics.setScissor()
 
 	--drawBetaBanner()
 end

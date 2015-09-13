@@ -78,7 +78,7 @@ function settings_load(tabi, selectioni)
 		general = {
 			{"Difficulty", "list", "difficultyi", difficultytypes},
 			{"Game Mode", "list", "gamemodei", gamemodes},
-			{"Modify Controls", "function", function() settingstab = "controls" settings_selectioni = 1 end},
+			{"Modify Controls", "function", function() settingstab = "controls" settings_selectioni = 2 end},
 			{"View Credits", "function", credits_load},
 			{"Restore all Defaults", "function", defaultSettings}
 		},
@@ -109,6 +109,7 @@ function settings_load(tabi, selectioni)
 			setControls = true
 		end})
 	end
+	table.insert(settings["controls"], {"Save", "function", function() settingstab = "general"; settings_selectioni = 4; saveData("settings") end})
 
 	for k = 1, #achievementsData do
 		table.insert(settings["achievements"], {"achievement", achievements[achievementsData[k].internal]})
@@ -279,20 +280,38 @@ function settings_draw()
 		love.graphics.setColor(255, 255, 255)
 		love.graphics.print(version, (settings_windowx + settings_width) * scale - font:getWidth(version) - 3 * scale, (settings_windowy + settings_height) * scale - font:getHeight(version))
 	end
-
-	settings_drawtab()
+	
+	if settingstab == "controls" then
+		settings_drawtab("general", 4)
+		
+		local font = love.graphics.getFont()
+		love.graphics.setColor(0, 5, 15, 235)
+		love.graphics.rectangle("fill", (settings_windowx + 10)*scale, (settings_windowy + 10)*scale, (settings_width - 20)*scale, (settings_height - 20)*scale)
+		love.graphics.setColor(255, 255, 255, 255)
+		love.graphics.rectangle("line", (settings_windowx + 10)*scale, (settings_windowy + 10)*scale, (settings_width - 20)*scale, (settings_height - 20)*scale)
+		love.graphics.line((settings_windowx+18)*scale, (settings_windowy+10)*scale+font:getHeight()*2, (settings_windowx+18+8)*scale+font:getWidth("Controls")*2, (settings_windowy+10)*scale+font:getHeight()*2)
+		love.graphics.print("Controls", (settings_windowx + 20)*scale, (settings_windowy + 20)*scale)
+		settings_drawtab()
+	else
+		settings_drawtab()
+	end
 end
 
-function settings_drawtab()
+function settings_drawtab(tab, sel)
 	local font = love.graphics.getFont()
 	local slide = math.floor(math.sin((slideMax-slideTime)/slideMax * (math.pi/2)) * slideDist)*scale
+	local tab = tab or settingstab
+	if sel then
+		slide = slideDist*scale
+	end
+	local sel = sel or settings_selectioni
 	
-	for i, v in ipairs(settings[settingstab]) do
+	for i, v in ipairs(settings[tab]) do
 		love.graphics.setColor(127, 127, 127)
-		local y = (settings_windowy + 60) * scale + (i-1)*30*scale
+		local y = (settings_windowy + 60) * scale + (i-1)*(150/#settings[tab])*scale
 		local x = (settings_windowx + 20) * scale
 		
-		if settings_selectioni == i+1 then
+		if sel == i+1 then
 			x = x + slide
 			love.graphics.setColor(255, 255, 255)
 		end
@@ -300,7 +319,7 @@ function settings_drawtab()
 		if v[1] == "achievement" then
 			
 			love.graphics.setScissor(x - 2 * scale, (settings_windowy + 58) * scale, 360 * scale, 128 * scale)
-			local off = math.max(0, (settings_selectioni * v[2].height - 128) * scale)
+			local off = math.max(0, (sel * v[2].height - 128) * scale)
 			local y = (settings_windowy + 60) * scale + (i-1)*38*scale
 
 			local img = v[2].imgGray
@@ -318,7 +337,7 @@ function settings_drawtab()
 			love.graphics.print(v[2].text .. extraStr, x + font5:getWidth(i .. ".") + 40 * scale, (y + (v[2].height / 2) * scale - font5:getHeight(v[2].text) / 2) + 4 * scale - off)
 			love.graphics.setScissor()
 
-			if settings_selectioni-1 == i then
+			if sel-1 == i then
 				love.graphics.print(v[2].description,  (settings_windowx + 20) * scale, (settings_windowy + settings_height) * scale - font5:getHeight(v[2].description))
 			end
 		elseif v[2] == "list" then
@@ -416,7 +435,11 @@ function settings_drawtab()
 			
 			love.graphics.polygon("fill", x+x1+y1/2, y+y1/2, x+x1, y, x+x1, y+y1)
 		elseif v[2] == "textfunction" then
-			love.graphics.print(v[1] .. ":  " .. v[3], x, y)
+			if tab == "controls" and v[3] == " " then
+				love.graphics.print(v[1] .. ":  " .. "spacebar", x, y)
+			else
+				love.graphics.print(v[1] .. ":  " .. v[3], x, y)
+			end
 		elseif v[2] == "value" then
 			love.graphics.print(v[1] .. ": " .. _G[ v[3] ], x, y)
 		end
@@ -455,7 +478,7 @@ end
 function settings_movecursor(right, up, enter)
 	if up ~= nil then
 		if up then
-			if settings_selectioni > 1 then
+			if settings_selectioni > 2 or (settings_selectioni > 1 and settingstab ~= "controls") then
 				settings_selectioni = settings_selectioni - 1
 				slideTime = slideMax
 			end
@@ -593,6 +616,7 @@ function settings_movecursor(right, up, enter)
 		else
 			if settingstab == "controls" then
 				settingstabi = 1
+				settings_selectioni = 4
 				settingstab = "general"
 			else
 				menu_load(true)

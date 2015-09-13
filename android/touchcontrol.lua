@@ -45,15 +45,32 @@ function highscoredisplay_load(from_menu, score)
 	end
 end
 
+local oldhskey = highscoredisplay_keypressed
+function highscoredisplay_keypressed(key)
+	oldhskey(key)
+	
+	if high then
+		if key == "escape" then
+			if not love.keyboard.hasTextInput() then
+				if high == 1 then
+					love.keyboard.setTextInput(true, 0, 160 * scale, love.window.getWidth(), love.window.getHeight())
+				elseif high > 1 then
+					love.keyboard.setTextInput(true, 0, 242 * scale, love.window.getWidth(), love.window.getHeight())
+				end
+			end
+		end
+	end
+end
+
 local oldmenuload = menu_load
 function menu_load(fromsettings, fromhighscore, fromcoop)
-	if fromhighscore then
-		love.keyboard.setTextInput(false)
-	end
+	oldmenuload(fromsettings, fromhighscore, fromcoop)
 
 	touchcontrols:setControls("dpad")
 
-	oldmenuload(fromsettings, fromhighscore, fromcoop)
+	if fromhighscore then
+		love.keyboard.setTextInput(false)
+	end
 end
 
 local oldnetmouse = netplay_mousepressed
@@ -139,8 +156,6 @@ function touchcontrol:__init()
 	--easy setup stuff..
 	controltypes = {"dpad", "gyro", "analog"}
 	controli = 1
-		
-	self.buttons = {}
 
 	self:setControls(controltypes[controli])
 
@@ -150,6 +165,7 @@ function touchcontrol:__init()
 end
 
 function touchcontrol:touchPress(id, x, y, pressure)
+
 	if love.keyboard.hasTextInput() or state == "netplay" then
 		return
 	end
@@ -166,17 +182,6 @@ function touchcontrol:touchPress(id, x, y, pressure)
 end
 
 function touchcontrol:touchRelease(id, x, y, pressure)
-
-	if not love.keyboard.hasTextInput() and state == "highscoredisplay" then
-		if high then
-			if high == 1 then
-				love.keyboard.setTextInput(true, 0, 160 * scale, love.window.getWidth(), love.window.getHeight())
-			elseif high > 1 then
-				love.keyboard.setTextInput(true, 0, 242 * scale, love.window.getWidth(), love.window.getHeight())
-			end
-		end
-	end
-
 	if love.keyboard.hasTextInput() or state == "netplay" then
 		return
 	end
@@ -276,7 +281,7 @@ end
 
 function touchcontrol:draw()
 	if love.keyboard.hasTextInput() or state == "netplay" then
-		return
+		--return
 	end
 
 	if self.controls then
@@ -297,6 +302,8 @@ function touchcontrol:setControls(t)
 	local wWidth = love.window.getWidth() / scale
 	local wHeight = love.window.getHeight() / scale
 
+	self.buttons = {}
+
 	if t == "analog" then
 		self.controls = newAnalog(160, love.window.getHeight() - 180, 45 * scale, 25 * scale)
 
@@ -311,7 +318,6 @@ function touchcontrol:setControls(t)
 		self.buttons[3] = virtualbutton:new(wWidth - 40, 40, 30, "||", "escape", nil, true)
 	elseif t == "gyro" then
 		self.controls = gyro:new()
-		self.buttons = {}
 		self.buttons[1] = virtualbutton:new(wWidth - 40, 40, 30, "||", "escape", nil, true)
 	end
 
@@ -335,15 +341,13 @@ function touchcontrol:setControls(t)
 end
 
 function touchcontrol:gyroCheck()
-	if love.window.showMessageBox then
-		if android and android:getName() == "Android Accelerometer" then
-			button = love.window.showMessageBox("First time setup", "Would you like to enable the Accelerometer? This could be turned on/off in options later. Movement would be tilting the device left and right, and shooting occurs when you tap anywhere onscreen.", {"Yes", "No"}, "info")
+	if android and android:getName() == "Android Accelerometer" then
+		button = love.window.showMessageBox("First time setup", "Would you like to enable the Accelerometer? This could be turned on/off in options later. Movement would be tilting the device left and right, and shooting occurs when you tap anywhere onscreen.", {"Yes", "No"}, "info")
 			
-			if button == 1 then
-				controli = 2
+		if button == 1 then
+			controli = 2
 
-				savesettings("settings", true)
-			end
+			savesettings("settings", true)
 		end
 	end
 end

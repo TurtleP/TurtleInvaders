@@ -12,7 +12,7 @@ function highscoredisplay_load(from_menu, score)
 		"y", "z", "0", "1", 
 		"2", "3", "4", "5", 
 		"6", "7", "8", "9", 
-		" "
+		" ", "!", "?", "$"
 	}
 	
 	highi = 1
@@ -157,7 +157,7 @@ function highscoredisplay_keypressed(k)
 		end
 
 		if k == "return" or k == "escape" then
-			highscoredisplay_movecursor(nil, true)
+			highscoredisplay_movecursor(nil, true, nil, nil, k)
 		end
 	end
 end
@@ -242,10 +242,10 @@ function highscoredisplay_joystickaxis(joy, axis, value)
 	end
 end
 
-function highscoredisplay_movecursor(up, back, del, right)
+function highscoredisplay_movecursor(up, back, del, right, key)
 	if up ~= nil then
 		if not up then
-			if highi < 9 then
+			if highi < 7 then
 				highi = highi + 1
 				cursory = cursory + 36*scale
 			end
@@ -259,13 +259,15 @@ function highscoredisplay_movecursor(up, back, del, right)
 
 	if back ~= nil then
 		if back and high == nil then
-			menu_load(false, true)
+			menu_load(false, false)
 		elseif back and high ~= 0 and high ~= nil then
-			if string.len(highscorestable[high][1]) > 0 then
-				if not clientonline then 
-					menu_load(false, true)
-				else
-					client:tryConnection()
+			if key == "return" then
+				if string.len(highscorestable[high][1]) > 0 then
+					if not clientonline then 
+						menu_load(false, true)
+					else
+						client:tryConnection()
+					end
 				end
 			end
 		end
@@ -296,10 +298,10 @@ end
 function highscoredisplay_textinput(u)
 	if high and high ~= 0 then
 		for i = 1, #whitelist do
-			if u == whitelist[i] then
+			if u:lower() == whitelist[i] then
 				if #highscorestable[high][1] < highscorelimit then
 			
-					highscorestable[high][1] = highscorestable[high][1] .. u
+					highscorestable[high][1] = highscorestable[high][1] .. u:lower()
 				end
 			end
 		end

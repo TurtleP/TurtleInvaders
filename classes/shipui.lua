@@ -37,7 +37,7 @@ function shipui:__init(i, name, char, parent)
 	self:setData(self.powerups[1], self.powerups[2])
 	self.char = char
 
-	self.width = self.graphic:getHeight() + 62
+	self.width = self.graphic:getHeight() + (font3:getWidth(self.name) / scale) + 12
 	self.height = 40
 	self.fade = 1
 
@@ -53,7 +53,7 @@ function shipui:__init(i, name, char, parent)
 	self.parent = parent
 
 	--8 spaces, dawg
-	self.width = 110
+	--self.width = 110
 	
 	if i == 2 then
 		self.x = gameW - self.width - 4
@@ -105,6 +105,10 @@ function shipui:draw()
 	
 	love.graphics.setFont(font3)
 	love.graphics.print(self.name, self.x * scale, (self.y - font3:getHeight(name) / scale) * scale)
+
+	if self.parent.dead then
+		return
+	end
 
 	local y = (self.y - 18)
 	local timery = (self.y - 6)

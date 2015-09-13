@@ -153,7 +153,7 @@ function achievementUI:draw()
 ]]
 			--draw text
 		love.graphics.setColor(255, 255, 255, 255*self.fade)
-		love.graphics.print(self.text, (self.x+self.spacing+self.graphicWxH+self.spacing+self.spacing) * scale - font3:getWidth(text), (self.y+(self.height/2)-(font3:getHeight(self.text)/2)+self.spacing) * scale)
+		love.graphics.print(self.text, (self.x+self.spacing+self.graphicWxH+self.spacing+self.spacing) * scale - font3:getWidth(text), (self.y+(self.height/2)+self.spacing) * scale - (font3:getHeight(self.text)/2))
 
 			--white border thingy
 		love.graphics.rectangle("line", self.x * scale - font3:getWidth(text), self.y * scale, self.width * scale + font3:getWidth(text), self.height * scale)

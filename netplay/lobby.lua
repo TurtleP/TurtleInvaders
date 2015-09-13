@@ -168,6 +168,7 @@ end
 function lobby_draw()
 
 	for k, v in pairs(lobby_stars) do
+		love.graphics.setPointSize(1 * scale)
 		love.graphics.point(v[1] * scale, v[2] * scale)
 	end
 

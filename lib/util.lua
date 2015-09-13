@@ -93,6 +93,8 @@ function util.fancyBox(screenX, screenY, w, h, divisor, colorIn, colorBorder, te
 	end
 
 	function fancyBox:draw()
+		love.graphics.setScissor(self.x * scale, self.y * scale, self.width * scale, self.height * scale)
+
 		love.graphics.setFont(self.font)
 		
 		love.graphics.setColor(self.colorIn)
@@ -101,9 +103,11 @@ function util.fancyBox(screenX, screenY, w, h, divisor, colorIn, colorBorder, te
 		love.graphics.setColor(self.colorBorder)
 		love.graphics.rectangle("line", self.x * scale, self.y * scale, self.width * scale, self.height * scale)
 
-		if self.doneMax then
+		if self.text then
 			love.graphics.printf(self.text, self.x * scale + 4 * scale, self.y * scale + 18 * scale, (self.maxWidth - 8) * scale, "center")
 		end
+
+		love.graphics.setScissor()
 	end
 
 	function fancyBox:onMax()

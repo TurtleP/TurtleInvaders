@@ -90,6 +90,9 @@ function turtle:__init(x, y, i, hp, char, name)
 			end
 		end
 	end
+
+	self.ghost = love.graphics.newImage(makeImageGray(self.img:getData()))
+	self.graphic = self.img
 end
 
 function turtle:powerupupdate(dt, name)
@@ -190,6 +193,10 @@ function turtle:stopright(relay)
 end
 
 function turtle:onCollide(name, data)
+	if self.dead then 
+		return
+	end
+
 	if name == "enemies" then
 		if self.powerup:lower() ~= "shield" then 
 			self:addLife(-1)
@@ -273,18 +280,6 @@ function turtle:update(dt)
 			end
 		end
 
-		if self.rightkey then
-			self.speed = self.xspeed
-		elseif self.leftkey then
-			self.speed = -self.xspeed
-		else
-			self.speed = 0
-		end
-
-		self.x = self.x + self.speed * dt
-		
-		self:checkBarriers()
-
 		if combo > 0 then
 			if combotimeout < 2 then
 				combotimeout = math.min(combotimeout + dt, 2)
@@ -308,6 +303,20 @@ function turtle:update(dt)
 			self.blinktimer = 0
 		end
 	end
+
+	if self.shouldupdate or self.dead then
+		if self.rightkey then
+			self.speed = self.xspeed
+		elseif self.leftkey then
+			self.speed = -self.xspeed
+		else
+			self.speed = 0
+		end
+
+		self.x = self.x + self.speed * dt
+		
+		self:checkBarriers()
+	end
 end
 
 function turtle:checkBarriers()
@@ -318,7 +327,7 @@ function turtle:checkBarriers()
 	end
 end
 
-function turtle:addLife(n, relay, dontSound)
+function turtle:addLife(n, dontSound)
 	if type(n) == "number" then
 		if not self.invincible then
 			self.health = self.health + n
@@ -365,6 +374,8 @@ function turtle:die(reason)
 	self.dead = true
 	self.shouldupdate = false
 
+	self.img = self.ghost
+
 	for k, v in pairs(objects.powerup) do
 		if v.parent == self then
 			v.kill = true
@@ -382,6 +393,14 @@ function turtle:die(reason)
 	if not alive then
 		gameover = true
 	end
+end
+
+function turtle:revive()
+	self.img = self.graphic
+	self.dead = false
+	self.shouldupdate = true
+
+	self:addLife(3, true)
 end
 
 function turtle:joystickpressed(joystick, button)
@@ -445,14 +464,15 @@ function turtle:joystickaxis(joystick, axis, value)
 end
 
 function turtle:draw()
-	if self.dead then
-		return 
+	if self.dead and gameover then
+		return
 	end
 
 	love.graphics.setColor(255, 255, 255, 255*self.invis)
-
-
-
+	if self.dead then
+		love.graphics.setColor(255, 255, 255, 96)
+	end
+	
 	if self.isAnimated then
 		love.graphics.draw(self.img, self.animationQuads[self.animationQuad], self.x*scale, self.y*scale, 0, scale, scale)
 	else
@@ -461,6 +481,10 @@ function turtle:draw()
 end
 
 function turtle:drawAbility()
+	if self.dead then 
+		return
+	end
+
 	if self.ability then
 		if self.ability.draw then
 			if (self.powerup == "special" and not self.ability.passive) or (self.powerup ~= "special" and self.ability.passive) then
@@ -471,6 +495,10 @@ function turtle:drawAbility()
 end
 
 function turtle:drawShield()
+	if self.dead then
+		return
+	end
+
 	love.graphics.setColor(255, 255, 255, 255)
 	if self.powerup:lower() == "shield" then
 		self.shield:draw()
@@ -480,6 +508,10 @@ function turtle:drawShield()
 end
 
 function turtle:keypressed(k)
+	if self.dead then
+		return
+	end
+
 	if k == controls[self.num][3] and self.shouldupdate then
 		local p = self.bullettype
 		

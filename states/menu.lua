@@ -1,4 +1,6 @@
 function menu_load(fromsettings, fromhighscore, fromcoop)
+	state = "menu"
+	
 	menuscrolly = 0
 	menu_batquadi = 1
 	score = 0
@@ -19,8 +21,6 @@ function menu_load(fromsettings, fromhighscore, fromcoop)
 		menu_selectioni = 3
 	elseif fromhighscore then
 		saveData("highscores")
-		
-		loadData("highscores")
 
 		menu_selectioni = 4
 	end
@@ -31,8 +31,6 @@ function menu_load(fromsettings, fromhighscore, fromcoop)
 
 	settings_selectioni = 1
 
-	state = "menu"
-
 	if audio["menu"]:isStopped() then
 		playsound("menu")
 	end
@@ -41,12 +39,8 @@ function menu_load(fromsettings, fromhighscore, fromcoop)
 	love.audio.stop(audio["finalboss"])
 
 	menu_battimer = 0
-	
 
 	gameover = false
-
-	players = 1
-	menustate = "main"
 
 	menu_items = 
 	{
@@ -55,8 +49,6 @@ function menu_load(fromsettings, fromhighscore, fromcoop)
 		{t = "Options Menu", func = settings_load},
 		{t = "Highscores", func = function() highscoredisplay_load(true) end},
 	}
-	
-	joydelay = 1
 end
 
 function menu_draw(alpha)
@@ -90,8 +82,6 @@ function menu_draw(alpha)
 	for k = 1, #menu_items do
 		love.graphics.print(menu_items[k].t, x - menubuttonfont:getWidth(menu_items[k].t) / 2, (182 + (k - 1) * 30) * scale)
 	end
-
-	love.graphics.setFont(font3)
 end
 
 function menu_update(dt)
@@ -115,20 +105,10 @@ function menu_keypressed(k)
 	if k == "escape" then
 		menu_movecursor(nil, nil, false)
 	end
-
-	if k == "escape" then
-		menu_movecursor(nil, nil, nil, true)
-	end	
 end
 
 function menu_joystickaxis(joystick, axis, value)
-	if axis == "lefty" then
-		if value == 1 then
-			
-		elseif value == -1 then
-			
-		end
-	end
+
 end
 
 function menu_joystickpressed(joystick, button)
@@ -147,7 +127,7 @@ function menu_joystickpressed(joystick, button)
 	end
 end
 
-function menu_movecursor(down, right, enter, space)
+function menu_movecursor(down, right, enter)
 	if  down ~= nil then
 		if down then
 			if menu_selectioni < #menu_items then
@@ -165,14 +145,12 @@ function menu_movecursor(down, right, enter, space)
 			if menu_items[menu_selectioni].func then
 				menu_items[menu_selectioni].func()
 			end
-		end
-	end
-
-	if space ~= nil then
-		if space then
-			love.event.quit()
 		else
-			credits_load()
+			local button = love.window.showMessageBox(love.window.getTitle(), "Are you sure you want to quit?", {"No", "Yes"}, "info", true )
+
+			if button == 2 then
+				love.event.quit()
+			end
 		end
 	end
 end

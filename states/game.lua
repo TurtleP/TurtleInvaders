@@ -94,7 +94,7 @@ function checkforBoss()
 	end
 end
 
-function addScore(n, reason)
+function addScore(n)
 	if type(score) == "number" then
 		local combovalue = n * combo
 
@@ -107,7 +107,7 @@ function addScore(n, reason)
 			unlockAchievement("combomadness")
 		end
 
-		score = score + combovalue
+		score = score + val
 
 		if score < 0 then
 			score = 0
@@ -241,7 +241,7 @@ function game_draw()
 
 	for i = #starfield, 1, -1 do
 		love.graphics.setScissor(0, 0, gameW * scale, gameH * scale)
-			love.graphics.setPointSize(i/2)
+			love.graphics.setPointSize((i/2) * scale)
 			local yadd = starfield[i].position
 			love.graphics.setColor(255, 255, 255)
 			for a = 1, 2 do
@@ -601,15 +601,19 @@ function checkAudio()
 end
 
 function game_checkForCore(dt)
-	if coretimer > 0 then
-		coretimer = coretimer - dt 
-	else 
-		local shouldSpawn = love.math.random(1000)
-		--clearly it works
-		if shouldSpawn < 10 then
-			objects.core[1] = core:new()
+	if clientonline and isnetworkhost then
+		if coretimer > 0 then
+			coretimer = coretimer - dt 
 		else 
-			coretimer = love.math.random(12)
+			local shouldSpawn = love.math.random(1000)
+			--clearly it works
+			if shouldSpawn < 10 then
+				objects.core[1] = core:new()
+
+				table.insert(onlinetriggers, "spawncore")
+			else 
+				coretimer = love.math.random(12)
+			end
 		end
 	end
 end

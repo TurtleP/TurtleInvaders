@@ -218,7 +218,7 @@ function changescale(s, first)
 		missingX = (desktopW - (600 * scale)) / 2
 	end
 
-	love.window.setMode(600 * scale, 300 * scale, {fullscreen=fullscreenbool, fullscreentype="desktop", vsync=vsyncbool})
+	love.window.setMode(600 * scale, 300 * scale, {fullscreen=fullscreenbool, fullscreentype="normal", vsync=vsyncbool})
 
 	loadFonts()
 

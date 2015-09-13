@@ -6,16 +6,8 @@ local corepos = {-24, 576}
 local coreypos = {-24, 126, 276}
 
 function core:__init()
-	local posx = corepos[love.math.random(#corepos)]
-	local posy = coreypos[love.math.random(#coreypos)]
-
-	if posx == corepos[3] and posy == coreypos[1] then
-		posx = corepos[1]
-	elseif posx == corepos[1] and posy == coreypos[3] then
-		local pos = {coreypos[1], coreypos[2]}
-
-		posy = pos[love.math.random(#pos)]
-	end
+	local posx = 0
+	local posy = 0
 
 	self.x = posx
 	self.y = posy
@@ -47,7 +39,7 @@ end
 
 function core:shotPrize(ply)
 	if not self.shot then
-		addScore(1500, "core")
+		addScore(1500)
 		ply:addLife(3)
 		
 		unlockAchievement("coreshot")

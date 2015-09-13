@@ -108,6 +108,10 @@ function server:update(dt)
 			return
 		end	
 
+		if cmd[1] == "spawncore" then
+			server:sendDataToClients(data, ip)
+		end
+
 		timer = 0
 	elseif ip ~= 'timeout' then
     	newNotice("Unknown network error: " .. tostring(ip))

@@ -24,8 +24,7 @@ function partymode_load()
 	end
 
 	table.insert(selectionIDs, newPortrait("?", ( (gameW / 2 - (selectionWidth / 2) ) + (math.mod(#gamechars+1 - 1, 5)) * 46) + padding, ( (gameH / 2 - (selectionHeight / 2)) + math.floor( (#gamechars+1 - 1) / 5 ) * 46 ) + padding ) )
-
-	joinTextTimers = {0, 0, 0, 0}
+	
 	playerSelections = {1, 2, 3, 4}
 	selectionActive = {true, false, false, false}
 	playerSelected = {false, false, false, false}
@@ -77,6 +76,7 @@ end
 function partymode_draw()
 	for k, v in pairs(party_stars) do
 		love.graphics.setColor(255, 255, 255)
+		love.graphics.setPointSize(1 * scale)
 		love.graphics.point(v[1] * scale, v[2] * scale)
 	end
 
@@ -128,7 +128,7 @@ function partymode_keypressed(key)
 			elseif key == controls[k][3] then
 				partymode_movecursor(k, nil, true)
 			elseif key == controls[k][4] then
-				partymode_movecursor(k, nil, false)
+				partymode_movecursor(k, nil, false, false, false)
 			end
 		elseif not selectionActive[k] then
 			if key == controls[k][3] then
@@ -150,7 +150,7 @@ function partymode_keypressed(key)
 	end
 
 	if key == "escape" then
-		if not playerSelected[1] and not ( (selectionActive[2]) or (selectionActive[3]) or (selectionActive[4]) ) then
+		if not playerSelected[1] and not ( (playerSelected[2]) or (playerSelected[3]) or (playerSelected[4]) ) then
 			menu_load()
 		end 
 	end
@@ -171,7 +171,7 @@ function partymode_joystickpressed(joystick, button)
 				elseif button == shoot then
 					partymode_movecursor(k, nil, true)
 				elseif button == esc then
-					partymode_movecursor(k, nil, false)
+					partymode_movecursor(k, nil, false, false, false)
 				end
 			elseif not selectionActive[k] then
 				if button == shoot then
@@ -179,7 +179,7 @@ function partymode_joystickpressed(joystick, button)
 				end
 			elseif selectionActive[k] and playerSelected[k] then
 				if button == esc then
-					if not playerSelected[1] and not ( (selectionActive[2]) or (selectionActive[3]) or (selectionActive[4]) ) then
+					if not playerSelected[1] and not ( (playerSelected[2]) or (playerSelected[3]) or (playerSelected[4]) ) then
 						menu_load()
 					end 
 				end
