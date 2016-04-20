@@ -1,8 +1,0 @@
-{
-	"shieldanimspeed": 0.10,
-	"name:": "gabe",
-	"ability": "wrap",
-	"shieldwidth": 40,
-	"shieldheight": 40,
-	"shieldquadcount": 8
-}
