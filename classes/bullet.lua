@@ -15,7 +15,7 @@ function bullet:init(x, y, t, velocity)
 		sound = laserSound
 
 		self.height = 10
-	elseif t == "antiscore" then
+	elseif t == "anti" then
 		color = {147, 101, 184}
 	end
 
@@ -47,7 +47,7 @@ function bullet:update(dt)
 end
 
 function bullet:draw()
-	love.graphics.setDepth(-0.25)
+	love.graphics.setDepth(0.25)
 
 	love.graphics.setColor(unpack(self.color))
 	love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)

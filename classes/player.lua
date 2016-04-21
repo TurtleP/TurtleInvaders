@@ -91,7 +91,7 @@ function player:update(dt)
 end
 
 function player:draw()
-	love.graphics.setDepth(-0.25)
+	love.graphics.setDepth(0.25)
 
 	if not self.shouldDraw then
 		return
@@ -128,7 +128,7 @@ end
 
 function player:passiveCollide(name, data)
 	if name == "powerup" then
-			data.remove = true
+		data.remove = true
 		if data.t == "oneup" then
 			self:addLife(1)
 			return
@@ -165,6 +165,9 @@ function player:shoot()
 
 			if self:isValidBullet(self.powerup) then
 				bulletType = self.powerup
+			else
+				table.insert(objects["bullet"], megacannon:new(self))
+				return
 			end
 
 			table.insert(objects["bullet"], bullet:new(self.x + self.width / 2 - 1, self.y - 1, bulletType, {0, -180}))			

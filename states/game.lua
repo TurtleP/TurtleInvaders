@@ -232,7 +232,7 @@ function gameKeyPressed(key)
 end
 
 function gameKeyReleased(key)
-	if not objects["player"][1] or paused then
+	if not objects["player"][1] then
 		return
 	end
 

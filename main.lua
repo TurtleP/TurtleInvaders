@@ -18,6 +18,7 @@ require 'classes.player'
 require 'classes.explosion'
 require 'classes.display'
 require 'classes.powerup'
+require 'classes.megacannon'
 
 require 'states.intro'
 require 'states.title'
@@ -83,6 +84,30 @@ function love.load()
 	powerupQuads = {}
 	for k = 1, 10 do
 		powerupQuads[k] = love.graphics.newQuad((k - 1) * 19, 0, 18, 18, powerupImage:getWidth(), powerupImage:getHeight())
+	end
+
+	megaCannonBaseImage = love.graphics.newImage("graphics/game/boombase.png")
+	megaCannonBaseQuads = {}
+	local boomBaseLimit = {6, 2}
+	for y = 1, 2 do
+		for x = 1, boomBaseLimit[y] do
+			table.insert(megaCannonBaseQuads, love.graphics.newQuad((x - 1) * 80, (y - 1) * 80, 80, 80, megaCannonBaseImage:getWidth(), megaCannonBaseImage:getHeight()))
+		end
+	end
+
+	megaCannonBoomImage = love.graphics.newImage("graphics/game/boom.png")
+	megaCannonBoomQuads = {}
+	local boomLimit = {6, 6, 3}
+	for y = 1, 3 do
+		for x = 1, boomLimit[y] do
+			table.insert(megaCannonBoomQuads, love.graphics.newQuad((x - 1) * 80, (y - 1) * 80, 80, 80, megaCannonBoomImage:getWidth(), megaCannonBoomImage:getHeight()))
+		end
+	end
+
+	megaCannonBeamImage = love.graphics.newImage("graphics/game/beam.png")
+	megaCannonBeamQuads = {}
+	for k = 1, 5 do
+		megaCannonBeamQuads[k] = love.graphics.newQuad((k - 1) * 22, 0, 22, 22, megaCannonBeamImage:getWidth(), megaCannonBeamImage:getHeight())
 	end
 
 	love.graphics.set3D(true)
@@ -158,6 +183,6 @@ function love.keyreleased(key)
 	util.keyReleasedState(key)
 end
 
-if love.system.getOS() == "Linux" then
+if _EMULATEHOMEBREW then
 	require 'libraries.3ds'
 end

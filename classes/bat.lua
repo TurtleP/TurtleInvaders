@@ -144,6 +144,6 @@ function bat:die(player)
 		oneup = true
 	end
 
-	gameDropPowerup(self.x + (self.width / 2) - 9, self.y + (self.height / 2) -9, oneup)
+	gameDropPowerup(self.x + (self.width / 2) - 9, self.y + (self.height / 2) - 9, oneup)
 
 end

@@ -21,7 +21,7 @@ function powerup:init(x, y, t)
 end
 
 function powerup:draw()
-	love.graphics.setDepth(-0.5)
+	love.graphics.setDepth(0.5)
 
 	love.graphics.draw(powerupImage, powerupQuads[self.i], self.x, self.y)
 

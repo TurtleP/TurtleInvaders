@@ -8,15 +8,20 @@ function loadingInit(loadState, ...)
 	loadingState = loadState
 
 	loadingArg = {...}
+
+	loadingTime = 1
 end
 
 function loadingUpdate(dt)
 	loadingBatTimer = loadingBatTimer + 8 * dt
 	loadingBati = math.floor(loadingBatTimer % 3) + 1
 
-
-	if util.fontsAreNilled() then --leet hax bruh
-		util.changeState(loadingState, unpack(loadingArg))
+	if loadingTime > 0 then
+		loadingTime = loadingTime - dt
+	else
+		if util.fontsAreNilled() then --leet hax bruh
+			util.changeState(loadingState, unpack(loadingArg))
+		end
 	end
 end
 

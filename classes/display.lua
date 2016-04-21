@@ -91,13 +91,13 @@ function display:draw()
 		love.graphics.print("Powerup", self.x + (self.width / 2) - hudFont:getWidth("Powerup") / 2, self.y + (self.height / 2) + hudFont:getHeight() / 2)
 	else
 		local powerupValue = player:getPowerup()
-		local powerup, color = self:getDisplayInfo(powerupValue)
+		local powerup, niceName = self:getDisplayInfo(powerupValue)
 
 		love.graphics.setColor(255, 255, 255, 255 * self.powerupFade)
 
 		love.graphics.draw(powerupDisplayImage, powerupDisplayQuads[powerup], self.x + (self.width / 2) - 32, self.y + (self.height / 2) - 22)
 		
-		love.graphics.print(powerupValue:gsub("^%l", string.upper), self.x + (self.width / 2) - hudFont:getWidth(powerupValue:gsub("^%l", string.upper)) / 2, self.y + (self.height / 2) + hudFont:getHeight() + 10)
+		love.graphics.print(niceName, self.x + (self.width / 2) - hudFont:getWidth(niceName) / 2, self.y + (self.height / 2) + hudFont:getHeight() + 10)
 
 		love.graphics.setColor(255, 255, 255, 255)
 		
@@ -108,25 +108,25 @@ function display:draw()
 end
 
 function display:getDisplayInfo(powerupValue)
-	local i, color = 1, {255, 73, 56}
+	local i, name = 1, "Shotgun"
 
 	if powerupValue == "time" then
-		i, color = 2, {209, 213, 216}
+		i, name = 2, "Time Slow"
 	elseif powerupValue == "mega" then
-		i, color = 3, {61, 142, 185}
+		i, name = 3, "Mega Laser"
 	elseif powerupValue == "shield" then
-		i, color = 4, {44, 130, 201}
+		i, name = 4, "Shield"
 	elseif powerupValue == "laser" then
-		i, color = 5, {209, 72, 65}
+		i, name = 5, "Laser"
 	elseif powerupValue == "freeze" then
-		i, color = 6, {44, 130, 201}
+		i, name = 6, "Frozen"
 	elseif powerupValue == "anti" then
-		i, color = 7, {147, 101, 184}
+		i, name = 7, "Anti-Score"
 	elseif powerupValue == "nobullets" then
-		i, color = 8, {243, 121, 52}
+		i, name = 8, "No Bullets"
 	elseif powerupValue == "nopower" then
-		i, color = 9, {243, 121, 52}
+		i, name = 9, "No Powerups"
 	end
 
-	return i, color
+	return i, name
 end

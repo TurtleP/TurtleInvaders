@@ -28,7 +28,7 @@ end
 function titleDraw()
 	love.graphics.setScreen("top")
 
-	love.graphics.setDepth(-2)
+	love.graphics.setDepth(1)
 	
 	love.graphics.setColor(255, 255, 255, 255)
 

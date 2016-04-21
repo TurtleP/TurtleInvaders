@@ -11,7 +11,9 @@ function introInit()
 		"This game auto saves.",
 		"Do not turn off the power",
 		"when you see this icon",
-		"between screens."
+		"between screens.",
+		"",
+		"3D Mode is supported."
 	}
 
 	introBatQuadi = 1
@@ -77,8 +79,8 @@ function introDraw()
 		love.graphics.print(v, util.getWidth() / 2 - warningFont:getWidth(v) / 2, 65 + (y - 1) * 24)
 	end
 
-	love.graphics.draw(batImage, batQuads[introBatQuadi][2], util.getWidth() / 2 - 16, 190)
-	love.graphics.draw(batImage, batQuads[introBatQuadi][1], util.getWidth() / 2 - 16, 190)
+	love.graphics.draw(batImage, batQuads[introBatQuadi][2], util.getWidth() / 2 - 16, 170)
+	love.graphics.draw(batImage, batQuads[introBatQuadi][1], util.getWidth() / 2 - 16, 170)
 end
 
 function skipIntro()

@@ -9,12 +9,12 @@ function star:init(x, y, layer)
 	self.speed = 15 * ((layer - 1) / 2)
 	self.r = (layer / 2)
 
-	local depth = -0.4
+	local depth = 2
 
 	if layer == 2 then
-		depth = 0
+		depth = 1
 	elseif layer == 3 then
-		depth = 0.4
+		depth = 0
 	end
 
 	self.depth = depth
