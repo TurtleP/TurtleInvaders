@@ -53,7 +53,7 @@ function bat:update(dt)
 end
 
 function bat:draw()
-	love.graphics.setDepth(-0.25)
+	love.graphics.setDepth(0.25)
 
 	love.graphics.setColor(255, 255, 255)
 	love.graphics.draw(batImage, batQuads[self.quadi][1], self.x, self.y)

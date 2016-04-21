@@ -19,6 +19,7 @@ require 'classes.explosion'
 require 'classes.display'
 require 'classes.powerup'
 require 'classes.megacannon'
+require 'classes.fizzle'
 
 require 'states.intro'
 require 'states.title'
@@ -115,6 +116,7 @@ function love.load()
 	menuSong = love.audio.newSource("audio/menu.wav")
 	
 	waveAdvanceSound = love.audio.newSource("audio/wave.wav")
+	gameOverSound = love.audio.newSource("audio/gameover.wav")
 
 	bulletSound = love.audio.newSource("audio/bullet.wav")
 	laserSound = love.audio.newSource("audio/laser.wav")
@@ -124,6 +126,9 @@ function love.load()
 	pauseSound = love.audio.newSource("audio/pause.wav")
 
 	addLifeSound = love.audio.newSource("audio/oneup.wav")
+
+	fizzleSound = love.audio.newSource("audio/evaporate.wav")
+	megaCannonSound = love.audio.newSource("audio/megacannon.wav")
 
 	hurtSound = {}
 	for k = 1, 3 do

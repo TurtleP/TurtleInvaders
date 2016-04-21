@@ -22,7 +22,7 @@ function player:init(characterData)
 
 	self.gravity = 0
 
-	self.shootingTimer = 1/2
+	self.shootingTimer = 1/3
 
 	self.mask =
 	{
@@ -165,7 +165,7 @@ function player:shoot()
 
 			if self:isValidBullet(self.powerup) then
 				bulletType = self.powerup
-			else
+			elseif self.powerup == "mega" then
 				table.insert(objects["bullet"], megacannon:new(self))
 				return
 			end
@@ -173,7 +173,7 @@ function player:shoot()
 			table.insert(objects["bullet"], bullet:new(self.x + self.width / 2 - 1, self.y - 1, bulletType, {0, -180}))			
 		end
 
-		self.shootingTimer = 1/2
+		self.shootingTimer = 1/3
 	end
 end
 
@@ -200,6 +200,8 @@ function player:addLife(add)
 		gameCreateExplosion(self)
 
 		gameOver = true
+
+		gameOverSound:play()
 	end
 end
 

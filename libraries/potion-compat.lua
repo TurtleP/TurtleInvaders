@@ -78,6 +78,14 @@ if not love.filesystem then
 			end
 		end
 	end
+
+	function love.filesystem.loadFile(path)
+		local path = path
+		if _EMULATEHOMEBREW then
+			return love.filesystem.load(path)()
+		end
+		return dofile(path)
+	end
 end
 
 if not love.graphics.scale then

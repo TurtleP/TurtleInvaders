@@ -24,7 +24,7 @@ function megacannon:init(player)
 	self.speedy = 0
 
 	self.gravity = 0
-	
+
 	self.mask =
 	{
 		["bat"] = true,
@@ -32,11 +32,36 @@ function megacannon:init(player)
 		["bullet"] = true
 	}
 
+	megaCannonSound:play()
+
 	self.passive = true
 end
 
 function megacannon:passiveCollide(name, data)
-	print(name)
+	if not self.initialize then
+		return
+	end
+
+	local pass = true
+	if name == "bullet" then
+		if data.speedy <= 0 then
+			pass = false
+		end
+	end
+
+	if pass then
+		if name == "bat" then
+			gameAddScore(100)
+		end
+
+		fizzleSound:play()
+
+		shakeValue = 10
+
+		table.insert(fizzles, fizzle:new(data, name))
+		
+		data.remove = true
+	end
 end
 
 function megacannon:update(dt)
@@ -52,6 +77,10 @@ function megacannon:update(dt)
 	else
 		self.baseQuadi = math.floor(self.boomTimer % 5) + 1
 		self.beami = math.floor(self.boomTimer % #megaCannonBeamQuads) + 1
+
+		if not megaCannonSound:isPlaying() then
+			self.remove = true
+		end
 	end
 end
 

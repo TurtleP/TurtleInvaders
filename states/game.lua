@@ -17,6 +17,7 @@ function gameInit()
 	objects["powerup"] = {}
 
 	explosions = {}
+	fizzles = {}
 
 	objects["player"] = 
 	{
@@ -29,9 +30,21 @@ function gameInit()
 		barrier:new(util.getWidth(), 0, 16, util.getHeight())
 	}
 
-	enemyTimer = timer:new(3, function()
-		table.insert(objects["bat"], bat:new(love.math.random(0, util.getWidth() - 30), -14))
-	end)
+	enemyTimer = timer:new(1, 
+		function(self)
+			table.insert(objects["bat"], bat:new(love.math.random(0, util.getWidth() - 30), -14))
+
+			self.maxTimer = (self.maxTime * 0.95) * currentWave
+		end
+	)
+
+	waveTimer = timer:new(14,
+		function(self)
+			self.maxTimer = self.maxTimer + love.math.random(4)
+
+			gameNextWave()
+		end
+	)
 
 	currentWave = 0
 	score = 0
@@ -45,6 +58,8 @@ function gameInit()
 	displayInfo = display:new()
 
 	batKillCount = 0
+
+	shakeValue = 0
 
 	state = "game"
 end
@@ -97,6 +112,10 @@ function gameUpdate(dt)
 		end
 	end
 
+	if shakeValue > 0 then
+		shakeValue = math.max(0, shakeValue - shakeValue * dt)
+	end
+
 	for k, v in pairs(objects) do
 		for j, w in pairs(v) do
 			if w.remove then
@@ -111,11 +130,24 @@ function gameUpdate(dt)
 		end
 	end
 
+	for k = #fizzles, 1, -1 do
+		if fizzles[k].remove then
+			table.remove(fizzles, k)
+		end
+	end
+
 	for k, v in pairs(explosions) do
 		v:update(dt)
 	end
 
+	for k, v in pairs(fizzles) do
+		v:update(dt)
+	end
+
 	if gameOver then
+		if not gameOverSound:isPlaying() then
+			util.changeState("loading", "title", 1)
+		end
 		return
 	end
 
@@ -128,6 +160,8 @@ function gameUpdate(dt)
 	end
 
 	enemyTimer:update(dt)
+
+	waveTimer:update(dt)
 
 	for k, v in pairs(objects) do
 		for j, w in pairs(v) do
@@ -146,6 +180,12 @@ end
 
 function gameDraw()
 	love.graphics.setScreen("top")
+
+	love.graphics.push()
+
+	if shakeValue > 0 then
+		love.graphics.translate(love.math.random() * shakeValue, love.math.random() * shakeValue)
+	end
 
 	for fieldCount = 1, #starFields do
 		local v = starFields[fieldCount]
@@ -175,10 +215,16 @@ function gameDraw()
 		v:draw()
 	end
 	
+	for k, v in pairs(fizzles) do
+		v:draw()
+	end
+
+	love.graphics.pop()
+
 	love.graphics.setFont(waveFont)
 	
 	if currentWaveFade > 0 then
-		love.graphics.setDepth(-0.5)
+		love.graphics.setDepth(1)
 
 		love.graphics.setColor(255, 255, 255, 255 * currentWaveFade)
 		love.graphics.print(waveText, util.getWidth() / 2 - waveFont:getWidth(waveText) / 2, util.getHeight() / 2 - waveFont:getHeight() / 2)

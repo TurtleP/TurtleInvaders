@@ -91,7 +91,7 @@ function display:draw()
 		love.graphics.print("Powerup", self.x + (self.width / 2) - hudFont:getWidth("Powerup") / 2, self.y + (self.height / 2) + hudFont:getHeight() / 2)
 	else
 		local powerupValue = player:getPowerup()
-		local powerup, niceName = self:getDisplayInfo(powerupValue)
+		local powerup, niceName, powerupTimeValue = self:getDisplayInfo(powerupValue)
 
 		love.graphics.setColor(255, 255, 255, 255 * self.powerupFade)
 
@@ -102,18 +102,19 @@ function display:draw()
 		love.graphics.setColor(255, 255, 255, 255)
 		
 		if not self.drainPowerup then
+			self.powerupTime = powerupTimeValue
 			self.drainPowerup = true
 		end
 	end
 end
 
 function display:getDisplayInfo(powerupValue)
-	local i, name = 1, "Shotgun"
+	local i, name, time = 1, "Shotgun", 8
 
 	if powerupValue == "time" then
 		i, name = 2, "Time Slow"
 	elseif powerupValue == "mega" then
-		i, name = 3, "Mega Laser"
+		i, name, time = 3, "Mega Laser", 5
 	elseif powerupValue == "shield" then
 		i, name = 4, "Shield"
 	elseif powerupValue == "laser" then
@@ -128,5 +129,5 @@ function display:getDisplayInfo(powerupValue)
 		i, name = 9, "No Powerups"
 	end
 
-	return i, name
+	return i, name, time
 end

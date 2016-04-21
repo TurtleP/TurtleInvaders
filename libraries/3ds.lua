@@ -75,6 +75,11 @@ function love.graphics.draw(...)
 	end
 end
 
+local olddofile = dofile
+function dofile(...)
+	return love.filesystem.load(...)()
+end
+
 local oldRectangle = love.graphics.rectangle
 function love.graphics.rectangle(mode, x, y, width, height)
 	local x = x or 0
