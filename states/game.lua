@@ -3,7 +3,7 @@ function gameInit()
 
 	for fieldCount = 1, 3 do
 		starFields[fieldCount] = {}
-		for starCount = 1, math.floor(50 / fieldCount) do
+		for starCount = 1, math.floor(100 / fieldCount) do
 			table.insert(starFields[fieldCount], star:new(love.math.random(0, util.getWidth()), love.math.random(0, util.getHeight()), fieldCount))
 		end
 	end
