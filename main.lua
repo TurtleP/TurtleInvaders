@@ -17,6 +17,7 @@ require 'classes.bullet'
 require 'classes.player'
 require 'classes.explosion'
 require 'classes.display'
+require 'classes.powerup'
 
 require 'states.intro'
 require 'states.title'
@@ -78,14 +79,31 @@ function love.load()
 		end
 	end
 	
+	powerupImage = love.graphics.newImage("graphics/game/powerups.png")
+	powerupQuads = {}
+	for k = 1, 10 do
+		powerupQuads[k] = love.graphics.newQuad((k - 1) * 19, 0, 18, 18, powerupImage:getWidth(), powerupImage:getHeight())
+	end
+
 	love.graphics.set3D(true)
 
 	menuSong = love.audio.newSource("audio/menu.wav")
 	
 	waveAdvanceSound = love.audio.newSource("audio/wave.wav")
+
 	bulletSound = love.audio.newSource("audio/bullet.wav")
 	laserSound = love.audio.newSource("audio/laser.wav")
+
 	explodeSound = love.audio.newSource("audio/explode.wav")
+
+	pauseSound = love.audio.newSource("audio/pause.wav")
+
+	addLifeSound = love.audio.newSource("audio/oneup.wav")
+
+	hurtSound = {}
+	for k = 1, 3 do
+		hurtSound[k] = love.audio.newSource("audio/hurt" .. k .. ".wav")
+	end
 
 	loadCharacters()
 
@@ -121,7 +139,7 @@ function love.load()
 
 	util.changeState("intro")
 
-	love.audio.setVolume(0)
+	--love.audio.setVolume(0)
 end
 
 function love.update(dt)

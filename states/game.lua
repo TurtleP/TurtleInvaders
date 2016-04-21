@@ -14,6 +14,7 @@ function gameInit()
 	objects["bat"] = {}
 	objects["bullet"] = {}
 	objects["boss"] = {}
+	objects["powerup"] = {}
 
 	explosions = {}
 
@@ -43,6 +44,8 @@ function gameInit()
 	
 	displayInfo = display:new()
 
+	batKillCount = 0
+
 	state = "game"
 end
 
@@ -60,8 +63,40 @@ function gameAddScore(add)
 	score = math.max(0, score + add)
 end
 
+function gameDropPowerup(x, y, oneUp)
+	if oneUp then
+		table.insert(objects["powerup"], powerup:new(x, y, 10))
+		return
+	end
+
+	local random = love.math.random(100)
+
+	local i
+
+	if random < 6 then
+		i = 9
+	else
+		if random >= 6 and random < 31 then
+			i = love.math.random(8)
+		end
+	end
+
+	if i then
+		table.insert(objects["powerup"], powerup:new(x, y, i))
+	end
+end
+
 function gameUpdate(dt)
-	
+	if not menuSong:isPlaying() then
+		menuSong:play()
+	end
+
+	if not gameOver then
+		if paused then
+			return
+		end
+	end
+
 	for k, v in pairs(objects) do
 		for j, w in pairs(v) do
 			if w.remove then
@@ -132,6 +167,10 @@ function gameDraw()
 		v:draw()
 	end
 
+	for k, v in pairs(objects["powerup"]) do
+		v:draw()
+	end
+
 	for k, v in pairs(explosions) do
 		v:draw()
 	end
@@ -153,6 +192,14 @@ function gameDraw()
 		love.graphics.print("Game Over", util.getWidth() / 2 - waveFont:getWidth("Game Over") / 2, util.getHeight() / 2 - waveFont:getHeight() / 2)
 	end
 
+	if paused then
+		love.graphics.setColor(0, 0, 0, 140)
+
+		love.graphics.rectangle("fill", 0, 0, 400, 240)
+		
+		love.graphics.setColor(255, 255, 255, 255)
+	end
+
 	love.graphics.setScreen("bottom")
 
 	if displayInfo then
@@ -161,7 +208,17 @@ function gameDraw()
 end
 
 function gameKeyPressed(key)
-	if not objects["player"][1] then
+	if key == "start" then
+		if not gameOver then
+			paused = not paused
+
+			if paused then
+				pauseSound:play()
+			end
+		end
+	end
+
+	if not objects["player"][1] or paused then
 		return
 	end
 
@@ -175,7 +232,7 @@ function gameKeyPressed(key)
 end
 
 function gameKeyReleased(key)
-	if not objects["player"][1] then
+	if not objects["player"][1] or paused then
 		return
 	end
 

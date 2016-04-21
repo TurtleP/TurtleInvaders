@@ -10,6 +10,8 @@ function bat:init(x, y)
 	self.speedx = love.math.random(-30, 30)
 	self.speedy = love.math.random(30, 90)
 
+	self.staticSpeed = {self.speedx, self.speedy}
+
 	self.powerupColor = {255, 255, 0}
 
 	self.active = true
@@ -30,6 +32,18 @@ function bat:init(x, y)
 end
 
 function bat:update(dt)
+	if objects["player"][1] then
+		if objects["player"][1]:getPowerup() == "time" then
+			dt = dt / 4
+
+			self.speedx = self.staticSpeed[1] / 2
+			self.speedy = self.staticSpeed[2] / 2
+		else
+			self.speedx = self.staticSpeed[1]
+			self.speedy = self.staticSpeed[2]
+		end
+	end
+
 	self.timer = self.timer + 8 * dt
 	self.quadi = math.floor(self.timer % 3) + 1
 
@@ -121,5 +135,15 @@ function bat:die(player)
 		return
 	end
 
+	batKillCount = batKillCount + 1
+
 	gameAddScore(10)
+
+	local oneup = false
+	if batKillCount % 50 == 0 then
+		oneup = true
+	end
+
+	gameDropPowerup(self.x + (self.width / 2) - 9, self.y + (self.height / 2) -9, oneup)
+
 end

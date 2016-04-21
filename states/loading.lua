@@ -5,8 +5,6 @@ function loadingInit(loadState, ...)
 	--clear the fonts anyways
 	util.clearFonts()
 
-	loadingDuration = 1
-
 	loadingState = loadState
 
 	loadingArg = {...}
@@ -16,12 +14,9 @@ function loadingUpdate(dt)
 	loadingBatTimer = loadingBatTimer + 8 * dt
 	loadingBati = math.floor(loadingBatTimer % 3) + 1
 
-	if loadingDuration > 0 then
-		loadingDuration = loadingDuration - dt
-	else
-		if util.fontsAreNilled() then --leet hax bruh
-			util.changeState(loadingState, unpack(loadingArg))
-		end
+
+	if util.fontsAreNilled() then --leet hax bruh
+		util.changeState(loadingState, unpack(loadingArg))
 	end
 end
 

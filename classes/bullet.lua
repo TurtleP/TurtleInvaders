@@ -36,6 +36,8 @@ function bullet:init(x, y, t, velocity)
 	}
 
 	self.passive = true
+
+	self.t = t
 end
 
 function bullet:update(dt)
@@ -60,6 +62,14 @@ function bullet:passiveCollide(name, data)
 		displayInfo:setEnemyData(data)
 
 		data:die()
+
+		if self.t == "laser" then
+			return
+		end
+
+		if self.t == "anti" then
+			gameAddScore(-10)
+		end
 
 		self.remove = true
 	end

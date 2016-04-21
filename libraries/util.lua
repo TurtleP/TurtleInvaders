@@ -26,14 +26,19 @@ end
 function util.clearFonts()
 	mainFont = nil
 	logoFont = nil
+
 	hudFont = nil
+	waveFont = nil
+
 	warningFont = nil
 
+	collectgarbage("collect")
+	
 	fontCount = 0
 end
 
 function util.fontsAreNilled()
-	return (mainFont == nil and logoFont == nil and hudFont == nil and warningFont == nil)
+	return (mainFont == nil and logoFont == nil and hudFont == nil and warningFont == nil and waveFont == nil)
 end
 
 function util.toBoolean(stringCompare)

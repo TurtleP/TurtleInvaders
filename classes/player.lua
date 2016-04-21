@@ -63,14 +63,6 @@ function player:update(dt)
 
 	self.shootingTimer = math.max(self.shootingTimer - dt, 0)
 
-	local speed = 0
-	if self.leftkey then
-		speed = -self.maxSpeedx
-	elseif self.rightkey then
-		speed = self.maxSpeedx
-	end
-	self.speedx = speed
-
 	if self.invincible then
 		self.invincibleTimer = self.invincibleTimer + 8 * dt
 
@@ -86,6 +78,16 @@ function player:update(dt)
 			self.invincible = false
 		end
 	end
+
+	local speed = 0
+	if self.powerup ~= "freeze" then
+		if self.leftkey then
+			speed = -self.maxSpeedx
+		elseif self.rightkey then
+			speed = self.maxSpeedx
+		end
+	end
+	self.speedx = speed
 end
 
 function player:draw()
@@ -124,6 +126,20 @@ function player:rightCollide(name, data)
 	end
 end
 
+function player:passiveCollide(name, data)
+	if name == "powerup" then
+			data.remove = true
+		if data.t == "oneup" then
+			self:addLife(1)
+			return
+		end
+
+		if self.powerup == "none" then
+			self.powerup = data.t
+		end
+	end
+end
+
 function player:moveLeft(move)
 	self.leftkey = move
 end
@@ -134,12 +150,25 @@ end
 
 function player:shoot()
 	if self.shootingTimer == 0 then
+		if self.powerup == "nobullets" or self.powerup == "freeze" then
+			return
+		end
+
 		if self.powerup == "shotgun" then
 			table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y - 1, "normal", {-100, -100}))
 
+			table.insert(objects["bullet"], bullet:new(self.x + self.width / 2 - 1, self.y - 1, "normal", {0, -180}))
+
 			table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y - 1, "normal", {100, -100}))
+		else
+			local bulletType = "normal"
+
+			if self:isValidBullet(self.powerup) then
+				bulletType = self.powerup
+			end
+
+			table.insert(objects["bullet"], bullet:new(self.x + self.width / 2 - 1, self.y - 1, bulletType, {0, -180}))			
 		end
-		table.insert(objects["bullet"], bullet:new(self.x + self.width / 2 - 1, self.y - 1, "normal", {0, -180}))
 
 		self.shootingTimer = 1/2
 	end
@@ -154,10 +183,13 @@ function player:addLife(add)
 		if self.invincible then
 			return
 		end
+		hurtSound[love.math.random(#hurtSound)]:play()
 		self.invincible = true
+	else
+		addLifeSound:play()
 	end
 
-	self.health = self.health + add
+	self.health = util.clamp(self.health + add, 0, self.maxHealth)
 
 	if self.health == 0 then
 		self.remove = true
@@ -166,6 +198,10 @@ function player:addLife(add)
 
 		gameOver = true
 	end
+end
+
+function player:isValidBullet(powerType)
+	return (powerType == "laser" or powerType == "anti")
 end
 
 function player:getMaxHealth()
