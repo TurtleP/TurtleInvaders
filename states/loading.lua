@@ -19,7 +19,9 @@ function loadingUpdate(dt)
 	if loadingDuration > 0 then
 		loadingDuration = loadingDuration - dt
 	else
-		util.changeState(loadingState, unpack(loadingArg))
+		if util.fontsAreNilled() then --leet hax bruh
+			util.changeState(loadingState, unpack(loadingArg))
+		end
 	end
 end
 

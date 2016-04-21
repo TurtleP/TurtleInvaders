@@ -32,6 +32,10 @@ function util.clearFonts()
 	fontCount = 0
 end
 
+function util.fontsAreNilled()
+	return (mainFont == nil and logoFont == nil and hudFont == nil and warningFont == nil)
+end
+
 function util.toBoolean(stringCompare)
 	return tostring(stringCompare) == "true"
 end
