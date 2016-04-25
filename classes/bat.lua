@@ -147,6 +147,9 @@ function bat:die(player)
 
 	batKillCount = batKillCount + 1
 
+	comboValue = comboValue + 1
+	comboTimeout = 0
+
 	gameAddScore(10)
 
 	local oneup = false

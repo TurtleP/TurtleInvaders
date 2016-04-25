@@ -47,6 +47,10 @@ function gameInit(playerData)
 
 	currentWave = 0
 	score = 0
+
+	comboValue = 0
+	comboTimeout = 0
+
 	gameOver = false
 	
 	gameNextWave()
@@ -72,6 +76,10 @@ function gameNextWave()
 end
 
 function gameAddScore(add)
+	if comboValue > 0 then
+		add = add * comboValue
+	end
+
 	score = math.max(0, score + add)
 end
 
@@ -106,6 +114,14 @@ function gameUpdate(dt)
 	if not gameOver then
 		if paused then
 			return
+		end
+	end
+
+	if comboValue > 0 then
+		if comboTimeout < 2 then
+			comboTimeout = comboTimeout + dt
+		else
+			comboValue = 0
 		end
 	end
 
