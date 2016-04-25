@@ -1,14 +1,12 @@
-function gameInit()
+function gameInit(playerData)
 	starFields = {}
 
 	for fieldCount = 1, 3 do
 		starFields[fieldCount] = {}
 		for starCount = 1, math.floor(100 / fieldCount) do
-			table.insert(starFields[fieldCount], star:new(love.math.random(0, util.getWidth()), love.math.random(0, util.getHeight()), fieldCount))
+			table.insert(starFields[fieldCount], star:new(love.math.random(0, 400), love.math.random(0, util.getHeight()), fieldCount))
 		end
 	end
-
-	playerData = gameCharacters[1]
 
 	objects = {}
 	objects["bat"] = {}
@@ -18,6 +16,7 @@ function gameInit()
 
 	explosions = {}
 	fizzles = {}
+	abilities = {}
 
 	objects["player"] = 
 	{
@@ -27,12 +26,12 @@ function gameInit()
 	objects["barrier"] = 
 	{
 		barrier:new(-16, 0, 16, util.getHeight()),
-		barrier:new(util.getWidth(), 0, 16, util.getHeight())
+		barrier:new(400, 0, 16, util.getHeight())
 	}
 
 	enemyTimer = timer:new(1, 
 		function(self)
-			table.insert(objects["bat"], bat:new(love.math.random(0, util.getWidth() - 30), -14))
+			table.insert(objects["bat"], bat:new(love.math.random(0, 370), -14))
 
 			self.maxTimer = (self.maxTime * 0.95) * currentWave
 		end
@@ -60,8 +59,6 @@ function gameInit()
 	batKillCount = 0
 
 	shakeValue = 0
-
-	state = "game"
 end
 
 function gameNextWave()
@@ -133,6 +130,18 @@ function gameUpdate(dt)
 	for k = #fizzles, 1, -1 do
 		if fizzles[k].remove then
 			table.remove(fizzles, k)
+		end
+	end
+
+	for k = #abilities, 1, -1 do
+		if abilities[k].remove then
+			table.remove(abilities, k)
+		end
+	end
+
+	for k, v in pairs(abilities) do
+		if v.update then
+			v:update(dt)
 		end
 	end
 
@@ -213,6 +222,12 @@ function gameDraw()
 
 	for k, v in pairs(explosions) do
 		v:draw()
+	end
+	
+	for k, v in pairs(abilities) do
+		if v.draw then
+			v:draw()
+		end
 	end
 	
 	for k, v in pairs(fizzles) do

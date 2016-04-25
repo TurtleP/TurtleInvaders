@@ -25,6 +25,7 @@ require 'states.intro'
 require 'states.title'
 require 'states.game'
 require 'states.options'
+require 'states.charselect'
 require 'states.loading'
 
 io.stdout:setvbuf("no")
@@ -111,6 +112,8 @@ function love.load()
 		megaCannonBeamQuads[k] = love.graphics.newQuad((k - 1) * 22, 0, 22, 22, megaCannonBeamImage:getWidth(), megaCannonBeamImage:getHeight())
 	end
 
+	cursorImage = love.graphics.newImage("graphics/menu/cursor.png")
+
 	love.graphics.set3D(true)
 
 	menuSong = love.audio.newSource("audio/menu.wav")
@@ -162,14 +165,11 @@ function love.load()
 		ability = "a"
 	}
 
-	mainFont = love.graphics.newFont("graphics/monofonto.ttf", 32)
-	warningFont = love.graphics.newFont("graphics/monofonto.ttf", 24)
-
 	directionPadEnabled = false
 
 	util.changeState("intro")
 
-	--love.audio.setVolume(0)
+	love.audio.setVolume(0)
 end
 
 function love.update(dt)

@@ -1,12 +1,2 @@
-{
-	"shieldanimspeed": 0.25,
-	"animated": true,
-	"animationframes": 12,
-	"animationspeed": 0.1,
-	"ability": "portal",
-	"shieldwidth": 48,
-	"shieldheight": 48,
-	"shieldquadcount": 9,
-	"width": 40,
-	"height": 28
-}
+width:40;height:28;animated:true;animationframes:12;animationspeed:0.1;ability:portal;shieldquadcount:9;shieldanimspeed:0.25;
+

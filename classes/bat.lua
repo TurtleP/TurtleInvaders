@@ -29,6 +29,8 @@ function bat:init(x, y)
 
 	self.maxHealth = love.math.random(2)
 	self.health = self.maxHealth
+
+	self.setSpeeds = false
 end
 
 function bat:update(dt)
@@ -38,9 +40,17 @@ function bat:update(dt)
 
 			self.speedx = self.staticSpeed[1] / 2
 			self.speedy = self.staticSpeed[2] / 2
+
+			if self.setSpeeds then
+				self.setSpeeds = false
+			end
 		else
-			self.speedx = self.staticSpeed[1]
-			self.speedy = self.staticSpeed[2]
+			if not self.setSpeeds then
+				self.speedx = self.staticSpeed[1]
+				self.speedy = self.staticSpeed[2]
+
+				self.setSpeeds = true
+			end
 		end
 	end
 
@@ -145,5 +155,4 @@ function bat:die(player)
 	end
 
 	gameDropPowerup(self.x + (self.width / 2) - 9, self.y + (self.height / 2) - 9, oneup)
-
 end

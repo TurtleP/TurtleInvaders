@@ -1,7 +1,1 @@
-{
-	"shieldanimspeed": 0.10,
-	"shieldwidth": 32,
-	"shieldheight": 32,
-	"shieldquadcount": 4,
-	"ability": "quickstep"
-}
+width:32;height:32;shieldanimspeed:0.10;shieldwidth:32;shieldheight:32;shieldquadcount:4;ability:quickstep;

@@ -13,9 +13,11 @@ function loadCharacters()
 	}
 
 	gameCharacters = {}
-	for k = 1, #characters do
+	
+	gameCharacters[1] = createCharacter("turtle")
+	for k = 2, #characters do
 		if createCharacter(characters[k]) then
-			gameCharacters[k] = createCharacter(characters[k])
+			table.insert(gameCharacters, createCharacter(characters[k]))
 		else
 			print("Error: Could not load: " .. characters[k])
 		end
@@ -37,18 +39,27 @@ function createCharacter(name)
 
 			if tonumber(v[2]) then
 				character[v[1]] = tonumber(v[2])
+			elseif util.toBoolean(v[2]) then
+				character[v[1]] = util.toBoolean(v[2])
 			else
 				character[v[1]] = v[2]
 			end
+		end
+		if #dataSplit == 1 then
+			return false
 		end
 	else
 		return false
 	end
 
 	character.graphic = love.graphics.newImage("characters/" .. name .. "/ship.png")
-	
-	character.width = character.graphic:getWidth()
-	character.height = character.graphic:getHeight()
+
+	character.quads = {}
+	if character.animated then
+		for k = 1, character.animationframes do
+			character.quads[k] = love.graphics.newQuad((k - 1) * character.width, 0, character.width, character.height, character.graphic:getWidth(), character.graphic:getHeight())
+		end
+	end
 
 	return character
 end

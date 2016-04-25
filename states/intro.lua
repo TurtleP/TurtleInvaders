@@ -18,6 +18,9 @@ function introInit()
 
 	introBatQuadi = 1
 	introBatTimer = 0
+
+	mainFont = love.graphics.newFont("graphics/monofonto.ttf", 32)
+	warningFont = love.graphics.newFont("graphics/monofonto.ttf", 24)
 end
 
 function introUpdate(dt)

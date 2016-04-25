@@ -19,8 +19,7 @@ function util.changeScale(scalar)
 end
 
 function util.createFonts()
-	mainFont = love.graphics.newFont("graphics/monofonto.ttf", 32)
-	logoFont = love.graphics.newFont("graphics/monofonto.ttf", 46)
+
 end
 
 function util.clearFonts()
@@ -32,13 +31,16 @@ function util.clearFonts()
 
 	warningFont = nil
 
+	chooseFont = nil
+	abilityFont = nil
+
 	collectgarbage("collect")
 	
 	fontCount = 0
 end
 
 function util.fontsAreNilled()
-	return (mainFont == nil and logoFont == nil and hudFont == nil and warningFont == nil and waveFont == nil)
+	return (mainFont and logoFont and hudFont and waveFont and warningFont and chooseFont and abilityFont) == nil
 end
 
 function util.toBoolean(stringCompare)
@@ -53,7 +55,9 @@ function util.changeState(toState, ...)
 	local arg = {...} or {}
 
 	if _G[toState .. "Init"] then
+
 		_G[toState .. "Init"](unpack(arg))
+
 		state = toState
 	end
 end

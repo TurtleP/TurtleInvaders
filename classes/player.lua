@@ -35,8 +35,12 @@ function player:init(characterData)
 
 	self.ability = dofile("characters/" .. self.name .. "/" .. characterData.ability .. ".lua")
 
-	if self.ability.passive then
-		self.ability:init(self)
+	if self.ability then
+		if self.ability.init then
+			self.ability:init(self)
+
+			table.insert(abilities, self.ability)
+		end
 	end
 
 	self.powerup = "none"
@@ -48,6 +52,9 @@ function player:init(characterData)
 	self.isAnimated = characterData.animated
 	self.animationTimer = 0
 	self.animationQuadi = 1
+	self.animationQuads = characterData.quads
+	self.animationSpeed = characterData.animationspeed
+	self.animationCount = characterData.animationframes
 end
 
 function player:update(dt)
@@ -58,6 +65,18 @@ function player:update(dt)
 		else
 			self.initialize = true
 			self.speedy = 0
+		end
+	end
+
+	if self.isAnimated then
+		self.animationTimer = self.animationTimer + dt
+
+		if self.animationTimer >= self.animationSpeed then
+			self.animationTimer = 0
+			self.animationQuadi = self.animationQuadi + 1
+			if self.animationQuadi > #self.animationQuads then
+				self.animationQuadi = 1
+			end
 		end
 	end
 
@@ -92,11 +111,15 @@ end
 
 function player:draw()
 	love.graphics.setDepth(0.25)
-
+	
 	if not self.shouldDraw then
 		return
 	end
 
+	if self.isAnimated then
+		love.graphics.draw(self.graphic, self.animationQuads[self.animationQuadi], self.x, self.y)
+		return
+	end
 	love.graphics.draw(self.graphic, self.x, self.y)
 
 	love.graphics.setDepth(0)
