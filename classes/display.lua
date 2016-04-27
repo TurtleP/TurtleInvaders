@@ -84,6 +84,7 @@ function display:draw()
 		
 		love.graphics.draw(healthImage, healthQuads[quadi][color], hudFont:getWidth(player.name) / 2 - (player:getMaxHealth() * 9) / 2 + (x - 1) * 9, self.y + 36)
 	end
+	love.graphics.setColor(255, 255, 255, 255)
 
 	--Score
 	love.graphics.print("Score", self.x + (self.width / 2) - hudFont:getWidth("Score") / 2, self.y)
