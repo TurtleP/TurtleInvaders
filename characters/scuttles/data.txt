@@ -1,7 +1,1 @@
-{
-	"shieldanimspeed": 0.10,
-	"ability": "gecko",
-	"shieldwidth": 40,
-	"shieldheight": 40,
-	"shieldquadcount": 4
-}
+width:40;height:40;shieldwidth:40;shieldheight:40;ability:gecko;shieldspeed:7;shieldcount:4;

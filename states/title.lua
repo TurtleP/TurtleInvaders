@@ -1,4 +1,5 @@
 function titleInit(selection)
+	print(warningFont)
 	titleOptions =
 	{
 		{"New Game", function() util.changeState("loading", "charSelect") end},
@@ -18,10 +19,6 @@ end
 function titleUpdate(dt)
 	menuBatTimer = menuBatTimer + 8 *dt
 	menuBatQuadi = math.floor(menuBatTimer % 3) + 1
-
-	if not menuSong:isPlaying() then
-		menuSong:play()
-	end
 end
 
 function titleDraw()

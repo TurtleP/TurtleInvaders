@@ -33,14 +33,13 @@ function player:init(characterData)
 	self.maxHealth = 3
 	self.health = self.maxHealth
 
-	self.ability = dofile("characters/" .. self.name .. "/" .. characterData.ability .. ".lua")
+	self.ability = characterData.ability
 
 	if self.ability then
-		if self.ability.init then
+		if self.ability.init and self.ability.pasive then
 			self.ability:init(self)
-
-			table.insert(abilities, self.ability)
 		end
+		table.insert(abilities, self.ability)
 	end
 
 	self.powerup = "none"
@@ -55,6 +54,16 @@ function player:init(characterData)
 	self.animationQuads = characterData.quads
 	self.animationSpeed = characterData.animationspeed
 	self.animationCount = characterData.animationframes
+
+	self.shieldImage = characterData.shieldImage
+	self.shieldTimer = 0
+	self.shieldQuad = 1
+	self.shieldQuads = characterData.shieldQuads
+	self.shieldRate = characterData.shieldspeed
+	self.shieldStopAtEnd = characterData.shieldstopatend
+
+	self.shieldWidth = characterData.shieldwidth
+	self.shieldHeight = characterData.shieldheight
 end
 
 function player:update(dt)
@@ -77,6 +86,19 @@ function player:update(dt)
 			if self.animationQuadi > #self.animationQuads then
 				self.animationQuadi = 1
 			end
+		end
+	end
+
+	if self.powerup == "shield" then
+		if #self.shieldQuads > 1 then
+			if self.shieldStopAtEnd then
+				if self.shieldQuad < #self.shieldQuads then
+					self.shieldTimer = self.shieldTimer + self.shieldRate * dt
+				end
+			else
+				self.shieldTimer = self.shieldTimer + self.shieldRate * dt
+			end
+			self.shieldQuad = math.floor(self.shieldTimer % #self.shieldQuads) + 1
 		end
 	end
 
@@ -118,34 +140,46 @@ function player:draw()
 
 	if self.isAnimated then
 		love.graphics.draw(self.graphic, self.animationQuads[self.animationQuadi], self.x, self.y)
+
+		self:drawShield()
 		return
 	end
 	love.graphics.draw(self.graphic, self.x, self.y)
 
+	self:drawShield()
+
+	
+
 	love.graphics.setDepth(0)
+end
+
+function player:drawShield()
+	if self.powerup == "shield" then
+		love.graphics.draw(self.shieldImage, self.shieldQuads[self.shieldQuad], self.x + (self.width / 2) - self.shieldWidth / 2, self.y + (self.height / 2) - self.shieldHeight / 2)
+	end
 end
 
 function player:upCollide(name, data)
 	if name == "bat" then
-		return true
+		return false
 	end
 end
 
 function player:downCollide(name, data)
 	if name == "bat" then
-		return true
+		return false
 	end
 end
 
 function player:leftCollide(name, data)
 	if name == "bat" then
-		return true
+		return false
 	end
 end
 
 function player:rightCollide(name, data)
 	if name == "bat" then
-		return true
+		return false
 	end
 end
 
@@ -169,6 +203,19 @@ end
 
 function player:moveRight(move)
 	self.rightkey = move
+end
+
+function player:triggerAbility()
+	if not self.ability.passive then
+		if abilityKills == (self.maxHealth * 2) then
+			self.ability:trigger(self)
+			abilityKills = 0
+		else
+			if self.ability.active then
+				self.ability:trigger()
+			end
+		end
+	end
 end
 
 function player:shoot()
@@ -204,9 +251,13 @@ function player:setPowerup(powerup)
 	self.powerup = powerup
 end
 
+function player:getPowerup()
+	return self.powerup
+end
+
 function player:addLife(add)
 	if add < 0 then
-		if self.invincible then
+		if self.invincible or self.powerup == "shield" then
 			return
 		end
 		hurtSound[love.math.random(#hurtSound)]:play()
@@ -228,10 +279,6 @@ function player:addLife(add)
 	end
 end
 
-function player:isValidBullet(powerType)
-	return (powerType == "laser" or powerType == "anti")
-end
-
 function player:getMaxHealth()
 	return self.maxHealth
 end
@@ -240,6 +287,6 @@ function player:getHealth()
 	return self.health
 end
 
-function player:getPowerup()
-	return self.powerup
+function player:isValidBullet(powerType)
+	return (powerType == "laser" or powerType == "anti")
 end

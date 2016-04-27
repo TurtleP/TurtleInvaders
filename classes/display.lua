@@ -14,6 +14,9 @@ function display:init()
 	self.player = nil
 
 	self.powerupFade = 1
+
+	self.abilityFade = 1
+	self.abilitySine = 0
 end
 
 function display:update(dt)
@@ -30,6 +33,14 @@ function display:update(dt)
 			self.powerupTime = 8
 			self.powerupFade = 1
 		end
+	end
+
+	if abilityKills > 0 then
+		self.abilitySine = self.abilitySine + 0.5 * dt
+
+		self.abilityFade = math.abs( math.sin( self.abilitySine * math.pi ) / 2 ) + 0.5
+	else
+		self.abilitySine = 0
 	end
 end
 
@@ -58,11 +69,20 @@ function display:draw()
 	love.graphics.print(player.name:gsub("^%l", string.upper), self.x, self.y)
 
 	for x = 1, player:getMaxHealth() do
-		local quadi, color = 1
+		love.graphics.setColor(255, 255, 255, 255)
+
+		local quadi, color = 1, 1
 		if x > player:getHealth() then
-			quadi, color = 2
+			quadi = 2
 		end
-		love.graphics.draw(healthImage, healthQuads[quadi][1], hudFont:getWidth(player.name) / 2 - (player:getMaxHealth() * 9) / 2 + (x - 1) * 9, self.y + 36)
+
+		if abilityKills / 2 >= x then
+			love.graphics.setColor(255, 255, 255, 255 * self.abilityFade)
+
+			color = 2
+		end
+		
+		love.graphics.draw(healthImage, healthQuads[quadi][color], hudFont:getWidth(player.name) / 2 - (player:getMaxHealth() * 9) / 2 + (x - 1) * 9, self.y + 36)
 	end
 
 	--Score

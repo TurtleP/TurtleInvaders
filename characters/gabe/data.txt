@@ -1,1 +1,1 @@
-width:40;height:40;shieldanimspeed:0.10;ability:wrap;shieldwidth:40;shieldheight:40;shieldquadcount:8;
+width:40;height:40;shieldspeed:8;ability:wrap;shieldwidth:40;shieldheight:40;shieldcount:8;

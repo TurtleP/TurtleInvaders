@@ -116,26 +116,26 @@ function love.load()
 
 	love.graphics.set3D(true)
 
-	menuSong = love.audio.newSource("audio/menu.wav")
+	menuSong = love.audio.newSource("audio/menu.wav", "static")
 	
-	waveAdvanceSound = love.audio.newSource("audio/wave.wav")
-	gameOverSound = love.audio.newSource("audio/gameover.wav")
+	waveAdvanceSound = love.audio.newSource("audio/wave.wav", "static")
+	gameOverSound = love.audio.newSource("audio/gameover.wav", "static")
 
-	bulletSound = love.audio.newSource("audio/bullet.wav")
-	laserSound = love.audio.newSource("audio/laser.wav")
+	bulletSound = love.audio.newSource("audio/bullet.wav", "static")
+	laserSound = love.audio.newSource("audio/laser.wav", "static")
 
-	explodeSound = love.audio.newSource("audio/explode.wav")
+	explodeSound = love.audio.newSource("audio/explode.wav", "static")
 
-	pauseSound = love.audio.newSource("audio/pause.wav")
+	pauseSound = love.audio.newSource("audio/pause.wav", "static")
 
-	addLifeSound = love.audio.newSource("audio/oneup.wav")
+	addLifeSound = love.audio.newSource("audio/oneup.wav", "static")
 
-	fizzleSound = love.audio.newSource("audio/evaporate.wav")
-	megaCannonSound = love.audio.newSource("audio/megacannon.wav")
+	fizzleSound = love.audio.newSource("audio/evaporate.wav", "static")
+	megaCannonSound = love.audio.newSource("audio/megacannon.wav", "static")
 
 	hurtSound = {}
 	for k = 1, 3 do
-		hurtSound[k] = love.audio.newSource("audio/hurt" .. k .. ".wav")
+		hurtSound[k] = love.audio.newSource("audio/hurt" .. k .. ".wav", "static")
 	end
 
 	loadCharacters()
@@ -168,12 +168,18 @@ function love.load()
 	directionPadEnabled = false
 
 	util.changeState("intro")
-
-	love.audio.setVolume(0)
 end
 
 function love.update(dt)
 	util.updateState(dt)
+
+	if menuSong then
+		if state ~= "intro" then
+			if not menuSong:isPlaying() then
+				menuSong:play()
+			end
+		end
+	end
 end
 
 function love.draw()

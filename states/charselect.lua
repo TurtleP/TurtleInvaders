@@ -1,25 +1,72 @@
 function charSelectInit()
 	charSelections = {}
 	for x = 1, #gameCharacters do
-		charSelections[x] = newCharSelection(20 + (x - 1) * 60, 20, x)
+		charSelections[x] = newCharSelection(20 + math.mod( (x - 1), 5 ) * 60, 20 + math.floor( (x - 1) / 5 ) * 60, x)
 	end
 
 	chooseFont = love.graphics.newFont("graphics/monofonto.ttf", 40)
 	abilityFont = love.graphics.newFont("graphics/monofonto.ttf", 16)
 
 	currentSelection = 1
+
+	charStarLayers = {}
+	for k = 1, 3 do
+		charStarLayers[k] = {}
+		for x = 1, 100 do
+			table.insert(charStarLayers[k], star:new(love.math.random(400), love.math.random(240), k))
+		end
+	end
+
+	charBats = {}
+
+	charTimer = timer:new(2, function()
+		local temp = bat:new(love.math.random(370), -14)
+		temp.screen = "top"
+
+		table.insert(charBats, temp)
+	end)
 end
 
 function charSelectUpdate(dt)
-	
+	charTimer:update(dt)
+
+	for k, v in pairs(charBats) do
+		local width = 400
+		if v.screen == "top" then
+			if v.y > util.getHeight() then
+				v.x = v.x - 40
+				v.y = 0
+				v.screen = "bottom"
+			end
+		else
+			width = 320
+		end
+
+		if v.y > util.getHeight() or v.x + v.width < 0 or v.x > width then
+			table.remove(charBats, k)
+		end
+
+		v:update(dt)
+
+		v.x = v.x + v.speedx * dt
+		v.y = v.y + v.speedy * dt
+	end
 end
 
 function charSelectDraw()
-	if charChangingState then
-		return
+	for k, v in pairs(charBats) do
+		love.graphics.setScreen(v.screen)
+
+		v:draw()
 	end
 
 	love.graphics.setScreen("top")
+
+	for layer = 1, 3 do
+		for j, w in pairs(charStarLayers[layer]) do
+			w:draw()
+		end
+	end
 
 	love.graphics.setFont(chooseFont)
 	love.graphics.print("Choose a character", util.getWidth() / 2 - chooseFont:getWidth("Choose a character") / 2, 20)
@@ -43,9 +90,33 @@ function charSelectDraw()
 
 	love.graphics.setScreen("bottom")
 
+	for layer = 1, 3 do
+		for j, w in pairs(charStarLayers[layer]) do
+			w:draw()
+		end
+	end
+
 	for k, v in pairs(charSelections) do
 		if currentSelection == k then
-			love.graphics.draw(cursorImage, v.x, v.y)
+			love.graphics.push()
+
+			love.graphics.translate(40, 240)
+			
+			local offset = (math.sin(love.timer.getTime() * math.pi * 2) + 1) / 2 * 2
+			love.graphics.line(v.x - offset, v.y - offset, (v.x + 8) - offset, v.y - offset)
+			love.graphics.line(v.x - offset, v.y - offset, v.x - offset, (v.y + 8) - offset)
+
+			love.graphics.line((v.x + v.width - 8) + offset, v.y - offset, (v.x + v.width) + offset, v.y - offset)
+			love.graphics.line((v.x + v.width) + offset, v.y - offset, (v.x + v.width) + offset, (v.y + 8) - offset)
+
+			love.graphics.line((v.x + v.width) + offset, (v.y + v.height - 8) + offset, (v.x + v.width) + offset, (v.y + v.height) + offset)
+			love.graphics.line((v.x + v.width - 8) + offset, (v.y + v.height) + offset, (v.x + v.width) + offset, (v.y + v.height) + offset)
+
+			offset = (math.sin(love.timer.getTime() * math.pi * 2) + 1) / 2 * 2
+			love.graphics.line(v.x - offset, (v.y + v.height) + offset, (v.x + 8) - offset, (v.y + v.height) + offset)
+			love.graphics.line(v.x - offset, (v.y + v.height - 8) + offset, (v.x - offset), (v.y + v.height) + offset)
+
+			love.graphics.pop()
 		end
 		v:draw()
 	end

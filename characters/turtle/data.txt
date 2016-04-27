@@ -1,1 +1,1 @@
-width:30;height:32;ability:tank;shieldinspeed:0.25;shieldoutspeed:0.25;shieldincount:8;shieldoutcount:8;shieldinwidth:34;shieldinheight:34;shieldoutwidth:34;shieldoutheight:34;
+width:30;height:32;ability:tank;shieldspeed:8;shieldcount:8;shieldwidth:34;shieldheight:34;shieldstopatend:true;

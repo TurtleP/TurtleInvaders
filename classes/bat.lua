@@ -34,26 +34,28 @@ function bat:init(x, y)
 end
 
 function bat:update(dt)
-	if objects["player"][1] then
-		if objects["player"][1]:getPowerup() == "time" then
-			dt = dt / 4
+	if objects then
+		if objects["player"][1] then
+			if objects["player"][1]:getPowerup() == "time" then
+				dt = dt / 4
 
-			self.speedx = self.staticSpeed[1] / 2
-			self.speedy = self.staticSpeed[2] / 2
+				self.speedx = self.staticSpeed[1] / 2
+				self.speedy = self.staticSpeed[2] / 2
 
-			if self.setSpeeds then
-				self.setSpeeds = false
-			end
-		else
-			if not self.setSpeeds then
-				self.speedx = self.staticSpeed[1]
-				self.speedy = self.staticSpeed[2]
+				if self.setSpeeds then
+					self.setSpeeds = false
+				end
+			else
+				if not self.setSpeeds then
+					self.speedx = self.staticSpeed[1]
+					self.speedy = self.staticSpeed[2]
 
-				self.setSpeeds = true
+					self.setSpeeds = true
+				end
 			end
 		end
 	end
-
+	
 	self.timer = self.timer + 8 * dt
 	self.quadi = math.floor(self.timer % 3) + 1
 
@@ -137,6 +139,10 @@ function bat:die(player)
 	explodeSound:play()
 
 	self.remove = true
+
+	if not objects["player"][1].ability.passive then
+		abilityKills = util.clamp(abilityKills + 1, 0, objects["player"][1]:getMaxHealth() * 2)
+	end
 
 	gameCreateExplosion(self)
 

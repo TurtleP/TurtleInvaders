@@ -1,9 +1,1 @@
-{
-	"shieldanimspeed": 0.05,
-	"shieldwidth": 54,
-	"shieldheight": 68,
-	"shieldquadcount": 12,
-	"width": 40,
-	"height": 40,
-	"ability": "shatterbullets"
-}
+shieldspeed:6;width:40;height:40;shieldwidth:54;shieldheight:68;shieldcount:12;ability:shatterbullets;

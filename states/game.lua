@@ -61,6 +61,7 @@ function gameInit(playerData)
 	displayInfo = display:new()
 
 	batKillCount = 0
+	abilityKills = 0
 
 	shakeValue = 0
 end
@@ -89,16 +90,15 @@ function gameDropPowerup(x, y, oneUp)
 		return
 	end
 
-	local random = love.math.random(100)
+	if objects["player"][1]:getPowerup() ~= "none" then
+		return
+	end
 
-	local i
-
-	if random < 6 then
+	local random, i = love.math.random()
+	if random < .1 then
 		i = 9
-	else
-		if random >= 6 and random < 31 then
-			i = love.math.random(8)
-		end
+	elseif random < .05 then
+		i = love.math.random(8)
 	end
 
 	if i then
@@ -107,10 +107,6 @@ function gameDropPowerup(x, y, oneUp)
 end
 
 function gameUpdate(dt)
-	if not menuSong:isPlaying() then
-		menuSong:play()
-	end
-
 	if not gameOver then
 		if paused then
 			return
@@ -305,6 +301,8 @@ function gameKeyPressed(key)
 		objects["player"][1]:moveRight(true)
 	elseif key == "b" then
 		objects["player"][1]:shoot()
+	elseif key == "a" then
+		objects["player"][1]:triggerAbility()
 	end
 end
 

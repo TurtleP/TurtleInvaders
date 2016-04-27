@@ -4,7 +4,6 @@ function fizzle:init(object, quadType)
 	self.x = object.x
 	self.y = object.y
 
-	print(self.x, self.y)
 	if object.quadi then
 		self.quadi = object.quadi
 
@@ -13,8 +12,13 @@ function fizzle:init(object, quadType)
 			graphic = powerupImage
 			quads = powerupQuads[self.quadi]
 		end
+
 		self.graphic = graphic
 		self.quads = quads
+	end
+
+	if quadType == "player" then
+		self.graphic = object.graphic
 	end
 
 	self.width = object.width
@@ -36,10 +40,14 @@ end
 function fizzle:draw()
 	love.graphics.setColor(128, 128, 128, 255 * self.fizzleFade)
 
-	if not self.quadi then
+	if not self.graphic then
 		love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
 		return
+	elseif not self.quadi then
+		love.graphics.draw(self.graphic, self.x, self.y)
+		return
 	end
+
 	love.graphics.draw(self.graphic, self.quads, self.x, self.y)
 
 	if self.t == "bat" then

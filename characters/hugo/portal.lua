@@ -28,6 +28,11 @@ for x = 1, 2 do
 	gradientQuads[x] = love.graphics.newQuad((x - 1) * 8, 0, 8, 64, portalGradientImage:getWidth(), portalGradientImage:getHeight())
 end
 
+--[[
+	This ability is pretty hacky how I do a *few* things, but other than that..it's fine.
+	I mean come on, this is the most complex ability I had to freaking rewrite!
+--]]
+
 function ability:init(turtle)
 	self.parent = turtle
 
@@ -36,9 +41,6 @@ function ability:init(turtle)
 	self.gunQuadi = 1
 
 	self.oldDraw = self.parent.draw
-	self.parent.draw = function()
-		love.graphics.draw(gunImage, gunQuads[self.gunQuadi], self.parent.x + (self.parent.width / 2) - 28, self.parent.y)
-	end
 
 	self.parent.mask["barrier"] = false
 
@@ -47,17 +49,41 @@ function ability:init(turtle)
 	self.reverse = false
 
 	self.portals = {}
+
+	self.parent.draw = function()
+		love.graphics.draw(gunImage, gunQuads[self.gunQuadi], self.parent.x + (self.parent.width / 2) - 28, self.parent.y)
+	end
+
+	self.useTimer = 8
+
+	self.active = true
 end
 
 function ability:update(dt)
+	if not self.active then
+		return
+	end
+
 	for k, v in pairs(self.portals) do
 		v:update(dt)
 	end
 
-	if self.parent.x < 8 then
-		self.parent.x = self.parent.x + 393
-	elseif self.parent.x > 393 then
-		self.parent.x = self.parent.x - 393
+	if self.useTimer > 0 then
+		self.useTimer = self.useTimer - dt
+	else
+		self:reset()
+	end
+
+	if self.portals[1] and self.portals[2] then
+		if self.portals[1].type == "portal" and self.portals[2].type == "portal" then
+			if self.portals[1].colors[self.portals[1].quadi][4] == 255 and self.portals[2].colors[self.portals[2].quadi][4] == 255 then
+				if self.parent.x < 8 then
+					self.parent.x = self.parent.x + 393
+				elseif self.parent.x > 393 then
+					self.parent.x = self.parent.x - 393
+				end
+			end
+		end
 	end
 
 	if self.gunQuadi == 8 then
@@ -82,12 +108,26 @@ function ability:createPortals(x, y, i)
 	self.portals[i] = newPortal(x, y, i)
 end
 
+function ability:trigger(parent)
+	self:init(parent)
+end
+
 function ability:draw()
-	if self.parent.shouldDraw and objects["player"][1] then
-		if self.parent.x < 8 then
-			love.graphics.draw(self.parent.graphic, self.parent.animationQuads[self.parent.animationQuadi], self.parent.x + 393, self.parent.y)
-		elseif self.parent.x + self.parent.width > 393 then
-			love.graphics.draw(self.parent.graphic, self.parent.animationQuads[self.parent.animationQuadi], self.parent.x - 393, self.parent.y)
+	if not self.active then
+		return
+	end
+
+	if self.portals[1] and self.portals[2] then
+		if self.portals[1].type == "portal" and self.portals[2].type == "portal" then
+			if self.portals[1].colors[self.portals[1].quadi][4] == 255 and self.portals[2].colors[self.portals[2].quadi][4] == 255 then
+				if self.parent.shouldDraw and objects["player"][1] then
+					if self.parent.x < 0 then
+						love.graphics.draw(self.parent.graphic, self.parent.animationQuads[self.parent.animationQuadi], self.parent.x + 393, self.parent.y)
+					elseif self.parent.x + self.parent.width > 400 then
+						love.graphics.draw(self.parent.graphic, self.parent.animationQuads[self.parent.animationQuadi], self.parent.x - 393, self.parent.y)
+					end
+				end
+			end
 		end
 	end
 
@@ -97,8 +137,14 @@ function ability:draw()
 end
 
 function ability:reset()
-	self.parent.mask["barrier"] = true
+	if self.parent.x < 0 then
+		self.parent.x = 0
+	elseif self.parent.x + self.parent.width > 400 then
+		self.parent.x = 400 - self.parent.width
+	end
 	self.parent.draw = self.oldDraw
+	self.parent.mask["barrier"] = true
+	self.active = false
 end
 
 function newPortalShot(x, y, i, abilityData)
@@ -123,6 +169,7 @@ function newPortalShot(x, y, i, abilityData)
 
 	shot.width = 32
 	shot.height = 16
+	shot.type = "shot"
 
 	function shot:update(dt)
 		if not self.remove then
@@ -157,8 +204,19 @@ function newPortal(x, y, i)
 
 	portal.colors = {{0, 128, 255, 0}, {255, 128, 0, 0}}
 
+	portal.fade = 1
+	portal.sineTimer = 0
+
+	portal.type = "portal"
+
 	function portal:update(dt)
 		self.colors[self.i][4] = math.min(self.colors[self.i][4] + 160 * dt, 255)
+
+		if self.colors[self.i][4] == 255 then
+			self.sineTimer = self.sineTimer + 0.5 * dt
+
+			self.fade = math.abs( math.sin( self.sineTimer * math.pi ) / 2 ) + 0.5
+		end
 	end
 
 	local offset = 1
@@ -170,10 +228,11 @@ function newPortal(x, y, i)
 	function portal:draw()
 		love.graphics.push()
 
-		love.graphics.setColor(255, 255, 255, self.colors[self.i][4])
+		love.graphics.setColor(255, 255, 255, self.colors[self.i][4] * self.fade)
 		love.graphics.draw(portalGradientImage, gradientQuads[self.i], self.x + self.offset, self.y)
 
-		love.graphics.setColor(unpack(self.colors[self.i]))
+		local r, g, b, a = unpack(self.colors[self.i])
+		love.graphics.setColor(r, g, b, a * self.fade)
 		love.graphics.draw(portalImage, portalQuads[self.i], self.x, self.y)
 
 		love.graphics.setColor(255, 255, 255, 255)

@@ -9,7 +9,7 @@ function loadingInit(loadState, ...)
 
 	loadingArg = {...}
 
-	loadingTime = 1
+	loadingTime = 1.5
 end
 
 function loadingUpdate(dt)
@@ -19,9 +19,7 @@ function loadingUpdate(dt)
 	if loadingTime > 0 then
 		loadingTime = loadingTime - dt
 	else
-		if util.fontsAreNilled() then --leet hax bruh
-			util.changeState(loadingState, unpack(loadingArg))
-		end
+		util.changeState(loadingState, unpack(loadingArg))
 	end
 end
 

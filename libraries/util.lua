@@ -18,29 +18,32 @@ function util.changeScale(scalar)
 	love.window.setMode(love.graphics.getWidth() * scalar, love.graphics.getHeight() * scalar)
 end
 
-function util.createFonts()
-
-end
-
 function util.clearFonts()
-	mainFont = nil
-	logoFont = nil
+	if mainFont then
+		mainFont = nil
+	end
 
-	hudFont = nil
-	waveFont = nil
+	if logoFont then
+		logoFont = nil
+	end
 
-	warningFont = nil
+	if hudFont and waveFont then
+		hudFont = nil
+		waveFont = nil
+	end
 
-	chooseFont = nil
-	abilityFont = nil
+	if warningFont then
+		warningFont = nil
+	end
 
-	collectgarbage("collect")
+	if chooseFont and abilityFont then
+		chooseFont = nil
+		abilityFont = nil
+	end
+
+	collectgarbage()
 	
 	fontCount = 0
-end
-
-function util.fontsAreNilled()
-	return (mainFont and logoFont and hudFont and waveFont and warningFont and chooseFont and abilityFont) == nil
 end
 
 function util.toBoolean(stringCompare)
@@ -55,11 +58,10 @@ function util.changeState(toState, ...)
 	local arg = {...} or {}
 
 	if _G[toState .. "Init"] then
-
 		_G[toState .. "Init"](unpack(arg))
-
-		state = toState
 	end
+
+	state = toState
 end
 
 function util.updateState(dt)
@@ -94,6 +96,19 @@ function util.clamp(val, min, max)
 	return math.max(min, math.min(val, max))
 end
 
+function util.colorFade(currenttime, maxtime, c1, c2) --Color function
+	local tp = currenttime/maxtime
+	local ret = {} --return color
+
+	for i = 1, #c1 do
+		ret[i] = c1[i]+(c2[i]-c1[i])*tp
+		ret[i] = math.max(ret[i], 0)
+		ret[i] = math.min(ret[i], 255)
+	end
+
+	return ret
+end
+
 function util.getWidth()
 	return love.graphics.getWidth()
 end
@@ -113,6 +128,7 @@ Color =
 	["yellow"] = {250, 197, 28},
 	["orange"] = {243, 121, 52},
 	["purple"] = {147, 101, 184},
+	["darkPurple"] = {85, 57, 130},
 	["black"] = {0, 0, 0},
 	["white"] = {255, 255, 255}
 }
