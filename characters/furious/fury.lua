@@ -1,6 +1,6 @@
 local ability = {}
 
-ability.description = "The lower his health is, the faster he gets"
+ability.description = "The lower health is, the greater the boost"
 
 function ability:init(parent)
 	self.parent = parent

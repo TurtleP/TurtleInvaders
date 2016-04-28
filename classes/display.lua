@@ -66,7 +66,7 @@ function display:draw()
 	love.graphics.setFont(hudFont)
 
 	--Player info
-	love.graphics.print(player.name:gsub("^%l", string.upper), self.x, self.y)
+	love.graphics.print("Player", self.x, self.y)
 
 	for x = 1, player:getMaxHealth() do
 		love.graphics.setColor(255, 255, 255, 255)
@@ -82,7 +82,7 @@ function display:draw()
 			color = 2
 		end
 		
-		love.graphics.draw(healthImage, healthQuads[quadi][color], hudFont:getWidth(player.name) / 2 - (player:getMaxHealth() * 9) / 2 + (x - 1) * 9, self.y + 36)
+		love.graphics.draw(healthImage, healthQuads[quadi][color], hudFont:getWidth("Player") / 2 - (player:getMaxHealth() * 9) / 2 + (x - 1) * 9, self.y + 36)
 	end
 	love.graphics.setColor(255, 255, 255, 255)
 

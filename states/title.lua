@@ -3,7 +3,7 @@ function titleInit(selection)
 	titleOptions =
 	{
 		{"New Game", function() util.changeState("loading", "charSelect") end},
-		{"Options Menu", function() --[[util.changeState("loading", "options")]] end},
+		{"Options Menu", function() util.changeState("loading", "options") end},
 		{"Highscores", function() end},
 	}
 
@@ -14,6 +14,8 @@ function titleInit(selection)
 
 	mainFont = love.graphics.newFont("graphics/monofonto.ttf", 32)
 	logoFont = love.graphics.newFont("graphics/monofonto.ttf", 46)
+
+	menuSong:play()
 end
 
 function titleUpdate(dt)

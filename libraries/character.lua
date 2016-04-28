@@ -5,7 +5,7 @@ function loadCharacters()
 		"gabe",
 		"idiot",
 		"hugo",
-		"astronomic",
+		"astro",
 		"furious",
 		"qwerty",
 		"saulo",

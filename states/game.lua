@@ -31,6 +31,10 @@ function gameInit(playerData)
 
 	enemyTimer = timer:new(1, 
 		function(self)
+			if objects["boss"][1] then
+				return
+			end
+
 			table.insert(objects["bat"], bat:new(love.math.random(0, 370), -14))
 
 			self.maxTimer = (self.maxTime * 0.95) * currentWave
@@ -39,6 +43,14 @@ function gameInit(playerData)
 
 	waveTimer = timer:new(14,
 		function(self)
+			if objects["boss"][1] then
+				return
+			end
+
+			if currentWave == 6 then
+				objects["boss"][1] = megabat:new()
+			end
+
 			self.maxTimer = self.maxTimer + love.math.random(4)
 
 			gameNextWave()
@@ -232,6 +244,10 @@ function gameDraw()
 		v:draw()
 	end
 
+	for k, v in pairs(objects["boss"]) do
+		v:draw()
+	end
+
 	for k, v in pairs(explosions) do
 		v:draw()
 	end
@@ -295,13 +311,13 @@ function gameKeyPressed(key)
 		return
 	end
 
-	if key == "cpadleft" then
+	if key == controls["left"] then
 		objects["player"][1]:moveLeft(true)
-	elseif key == "cpadright" then
+	elseif key == controls["right"] then
 		objects["player"][1]:moveRight(true)
-	elseif key == "b" then
+	elseif key == controls["shoot"] then
 		objects["player"][1]:shoot()
-	elseif key == "a" then
+	elseif key == controls["ability"] then
 		objects["player"][1]:triggerAbility()
 	end
 end
@@ -311,9 +327,9 @@ function gameKeyReleased(key)
 		return
 	end
 
-	if key == "cpadleft" then
+	if key == controls["left"] then
 		objects["player"][1]:moveLeft(false)
-	elseif key == "cpadright" then
+	elseif key == controls["right"] then
 		objects["player"][1]:moveRight(false)
 	end
 end

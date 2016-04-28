@@ -20,6 +20,7 @@ require 'classes.display'
 require 'classes.powerup'
 require 'classes.megacannon'
 require 'classes.fizzle'
+require 'classes.megabat'
 
 require 'states.intro'
 require 'states.title'
@@ -112,30 +113,41 @@ function love.load()
 		megaCannonBeamQuads[k] = love.graphics.newQuad((k - 1) * 22, 0, 22, 22, megaCannonBeamImage:getWidth(), megaCannonBeamImage:getHeight())
 	end
 
-	cursorImage = love.graphics.newImage("graphics/menu/cursor.png")
+	bossImage = love.graphics.newImage("graphics/game/boss.png")
+	bossQuads = {}
+	for i = 1, 3 do
+		bossQuads[i] = love.graphics.newQuad((i - 1) * 60, 0, 59, 30, bossImage:getWidth(), bossImage:getHeight())
+	end
 
 	love.graphics.set3D(true)
 
-	menuSong = love.audio.newSource("audio/menu.wav", "static")
+	menuSong = love.audio.newSource("audio/menu.ogg", "static")
+	menuSong:setLooping(true)
+
+	bossSong = love.audio.newSource("audio/boss.ogg", "static")
+	bossSong:setLooping(true)
 	
-	waveAdvanceSound = love.audio.newSource("audio/wave.wav", "static")
-	gameOverSound = love.audio.newSource("audio/gameover.wav", "static")
+	waveAdvanceSound = love.audio.newSource("audio/wave.ogg", "static")
+	gameOverSound = love.audio.newSource("audio/gameover.ogg", "static")
 
-	bulletSound = love.audio.newSource("audio/bullet.wav", "static")
-	laserSound = love.audio.newSource("audio/laser.wav", "static")
+	bulletSound = love.audio.newSource("audio/bullet.ogg", "static")
+	laserSound = love.audio.newSource("audio/laser.ogg", "static")
 
-	explodeSound = love.audio.newSource("audio/explode.wav", "static")
+	tabRightSound = love.audio.newSource("audio/tabright.ogg", "static")
+	tabLeftSound = love.audio.newSource("audio/tableft.ogg", "static")
 
-	pauseSound = love.audio.newSource("audio/pause.wav", "static")
+	explodeSound = love.audio.newSource("audio/explode.ogg", "static")
 
-	addLifeSound = love.audio.newSource("audio/oneup.wav", "static")
+	pauseSound = love.audio.newSource("audio/pause.ogg", "static")
 
-	fizzleSound = love.audio.newSource("audio/evaporate.wav", "static")
-	megaCannonSound = love.audio.newSource("audio/megacannon.wav", "static")
+	addLifeSound = love.audio.newSource("audio/oneup.ogg", "static")
+
+	fizzleSound = love.audio.newSource("audio/evaporate.ogg", "static")
+	megaCannonSound = love.audio.newSource("audio/megacannon.ogg", "static")
 
 	hurtSound = {}
 	for k = 1, 3 do
-		hurtSound[k] = love.audio.newSource("audio/hurt" .. k .. ".wav", "static")
+		hurtSound[k] = love.audio.newSource("audio/hurt" .. k .. ".ogg", "static")
 	end
 
 	loadCharacters()
@@ -157,29 +169,15 @@ function love.load()
 
 	gameModei = 1
 
-	controls =
-	{
-		left = "cpadleft",
-		right = "cpadright",
-		shoot = "b",
-		ability = "a"
-	}
-
-	directionPadEnabled = false
+	loadSettings()
 
 	util.changeState("intro")
+
+	--love.audio.setVolume(0)
 end
 
 function love.update(dt)
 	util.updateState(dt)
-
-	if menuSong then
-		if state ~= "intro" then
-			if not menuSong:isPlaying() then
-				menuSong:play()
-			end
-		end
-	end
 end
 
 function love.draw()
@@ -192,6 +190,75 @@ end
 
 function love.keyreleased(key)
 	util.keyReleasedState(key)
+end
+
+function useDirectionalPad(enable)
+	directionalPadEnable = enable
+
+	if enable then
+		controls["left"] = "dleft"
+		controls["right"] = "dright"
+	else
+		controls["left"] = "cpadleft"
+		controls["right"] = "cpadright"
+	end
+end
+
+function loadSettings()
+	defaultSettings()
+
+	if not love.filesystem.isFile("save.txt") then
+		return
+	end
+		
+	local saveData = love.filesystem.read("save.txt")
+
+	local keys = saveData:split(";")
+
+	for x = 1, #keys do
+		local keyPairs = keys[x]:split(":")
+
+		local index, value = keyPairs[1], keyPairs[2]
+
+		print(index, value)
+		if index == "shoot" then
+			controls[index] = value
+		elseif index == "ability" then
+			controls[index] = value
+		elseif index == "left" then
+			controls[index] = value
+		elseif index == "right" then
+			controls[index] = value
+		elseif index == "dpad" then
+			print(util.toBoolean(value))
+			useDirectionalPad(util.toBoolean(value))
+		end
+	end
+end
+
+function saveSettings()
+	local string = ""
+
+	for k, v in pairs(controls) do
+		string = string .. k .. ":" .. v .. ";"
+	end
+	string = string .. "dpad:" .. tostring(directionalPadEnable) .. ";"
+
+	love.filesystem.write("save.txt", string)
+end
+
+function defaultSettings()
+	controls =
+	{
+		left = "cpadleft",
+		right = "cpadright",
+		shoot = "b",
+		ability = "a"
+	}
+
+	directionalPadEnable = false
+
+	useDirectionalPad(directionalPadEnable)
 end
 
 if _EMULATEHOMEBREW then

@@ -6,6 +6,8 @@ function explosion:init(x, y)
 
 	self.timer = 0
 	self.quadi = 1
+
+	explodeSound:play()
 end
 
 function explosion:update(dt)

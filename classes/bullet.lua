@@ -73,4 +73,23 @@ function bullet:passiveCollide(name, data)
 
 		self.remove = true
 	end
+
+	if name == "boss" then
+		if self.speedy > 0 then
+			return
+		end
+
+		data:takeDamage(-2)
+
+		self.remove = true
+	end
+
+	if name == "player" then
+		if self.speedy < 0 then
+			return
+		end
+
+		data:addLife(-1)
+		self.remove = true
+	end
 end

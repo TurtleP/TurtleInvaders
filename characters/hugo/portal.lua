@@ -1,7 +1,7 @@
 local ability = {}
 
 ability.name = "portal"
-ability.description = "Shoots portals to travel long distances quickly."
+ability.description = "Use portals to travel long distances"
 
 local portalImage = love.graphics.newImage("characters/hugo/portal.png")
 local portalGradientImage = love.graphics.newImage("characters/hugo/portalgrad.png")

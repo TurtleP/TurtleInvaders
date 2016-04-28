@@ -5,7 +5,7 @@ function charSelectInit()
 	end
 
 	chooseFont = love.graphics.newFont("graphics/monofonto.ttf", 40)
-	abilityFont = love.graphics.newFont("graphics/monofonto.ttf", 16)
+	abilityFont = love.graphics.newFont("graphics/monofonto.ttf", 18)
 
 	currentSelection = 1
 
@@ -70,6 +70,7 @@ function charSelectDraw()
 
 	love.graphics.setFont(chooseFont)
 	love.graphics.print("Choose a character", util.getWidth() / 2 - chooseFont:getWidth("Choose a character") / 2, 20)
+	love.graphics.line(36, 65, chooseFont:getWidth("Choose a character"), 65)
 
 	local selectedCharacter = charSelections[currentSelection].char
 	love.graphics.print(selectedCharacter.name:gsub("^%l", string.upper), util.getWidth() / 2 - chooseFont:getWidth(selectedCharacter.name:gsub("^%l", string.upper)) / 2, 80)
@@ -129,6 +130,8 @@ function charSelectKeyPressed(key)
 		currentSelection = math.max(currentSelection - 1, 1)
 	elseif key == "a" then
 		util.changeState("loading", "game", charSelections[currentSelection].char)
+	elseif key == "b" then
+		util.changeState("loading", "title", 1)
 	end
 end
 

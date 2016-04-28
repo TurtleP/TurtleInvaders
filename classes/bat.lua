@@ -136,8 +136,6 @@ function bat:die(player)
 		displayInfo:setEnemyData(nil)
 	end
 
-	explodeSound:play()
-
 	self.remove = true
 
 	if not objects["player"][1].ability.passive then
