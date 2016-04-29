@@ -2,8 +2,8 @@ function titleInit(selection)
 	print(warningFont)
 	titleOptions =
 	{
-		{"New Game", function() util.changeState("loading", "charSelect") end},
-		{"Options Menu", function() util.changeState("loading", "options") end},
+		{"New Game", function() util.changeState("charSelect") end},
+		{"Options Menu", function() util.changeState("options") end},
 		{"Highscores", function() end},
 	}
 
@@ -15,7 +15,14 @@ function titleInit(selection)
 	mainFont = love.graphics.newFont("graphics/monofonto.ttf", 32)
 	logoFont = love.graphics.newFont("graphics/monofonto.ttf", 46)
 
-	menuSong:play()
+	createSong("menu")
+	if not menuSong:isPlaying() then
+		menuSong:play()
+	end
+
+	if bossSong then
+		bossSong:stop()
+	end
 end
 
 function titleUpdate(dt)
@@ -26,7 +33,7 @@ end
 function titleDraw()
 	love.graphics.setScreen("top")
 
-	love.graphics.setDepth(1)
+	love.graphics.setDepth(-INTERFACE_DEPTH)
 	
 	love.graphics.setColor(255, 255, 255, 255)
 
@@ -46,10 +53,10 @@ function titleDraw()
 		love.graphics.print(v, util.getWidth() / 2 - mainFont:getWidth(v) / 2, 120 + (k - 1) * 32)
 	end
 
-	love.graphics.draw(batImage, batQuads[menuBatQuadi][2], 200 - mainFont:getWidth(titleOptions[menuSelectioni][1]) / 2 - 32, 132 + ((menuSelectioni - 1) * 32))
-	love.graphics.draw(batImage, batQuads[menuBatQuadi][1], 200 - mainFont:getWidth(titleOptions[menuSelectioni][1]) / 2 - 32, 132 + ((menuSelectioni - 1) * 32))
+	love.graphics.draw(batImage, batQuads[menuBatQuadi][2], 200 - mainFont:getWidth(titleOptions[menuSelectioni][1]) / 2 - 32, ((120 + mainFont:getHeight() / 2) - 7) + ((menuSelectioni - 1) * 32))
+	love.graphics.draw(batImage, batQuads[menuBatQuadi][1], 200 - mainFont:getWidth(titleOptions[menuSelectioni][1]) / 2 - 32, ((120 + mainFont:getHeight() / 2) - 7) + ((menuSelectioni - 1) * 32))
 
-	love.graphics.setDepth(0)
+	love.graphics.setDepth(NORMAL_DEPTH)
 end
 
 function titleKeyPressed(key)

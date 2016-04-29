@@ -9,12 +9,12 @@ function star:init(x, y, layer)
 	self.speed = 15 * ((layer - 1) / 2)
 	self.r = (layer / 2)
 
-	local depth = 2
+	local depth = -INTERFACE_DEPTH
 
 	if layer == 2 then
-		depth = 1
+		depth = NORMAL_DEPTH
 	elseif layer == 3 then
-		depth = 0
+		depth = INTERFACE_DEPTH
 	end
 
 	self.depth = depth
@@ -37,5 +37,5 @@ function star:draw()
 
 	love.graphics.setColor(255, 255, 255)
 
-	love.graphics.setDepth(0)
+	love.graphics.setDepth(NORMAL_DEPTH)
 end

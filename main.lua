@@ -28,7 +28,7 @@ require 'states.title'
 require 'states.game'
 require 'states.options'
 require 'states.charselect'
-require 'states.loading'
+require 'states.credits'
 
 io.stdout:setvbuf("no")
 
@@ -147,12 +147,6 @@ function love.load()
 	end
 
 	love.graphics.set3D(true)
-
-	menuSong = love.audio.newSource("audio/menu.ogg", "static")
-	menuSong:setLooping(true)
-
-	bossSong = love.audio.newSource("audio/boss.ogg", "static")
-	bossSong:setLooping(true)
 	
 	waveAdvanceSound = love.audio.newSource("audio/wave.ogg", "static")
 	gameOverSound = love.audio.newSource("audio/gameover.ogg", "static")
@@ -198,9 +192,16 @@ function love.load()
 
 	loadSettings()
 
-	util.changeState("intro")
+	batSaveTimer = 0
+	batSaveQuadi = 1
 
 	--love.audio.setVolume(0)
+
+	INTERFACE_DEPTH = 3
+	ENTITY_DEPTH = 1.5
+	NORMAL_DEPTH = 0
+
+	util.changeState("intro")
 end
 
 function love.update(dt)
@@ -209,10 +210,27 @@ function love.update(dt)
 	for k, v in pairs(achievements) do
 		v:update(dt)
 	end
+
+	if isSaving then
+		batSaveTimer = batSaveTimer + 12 * dt
+		batSaveQuadi = math.floor(batSaveTimer % 3) + 1
+
+		if batSaveTimer > 12 then
+			isSaving = false
+			batSaveTimer = 0
+		end
+	end
 end
 
 function love.draw()
 	util.renderState()
+
+	love.graphics.setScreen("top")
+	if isSaving then
+		love.graphics.setColor(255, 255, 255, 255)
+		love.graphics.draw(batImage, batQuads[batSaveQuadi][1], 366, 216)
+		love.graphics.draw(batImage, batQuads[batSaveQuadi][2], 366, 216)
+	end
 end
 
 function love.keypressed(key)
@@ -251,7 +269,6 @@ function loadSettings()
 
 		local index, value = keyPairs[1], keyPairs[2]
 
-		print(index, value)
 		if index == "shoot" then
 			controls[index] = value
 		elseif index == "ability" then
@@ -261,19 +278,27 @@ function loadSettings()
 		elseif index == "right" then
 			controls[index] = value
 		elseif index == "dpad" then
-			print(util.toBoolean(value))
 			useDirectionalPad(util.toBoolean(value))
+		elseif index == "achievement" then
+			achievement[tonumber(value)]:unlock()
 		end
 	end
 end
 
 function saveSettings()
-	local string = ""
+	isSaving = true
 
+	local string = ""
 	for k, v in pairs(controls) do
 		string = string .. k .. ":" .. v .. ";"
 	end
 	string = string .. "dpad:" .. tostring(directionalPadEnable) .. ";"
+	
+	for k = 1, #achievement do
+		if achievement[k].unlocked then
+			string = string .. "achievement:" .. k .. ";"
+		end
+	end
 
 	love.filesystem.write("save.txt", string)
 end
@@ -290,8 +315,27 @@ function defaultSettings()
 	directionalPadEnable = false
 
 	useDirectionalPad(directionalPadEnable)
+
+	love.filesystem.remove("save.txt")
 end
 
 if _EMULATEHOMEBREW then
 	require 'libraries.3ds'
+end
+
+--WELP
+function createSong(songName)
+	if songName == "menu" then
+		if not menuSong then
+			menuSong = love.audio.newSource("audio/menu.ogg", "static")
+			menuSong:setLooping(true)
+		end
+	end
+
+	if songName == "boss" then
+		if not bossSong then
+			bossSong = love.audio.newSource("audio/boss.ogg", "static")
+			bossSong:setLooping(true)
+		end
+	end
 end

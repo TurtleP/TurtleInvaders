@@ -24,6 +24,8 @@ end
 function optionsDraw()
 	love.graphics.setScreen("top")
 
+	love.graphics.setDepth(-INTERFACE_DEPTH)
+
 	for layer = 1, 3 do
 		for j, w in pairs(optionsStarLayers[layer]) do
 			w:draw()
@@ -104,10 +106,16 @@ function optionsDraw()
 
 	if optionsTab == 2 then
 		for k = 1, #achievements do
+			love.graphics.setColor(127, 127, 127)
+			if achievements[k].unlocked then
+				love.graphics.setColor(255, 255, 255)
+			end
 			love.graphics.draw(achievementImage, achievementQuads[k], optionsX + math.mod((k - 1), 2) * 180, (((optionsY + 32) + 16) - 15) + math.floor((k - 1) /  2) * 36)
 			love.graphics.print(achievements[k].title, optionsX + 40 + math.mod((k - 1), 2) * 180, (((optionsY + 32) + 16) - logoFont:getHeight() / 2) + math.floor((k - 1) /  2) * 36)
 		end
 	end
+
+	love.graphics.setDepth(NORMAL_DEPTH)
 end
 
 function optionsKeyPressed(key)
@@ -148,12 +156,18 @@ function optionsKeyPressed(key)
 		if optionsTab == 1 then
 			if optionsSelection == 6 or optionsSelection == 7 then
 				optionsInput = true
+			elseif optionsSelection == 3 then
+				explodeSound:play()
+
+				defaultSettings()
+			elseif optionsSelection == 4 then
+				util.changeState("credits")
 			end
 		end
 	elseif key == "b" then
 		saveSettings()
 		
-		util.changeState("loading", "title", 2)
+		util.changeState("title", 2)
 	elseif key == "rbutton" then
 		optionsChangeTab(1)
 	elseif key == "lbutton" then

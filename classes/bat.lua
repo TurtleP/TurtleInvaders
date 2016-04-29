@@ -65,8 +65,6 @@ function bat:update(dt)
 end
 
 function bat:draw()
-	love.graphics.setDepth(0.25)
-
 	love.graphics.setColor(255, 255, 255)
 	love.graphics.draw(batImage, batQuads[self.quadi][1], self.x, self.y)
 
@@ -74,8 +72,6 @@ function bat:draw()
 	love.graphics.draw(batImage, batQuads[self.quadi][2], self.x, self.y)
 	
 	love.graphics.setColor(255, 255, 255)
-
-	love.graphics.setDepth(0)
 end
 
 function bat:leftCollide(name, data)

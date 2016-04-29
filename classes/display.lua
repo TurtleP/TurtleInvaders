@@ -95,9 +95,9 @@ function display:draw()
 	if self.enemyData then
 		local enemy = self.enemyData
 		for x = 1, enemy:getMaxHealth() do
-			local quadi, color = 1
+			local quadi = 1
 			if x > enemy:getHealth() then
-				quadi, color = 2
+				quadi = 2
 			end
 			love.graphics.draw(healthImage, healthQuads[quadi][1], (self.x + self.width) - hudFont:getWidth("Enemy") / 2 - (enemy:getMaxHealth() * 9) / 2 + (x - 1) * 9, self.y + 36)
 		end

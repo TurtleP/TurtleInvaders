@@ -25,12 +25,20 @@ function megabat:init()
 	self.quadi = 1
 
 	menuSong:stop()
+	menuSong = nil
+
+	createSong("boss")
 	bossSong:play()
 
-	self.realHealth = 100
+	local health = 60
+	if difficultyi > 1 then
+		health = 60 + (difficultyi - 1) * 40
+	end
+
+	self.realHealth = health 
 	self.realMaxHealth = self.realHealth
 
-	self.health = 5
+	self.health = self.realMaxHealth / 20
 	self.maxHealth = self.health
 
 	self.initialize = false
@@ -60,8 +68,17 @@ function megabat:update(dt)
 			self.fade = math.max(self.fade - 0.6 * dt, 0)
 		else
 			bossSong:stop()
+			bossSong = nil
+
+			createSong("menu")
 			menuSong:play()
+
 			gameAddScore(1000)
+
+			gameDropPowerup(self.x + self.width / 2 - 9, self.y + (self.height / 2) - 9, true, true)
+
+			enemyTimer:setTimeLimit(1)
+
 			self.remove = true
 		end
 		return
@@ -146,6 +163,8 @@ end
 
 function megabat:takeDamage(damageValue)
 	self.realHealth = util.clamp(self.realHealth + damageValue, 0, self.realMaxHealth)
+
+	print(self.realHealth)
 
 	if self.realHealth > 0 then
 		if self.realHealth % 20 == 0 then

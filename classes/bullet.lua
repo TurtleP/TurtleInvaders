@@ -47,16 +47,13 @@ function bullet:update(dt)
 end
 
 function bullet:draw()
-	love.graphics.setDepth(0.25)
-
 	love.graphics.setColor(unpack(self.color))
 	love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
 
 	love.graphics.setColor(255, 255, 255)
-
-	love.graphics.setDepth(0)
 end
 
+local batCount = 0
 function bullet:passiveCollide(name, data)
 	if name == "bat" then
 		displayInfo:setEnemyData(data)
@@ -64,6 +61,12 @@ function bullet:passiveCollide(name, data)
 		data:die()
 
 		if self.t == "laser" then
+			batCount = batCount + 1
+
+			if batCount == 2 then
+				achievements[10]:unlock(true)
+			end
+
 			return
 		end
 

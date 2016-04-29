@@ -20,9 +20,5 @@ function explosion:update(dt)
 end
 
 function explosion:draw()
-	love.graphics.setDepth(-0.25)
-
 	love.graphics.draw(explosionImage, explosionQuads[self.quadi], self.x, self.y)
-
-	love.graphics.setDepth(0)
 end

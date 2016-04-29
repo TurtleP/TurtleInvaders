@@ -47,7 +47,8 @@ function gameInit(playerData)
 				return
 			end
 
-			if currentWave == 6 then
+			--Boss wave number - 1 because offsets
+			if currentWave == 5 then
 				objects["boss"][1] = megabat:new()
 			end
 
@@ -57,6 +58,8 @@ function gameInit(playerData)
 		end
 	)
 
+	paused = false
+	
 	currentWave = 0
 	score = 0
 
@@ -76,8 +79,6 @@ function gameInit(playerData)
 	abilityKills = 0
 
 	shakeValue = 0
-
-	achievements[love.math.random(#achievements)]:unlock(true)
 end
 
 function gameNextWave()
@@ -93,14 +94,18 @@ end
 function gameAddScore(add)
 	if comboValue > 0 then
 		add = add * comboValue
+
+		if comboValue == 7 then
+			achievements[7]:unlock(true)
+		end
 	end
 
 	score = math.max(0, score + add)
 end
 
-function gameDropPowerup(x, y, oneUp)
+function gameDropPowerup(x, y, oneUp, superUp)
 	if oneUp then
-		table.insert(objects["powerup"], powerup:new(x, y, 10))
+		table.insert(objects["powerup"], powerup:new(x, y, 10, true))
 		return
 	end
 
@@ -181,7 +186,7 @@ function gameUpdate(dt)
 
 	if gameOver then
 		if not gameOverSound:isPlaying() then
-			util.changeState("loading", "title", 1)
+			util.changeState("title", 1)
 		end
 		return
 	end
@@ -230,6 +235,8 @@ function gameDraw()
 		end
 	end
 
+	love.graphics.setDepth(ENTITY_DEPTH)
+
 	for k, v in pairs(objects["bat"]) do
 		v:draw()
 	end
@@ -264,19 +271,19 @@ function gameDraw()
 		v:draw()
 	end
 
+	love.graphics.setDepth(NORMAL_DEPTH)
+
 	love.graphics.pop()
 
 	love.graphics.setFont(waveFont)
 	
-	if currentWaveFade > 0 then
-		love.graphics.setDepth(1)
+	love.graphics.setDepth(INTERFACE_DEPTH)
 
+	if currentWaveFade > 0 then
 		love.graphics.setColor(255, 255, 255, 255 * currentWaveFade)
 		love.graphics.print(waveText, util.getWidth() / 2 - waveFont:getWidth(waveText) / 2, util.getHeight() / 2 - waveFont:getHeight() / 2)
 
 		love.graphics.setColor(255, 255, 255, 255)
-
-		love.graphics.setDepth(0)
 	end
 
 	if gameOver then
@@ -289,13 +296,21 @@ function gameDraw()
 		love.graphics.rectangle("fill", 0, 0, 400, 240)
 		
 		love.graphics.setColor(255, 255, 255, 255)
+
+		love.graphics.print("Game Paused", util.getWidth() / 2 - waveFont:getWidth("Game Paused") / 2, util.getHeight() / 2 - waveFont:getHeight())
 	end
 
 	love.graphics.setFont(hudFont)
 	
+	if paused then
+		love.graphics.print("Press 'B' to Quit", util.getWidth() / 2 - hudFont:getWidth("Press 'B' to Quit") / 2, util.getHeight() / 2 - hudFont:getHeight() / 2 + 8)
+	end
+
 	for k, v in pairs(achievements) do
 		v:draw()
 	end
+
+	love.graphics.setDepth(NORMAL_DEPTH)
 
 	love.graphics.setScreen("bottom")
 
@@ -312,6 +327,12 @@ function gameKeyPressed(key)
 			if paused then
 				pauseSound:play()
 			end
+		end
+	end
+
+	if key == "b" then
+		if paused then
+			util.changeState("title", 1)
 		end
 	end
 

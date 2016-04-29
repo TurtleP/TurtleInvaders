@@ -62,6 +62,8 @@ function charSelectDraw()
 
 	love.graphics.setScreen("top")
 
+	love.graphics.setDepth(-INTERFACE_DEPTH)
+
 	for layer = 1, 3 do
 		for j, w in pairs(charStarLayers[layer]) do
 			w:draw()
@@ -89,6 +91,8 @@ function charSelectDraw()
 		love.graphics.draw(selectedCharacter.graphic, util.getWidth() / 2 - selectedCharacter.width / 2, 164 - selectedCharacter.graphic:getHeight() / 2)
 	end
 
+	love.graphics.setDepth(NORMAL_DEPTH)
+
 	love.graphics.setScreen("bottom")
 
 	for layer = 1, 3 do
@@ -103,7 +107,7 @@ function charSelectDraw()
 
 			love.graphics.translate(40, 240)
 			
-			local offset = (math.sin(love.timer.getTime() * math.pi * 2) + 1) / 2 * 2
+			local offset = math.floor((math.sin(love.timer.getTime() * math.pi * 2) + 1) / 2 * 3)
 			love.graphics.line(v.x - offset, v.y - offset, (v.x + 8) - offset, v.y - offset)
 			love.graphics.line(v.x - offset, v.y - offset, v.x - offset, (v.y + 8) - offset)
 
@@ -113,7 +117,7 @@ function charSelectDraw()
 			love.graphics.line((v.x + v.width) + offset, (v.y + v.height - 8) + offset, (v.x + v.width) + offset, (v.y + v.height) + offset)
 			love.graphics.line((v.x + v.width - 8) + offset, (v.y + v.height) + offset, (v.x + v.width) + offset, (v.y + v.height) + offset)
 
-			offset = (math.sin(love.timer.getTime() * math.pi * 2) + 1) / 2 * 2
+			offset = math.floor((math.sin(love.timer.getTime() * math.pi * 2) + 1) / 2 * 3)
 			love.graphics.line(v.x - offset, (v.y + v.height) + offset, (v.x + 8) - offset, (v.y + v.height) + offset)
 			love.graphics.line(v.x - offset, (v.y + v.height - 8) + offset, (v.x - offset), (v.y + v.height) + offset)
 
@@ -129,9 +133,9 @@ function charSelectKeyPressed(key)
 	elseif key == "cpadleft" then
 		currentSelection = math.max(currentSelection - 1, 1)
 	elseif key == "a" then
-		util.changeState("loading", "game", charSelections[currentSelection].char)
+		util.changeState("game", charSelections[currentSelection].char)
 	elseif key == "b" then
-		util.changeState("loading", "title", 1)
+		util.changeState("title", 1)
 	end
 end
 

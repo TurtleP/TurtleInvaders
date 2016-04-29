@@ -58,10 +58,13 @@ function util.changeState(toState, ...)
 	local arg = {...} or {}
 
 	if _G[toState .. "Init"] then
+		state = toState
+		
+		util.clearFonts()
+		
 		_G[toState .. "Init"](unpack(arg))
 	end
 
-	state = toState
 end
 
 function util.updateState(dt)

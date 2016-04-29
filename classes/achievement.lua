@@ -43,7 +43,7 @@ function achievement:draw()
 	if not self.display then
 		return
 	end
-	local x, width = 400 - hudFont:getWidth("Unlocked!") - 42, hudFont:getWidth("Unlocked!") + 41
+	local x, width = math.floor(400 - hudFont:getWidth("Unlocked!") - 42), hudFont:getWidth("Unlocked!") + 41
 	love.graphics.setColor(32, 32, 32, 140)
 	love.graphics.rectangle("fill", x, self.y, width, self.height)
 
@@ -56,10 +56,16 @@ function achievement:draw()
 end
 
 function achievement:unlock(display)
+	if self.unlocked then
+		return
+	end
+
 	self.unlocked = true
 
 	if not display then
 		return
 	end
 	self.display = true
+
+	saveSettings("achievement")
 end

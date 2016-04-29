@@ -36,7 +36,7 @@ function player:init(characterData)
 	self.ability = characterData.ability
 
 	if self.ability then
-		if self.ability.init and self.ability.pasive then
+		if self.ability.init and self.ability.passive then
 			self.ability:init(self)
 		end
 		table.insert(abilities, self.ability)
@@ -187,7 +187,12 @@ function player:passiveCollide(name, data)
 	if name == "powerup" then
 		data.remove = true
 		if data.t == "oneup" then
-			self:addLife(1)
+			if not data.isSuper then
+				self:addLife(1)
+			else
+				self.maxHealth = self.maxHealth + 1
+				self:addLife(self:getMaxHealth())
+			end
 			return
 		end
 
@@ -206,13 +211,15 @@ function player:moveRight(move)
 end
 
 function player:triggerAbility()
-	if not self.ability.passive then
-		if abilityKills == (self.maxHealth * 2) then
-			self.ability:trigger(self)
-			abilityKills = 0
-		else
-			if self.ability.active then
-				self.ability:trigger()
+	if self.ability then
+		if not self.ability.passive then
+			if abilityKills == (self.maxHealth * 2) then
+				self.ability:trigger(self)
+				abilityKills = 0
+			else
+				if self.ability.active then
+					self.ability:trigger()
+				end
 			end
 		end
 	end

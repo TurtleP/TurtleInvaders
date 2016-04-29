@@ -31,7 +31,7 @@ function introUpdate(dt)
 	end
 
 	if introTimer > 6 then
-		util.changeState("loading", "title", 1)
+		util.changeState("title", 1)
 		introTimer = 0
 	elseif introTimer > 4 then
 		introPotionFade = math.max(introPotionFade - 0.6 * dt, 0)
@@ -51,6 +51,9 @@ end
 
 function introDraw()
 	love.graphics.setScreen("top")
+
+	love.graphics.setDepth(-INTERFACE_DEPTH)
+
 	love.graphics.setColor(255, 255, 255, 255 * introTurtleFade)
 	love.graphics.draw(introImage, util.getWidth() / 2 - introImage:getWidth() / 2, util.getHeight() / 2 - introImage:getHeight() )
 
@@ -62,6 +65,8 @@ function introDraw()
 	for k, v in pairs(bubbles) do
 		v:draw()
 	end
+
+	love.graphics.setDepth(NORMAL_DEPTH)
 
 	love.graphics.draw(potionImage, util.getWidth() / 2 - potionImage:getWidth() / 2, util.getHeight() / 2 - potionImage:getHeight() / 2)
 

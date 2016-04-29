@@ -1,6 +1,6 @@
 powerup = class("powerup")
 
-function powerup:init(x, y, t)
+function powerup:init(x, y, t, isSuper)
 	self.x = x
 	self.y = y
 
@@ -18,14 +18,12 @@ function powerup:init(x, y, t)
 	self.t = self:getType(t)
 
 	self.i = t
+
+	self.isSuper = isSuper
 end
 
 function powerup:draw()
-	love.graphics.setDepth(0.5)
-
 	love.graphics.draw(powerupImage, powerupQuads[self.i], self.x, self.y)
-
-	love.graphics.setDepth(0)
 end
 
 function powerup:getType(i)
