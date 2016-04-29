@@ -21,6 +21,7 @@ require 'classes.powerup'
 require 'classes.megacannon'
 require 'classes.fizzle'
 require 'classes.megabat'
+require 'classes.achievement'
 
 require 'states.intro'
 require 'states.title'
@@ -119,6 +120,32 @@ function love.load()
 		bossQuads[i] = love.graphics.newQuad((i - 1) * 60, 0, 59, 30, bossImage:getWidth(), bossImage:getHeight())
 	end
 
+	achievementImage = love.graphics.newImage("graphics/etc/achievements.png")
+	achievementQuads = {}
+	for k = 1, 10 do
+		achievementQuads[k] = love.graphics.newQuad((k - 1) * 30, 0, 30, 30, achievementImage:getWidth(), achievementImage:getHeight())
+	end
+
+	--SET UP ACHIEVEMENTS
+	local achievementNames =
+	{
+		"Megalovania Bat",
+		"Risky Raccoon",
+		"Phoenix Fizzler",
+		"Easy as Pie",
+		"Average Gamer",
+		"Dedicated Player",
+		"Combo Madness",
+		"Super Player",
+		"Cease Fire",
+		"Double Ping"
+	}
+
+	achievements = {}
+	for k = 1, 10 do
+		table.insert(achievements, achievement:new(k, achievementNames[k]))
+	end
+
 	love.graphics.set3D(true)
 
 	menuSong = love.audio.newSource("audio/menu.ogg", "static")
@@ -178,6 +205,10 @@ end
 
 function love.update(dt)
 	util.updateState(dt)
+
+	for k, v in pairs(achievements) do
+		v:update(dt)
+	end
 end
 
 function love.draw()

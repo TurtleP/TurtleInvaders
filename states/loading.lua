@@ -9,7 +9,7 @@ function loadingInit(loadState, ...)
 
 	loadingArg = {...}
 
-	loadingTime = 1.5
+	loadingTime = 0.25
 end
 
 function loadingUpdate(dt)

@@ -76,6 +76,8 @@ function gameInit(playerData)
 	abilityKills = 0
 
 	shakeValue = 0
+
+	achievements[love.math.random(#achievements)]:unlock(true)
 end
 
 function gameNextWave()
@@ -287,6 +289,12 @@ function gameDraw()
 		love.graphics.rectangle("fill", 0, 0, 400, 240)
 		
 		love.graphics.setColor(255, 255, 255, 255)
+	end
+
+	love.graphics.setFont(hudFont)
+	
+	for k, v in pairs(achievements) do
+		v:draw()
 	end
 
 	love.graphics.setScreen("bottom")

@@ -103,7 +103,10 @@ function optionsDraw()
 	end
 
 	if optionsTab == 2 then
-		
+		for k = 1, #achievements do
+			love.graphics.draw(achievementImage, achievementQuads[k], optionsX + math.mod((k - 1), 2) * 180, (((optionsY + 32) + 16) - 15) + math.floor((k - 1) /  2) * 36)
+			love.graphics.print(achievements[k].title, optionsX + 40 + math.mod((k - 1), 2) * 180, (((optionsY + 32) + 16) - logoFont:getHeight() / 2) + math.floor((k - 1) /  2) * 36)
+		end
 	end
 end
 

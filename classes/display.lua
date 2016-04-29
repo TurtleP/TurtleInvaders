@@ -63,8 +63,6 @@ function display:draw()
 	end
 	local player = self.player
 
-	love.graphics.setFont(hudFont)
-
 	--Player info
 	love.graphics.print("Player", self.x, self.y)
 

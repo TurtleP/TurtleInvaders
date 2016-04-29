@@ -27,7 +27,6 @@ function loadCharacters()
 end
 
 function createCharacter(name)
-	print("==LOADING " .. name:upper() .. "==")
 	local character = {}
 
 	if love.filesystem.isFile("characters/" .. name .. "/data.txt") then

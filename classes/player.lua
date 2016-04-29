@@ -262,6 +262,9 @@ function player:addLife(add)
 		end
 		hurtSound[love.math.random(#hurtSound)]:play()
 		self.invincible = true
+
+		comboValue = 0
+		comboTimer = 0
 	else
 		addLifeSound:play()
 	end
