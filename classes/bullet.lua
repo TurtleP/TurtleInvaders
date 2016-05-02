@@ -17,6 +17,8 @@ function bullet:init(x, y, t, velocity)
 		self.height = 10
 	elseif t == "anti" then
 		color = {147, 101, 184}
+	elseif t == "freeze" then
+		color = {44, 130, 201}
 	end
 
 	self.color = color
@@ -56,6 +58,10 @@ end
 local batCount = 0
 function bullet:passiveCollide(name, data)
 	if name == "bat" then
+		if self.speedy > 0 then
+			return
+		end
+		
 		displayInfo:setEnemyData(data)
 
 		data:die()

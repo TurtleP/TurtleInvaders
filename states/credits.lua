@@ -6,7 +6,7 @@ function creditsInit()
 		"Originally for PC/Mobile",
 		"",
 		"Programmed with Lua",
-		"Made with Löve Potion",
+		"Made with Love Potion",
 		"",
 		":: Notes/Thoughts ::",
 		"There is a 2 font limit",

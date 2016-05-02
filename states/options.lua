@@ -159,7 +159,7 @@ function optionsKeyPressed(key)
 			elseif optionsSelection == 3 then
 				explodeSound:play()
 
-				defaultSettings()
+				defaultSettings(true)
 			elseif optionsSelection == 4 then
 				util.changeState("credits")
 			end

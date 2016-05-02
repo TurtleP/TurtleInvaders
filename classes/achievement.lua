@@ -67,5 +67,5 @@ function achievement:unlock(display)
 	end
 	self.display = true
 
-	saveSettings("achievement")
+	saveSettings()
 end

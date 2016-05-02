@@ -29,7 +29,14 @@ function gameInit(playerData)
 		barrier:new(400, 0, 16, util.getHeight())
 	}
 
-	enemyTimer = timer:new(1, 
+	local time = 1.25
+	if difficultyi == 1 then
+		time = 1.5
+	elseif difficultyi == 3 then
+		time = 1
+	end
+	
+	enemyTimer = timer:new(time, 
 		function(self)
 			if objects["boss"][1] then
 				return
@@ -37,7 +44,7 @@ function gameInit(playerData)
 
 			table.insert(objects["bat"], bat:new(love.math.random(0, 370), -14))
 
-			self.maxTimer = (self.maxTime * 0.95) * currentWave
+		--	self.maxTimer = (self.maxTime * 0.95) * currentWave
 		end
 	)
 
@@ -105,7 +112,7 @@ end
 
 function gameDropPowerup(x, y, oneUp, superUp)
 	if oneUp then
-		table.insert(objects["powerup"], powerup:new(x, y, 10, true))
+		table.insert(objects["powerup"], powerup:new(x, y, 10, superUp))
 		return
 	end
 
@@ -114,14 +121,23 @@ function gameDropPowerup(x, y, oneUp, superUp)
 	end
 
 	local random, i = love.math.random()
-	if random < .1 then
+
+	if random < .05 then
 		i = 9
-	elseif random < .05 then
+	elseif random < .1 then
 		i = love.math.random(8)
 	end
 
 	if i then
+		if i == lastDrop then
+			gameDropPowerup(x, y, oneUp)
+
+			return
+		end
+
 		table.insert(objects["powerup"], powerup:new(x, y, i))
+
+		lastDrop = i
 	end
 end
 
@@ -133,7 +149,7 @@ function gameUpdate(dt)
 	end
 
 	if comboValue > 0 then
-		if comboTimeout < 2 then
+		if comboTimeout < 1 then
 			comboTimeout = comboTimeout + dt
 		else
 			comboValue = 0

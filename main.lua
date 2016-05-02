@@ -29,6 +29,9 @@ require 'states.game'
 require 'states.options'
 require 'states.charselect'
 require 'states.credits'
+require 'states.highscore'
+
+require 'data'
 
 io.stdout:setvbuf("no")
 
@@ -43,6 +46,12 @@ io.stdout:setvbuf("no")
 
 	http://TurtleP.github.io/
 --]]
+
+love.math.setRandomSeed( os.time() )
+
+--Make sure random stuff works
+love.math.random()
+love.math.random()
 
 function love.load()
 	love.graphics.setDefaultFilter("nearest", "nearest")
@@ -195,7 +204,7 @@ function love.load()
 	batSaveTimer = 0
 	batSaveQuadi = 1
 
-	--love.audio.setVolume(0)
+	love.audio.setVolume(0)
 
 	INTERFACE_DEPTH = 3
 	ENTITY_DEPTH = 1.5
@@ -280,7 +289,7 @@ function loadSettings()
 		elseif index == "dpad" then
 			useDirectionalPad(util.toBoolean(value))
 		elseif index == "achievement" then
-			achievement[tonumber(value)]:unlock()
+			achievements[tonumber(value)]:unlock()
 		end
 	end
 end
@@ -294,8 +303,8 @@ function saveSettings()
 	end
 	string = string .. "dpad:" .. tostring(directionalPadEnable) .. ";"
 	
-	for k = 1, #achievement do
-		if achievement[k].unlocked then
+	for k = 1, #achievements do
+		if achievements[k].unlocked then
 			string = string .. "achievement:" .. k .. ";"
 		end
 	end
@@ -303,7 +312,7 @@ function saveSettings()
 	love.filesystem.write("save.txt", string)
 end
 
-function defaultSettings()
+function defaultSettings(remove)
 	controls =
 	{
 		left = "cpadleft",
@@ -316,7 +325,9 @@ function defaultSettings()
 
 	useDirectionalPad(directionalPadEnable)
 
-	love.filesystem.remove("save.txt")
+	if remove then
+		love.filesystem.remove("save.txt")
+	end
 end
 
 if _EMULATEHOMEBREW then

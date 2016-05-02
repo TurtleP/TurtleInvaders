@@ -10,7 +10,7 @@ local gunImage = love.graphics.newImage("characters/hugo/guns.png")
 
 local gunQuads = {}
 for i = 1, 8 do
-	table.insert(gunQuads, love.graphics.newQuad(0, (i - 1) * 28, gunImage:getWidth(), gunImage:getHeight(), gunImage:getWidth(), gunImage:getHeight()))
+	table.insert(gunQuads, love.graphics.newQuad(0, (i - 1) * 28, gunImage:getWidth(), 28, gunImage:getWidth(), gunImage:getHeight()))
 end
 
 local shootingQuads = {}
@@ -76,7 +76,7 @@ function ability:update(dt)
 
 	if self.portals[1] and self.portals[2] then
 		if self.portals[1].type == "portal" and self.portals[2].type == "portal" then
-			if self.portals[1].colors[self.portals[1].quadi][4] == 255 and self.portals[2].colors[self.portals[2].quadi][4] == 255 then
+			if self.portals[1].colors[self.portals[1].i][4] == 255 and self.portals[2].colors[self.portals[2].i][4] == 255 then
 				if self.parent.x < 8 then
 					self.parent.x = self.parent.x + 393
 				elseif self.parent.x > 393 then
@@ -119,7 +119,7 @@ function ability:draw()
 
 	if self.portals[1] and self.portals[2] then
 		if self.portals[1].type == "portal" and self.portals[2].type == "portal" then
-			if self.portals[1].colors[self.portals[1].quadi][4] == 255 and self.portals[2].colors[self.portals[2].quadi][4] == 255 then
+			if self.portals[1].colors[self.portals[1].i][4] == 255 and self.portals[2].colors[self.portals[2].i][4] == 255 then
 				if self.parent.shouldDraw and objects["player"][1] then
 					if self.parent.x < 0 then
 						love.graphics.draw(self.parent.graphic, self.parent.animationQuads[self.parent.animationQuadi], self.parent.x + 393, self.parent.y)

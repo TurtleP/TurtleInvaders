@@ -27,7 +27,40 @@ function bat:init(x, y)
 		["barrier"] = true
 	}
 
-	self.maxHealth = love.math.random(2)
+	if not objects then
+		return
+	end
+
+	local health = 1
+	if currentWave > 3 then
+		health =  love.math.random(2)
+	elseif currentWave > 6 then
+		health = love.math.random(3)
+	end
+
+	local ability = batAbilities[love.math.random(#batAbilities)]
+	if currentWave >= ability[2] then
+		self.ability = ability[1]
+	end
+
+	self.bulletTimer = love.math.random(1, 2)
+	self.angle = 0
+	
+	if self.ability == "shoot" then
+		local powerup = batPowerups[love.math.random(#batPowerups)]
+
+		if currentWave >= powerup[2] then
+			self.powerup = powerup[1]
+
+			if self.powerup == "laser" then
+				self.powerupColor = {255, 73, 56}
+			elseif self.powerup == "freeze" then
+				self.powerupColor = {44, 130, 201}
+			end
+		end
+	end
+
+	self.maxHealth = health
 	self.health = self.maxHealth
 
 	self.setSpeeds = false
@@ -52,6 +85,14 @@ function bat:update(dt)
 
 					self.setSpeeds = true
 				end
+			end
+		end
+
+		if self.ability == "shoot" then
+			if self.bulletTimer > 0 then
+				self.bulletTimer = self.bulletTimer - dt
+			else
+				self:shoot()
 			end
 		end
 	end
@@ -120,6 +161,20 @@ function bat:getHealth()
 	return self.health
 end
 
+function bat:shoot()
+	if self.powerup == "shotgun" then
+		table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height, "normal", {-100, 100}))
+		
+		table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height, "normal", {0, 100}))
+		
+		table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height, "normal", {100, 100}))
+	else
+		table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height, self.powerup, {0, 100}))
+	end
+
+	self.bulletTimer = love.math.random(1, 2)
+end
+
 function bat:die(player)
 	if not player then
 		if self.health > 1 then
@@ -152,8 +207,12 @@ function bat:die(player)
 
 	gameAddScore(10)
 
+	if self.bulletTimer > 0 and self.bulletTimer < 0.2 then
+		achievements[9]:unlock(true)
+	end
+
 	local oneup = false
-	if batKillCount % 50 == 0 then
+	if batKillCount % 20 == 0 then
 		oneup = true
 	end
 
