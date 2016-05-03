@@ -132,8 +132,6 @@ function player:update(dt)
 end
 
 function player:draw()
-	love.graphics.setDepth(0.25)
-	
 	if not self.shouldDraw then
 		return
 	end
@@ -147,10 +145,6 @@ function player:draw()
 	love.graphics.draw(self.graphic, self.x, self.y)
 
 	self:drawShield()
-
-	
-
-	love.graphics.setDepth(0)
 end
 
 function player:drawShield()
@@ -264,7 +258,7 @@ end
 
 function player:addLife(add)
 	if add < 0 then
-		if self.invincible or self.powerup == "shield" then
+		if self.invincible then
 			return
 		end
 		hurtSound[love.math.random(#hurtSound)]:play()

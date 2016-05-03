@@ -9,7 +9,7 @@ function display:init()
 
 	self.powerupTime = 8
 
-	self.drainPowerup = true
+	self.drainPowerup = false
 
 	self.player = nil
 

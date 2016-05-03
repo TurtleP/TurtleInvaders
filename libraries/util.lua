@@ -91,6 +91,12 @@ function util.keyReleasedState(key)
 	end
 end
 
+function util.mousePressedState(x, y, button)
+	if _G[state .. "MousePressed"] then
+		_G[state .. "MousePressed"](x, y, button)
+	end
+end
+
 function util.dist(x1,y1, x2,y2) 
 	return ((x2-x1)^2+(y2-y1)^2)^0.5 
 end

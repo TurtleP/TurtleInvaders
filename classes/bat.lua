@@ -1,3 +1,18 @@
+local batAbilities =
+{
+	{"shoot", 2},
+	{"powerup", 8},
+	{"circle", 14}
+}
+
+local batPowerups =
+{
+	{"none", 2},
+	{"shotgun", 6},
+	{"laser", 10},
+	{"freeze", 14}
+}
+
 bat = class("bat")
 
 function bat:init(x, y)
@@ -60,6 +75,10 @@ function bat:init(x, y)
 		end
 	end
 
+	if self.ability == "circle" then
+		self.mask["barrier"] = false
+	end
+
 	self.maxHealth = health
 	self.health = self.maxHealth
 
@@ -94,6 +113,13 @@ function bat:update(dt)
 			else
 				self:shoot()
 			end
+		end
+
+		if self.ability == "circle" then
+			self.angle = self.angle + 5 * dt
+
+			self.x = self.x + math.cos(self.angle) * 2
+			self.y = self.y + math.sin(self.angle) * 2
 		end
 	end
 	
@@ -163,13 +189,13 @@ end
 
 function bat:shoot()
 	if self.powerup == "shotgun" then
-		table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height, "normal", {-100, 100}))
+		table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height, "normal", {-100, 120}))
 		
-		table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height, "normal", {0, 100}))
+		table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height, "normal", {0, 120}))
 		
-		table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height, "normal", {100, 100}))
+		table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height, "normal", {100, 120}))
 	else
-		table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height, self.powerup, {0, 100}))
+		table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height, self.powerup, {0, 120}))
 	end
 
 	self.bulletTimer = love.math.random(1, 2)

@@ -90,6 +90,8 @@ function bullet:passiveCollide(name, data)
 
 		data:takeDamage(-2)
 
+		displayInfo:setEnemyData(data)
+
 		self.remove = true
 	end
 
@@ -98,7 +100,18 @@ function bullet:passiveCollide(name, data)
 			return
 		end
 
-		data:addLife(-1)
+		if self.t == "freeze" then
+			v:setPowerup("freeze")
+		end
+
 		self.remove = true
+
+		if data:getPowerup() == "shield" then
+			if self.t ~= "laser" then
+				return
+			end
+		end
+
+		data:addLife(-1)
 	end
 end

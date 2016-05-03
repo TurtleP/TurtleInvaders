@@ -8,6 +8,7 @@ require 'libraries.character'
 require 'libraries.functions'
 
 require 'libraries.potion-compat'
+require 'libraries.keyboard'
 
 require 'classes.star'
 require 'classes.timer'
@@ -30,8 +31,6 @@ require 'states.options'
 require 'states.charselect'
 require 'states.credits'
 require 'states.highscore'
-
-require 'data'
 
 io.stdout:setvbuf("no")
 
@@ -197,6 +196,12 @@ function love.load()
 		"Endless"
 	}
 
+	menuSong = love.audio.newSource("audio/menu.ogg", "static")
+	menuSong:setLooping(true)
+
+	bossSong = love.audio.newSource("audio/boss.ogg", "static")
+	bossSong:setLooping(true)
+
 	gameModei = 1
 
 	loadSettings()
@@ -250,6 +255,10 @@ function love.keyreleased(key)
 	util.keyReleasedState(key)
 end
 
+function love.mousepressed(x, y, button)
+	util.mousePressedState(x, y, button)
+end
+
 function useDirectionalPad(enable)
 	directionalPadEnable = enable
 
@@ -290,6 +299,10 @@ function loadSettings()
 			useDirectionalPad(util.toBoolean(value))
 		elseif index == "achievement" then
 			achievements[tonumber(value)]:unlock()
+		elseif index == "highscore" then
+			local split = value:split("~")
+
+			highscores[tonumber(split[1])] = {split[2], split[3], tonumber(split[4])}
 		end
 	end
 end
@@ -309,6 +322,10 @@ function saveSettings()
 		end
 	end
 
+	for k = 1, #highscores do
+		string = string .. "highscore:" .. k .. "~" .. highscores[k][1] .. "~" .. highscores[k][2] .. "~" .. highscores[k][3] .. ";"
+	end
+
 	love.filesystem.write("save.txt", string)
 end
 
@@ -325,6 +342,11 @@ function defaultSettings(remove)
 
 	useDirectionalPad(directionalPadEnable)
 
+	highscores = {}
+	for k = 1, 4 do
+		highscores[k] = {"????", "Unknown", 0}
+	end
+
 	if remove then
 		love.filesystem.remove("save.txt")
 	end
@@ -332,21 +354,4 @@ end
 
 if _EMULATEHOMEBREW then
 	require 'libraries.3ds'
-end
-
---WELP
-function createSong(songName)
-	if songName == "menu" then
-		if not menuSong then
-			menuSong = love.audio.newSource("audio/menu.ogg", "static")
-			menuSong:setLooping(true)
-		end
-	end
-
-	if songName == "boss" then
-		if not bossSong then
-			bossSong = love.audio.newSource("audio/boss.ogg", "static")
-			bossSong:setLooping(true)
-		end
-	end
 end

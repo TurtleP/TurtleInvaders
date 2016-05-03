@@ -202,7 +202,7 @@ function gameUpdate(dt)
 
 	if gameOver then
 		if not gameOverSound:isPlaying() then
-			util.changeState("title", 1)
+			util.changeState("highscore")
 		end
 		return
 	end

@@ -67,19 +67,7 @@ function megabat:update(dt)
 			end
 			self.fade = math.max(self.fade - 0.6 * dt, 0)
 		else
-			bossSong:stop()
-			bossSong = nil
-
-			createSong("menu")
-			menuSong:play()
-
-			gameAddScore(1000)
-
-			gameDropPowerup(self.x + self.width / 2 - 9, self.y + (self.height / 2) - 9, true, true)
-
-			enemyTimer:setTimeLimit(1)
-
-			self.remove = true
+			self:die()
 		end
 		return
 	end
@@ -175,4 +163,20 @@ function megabat:takeDamage(damageValue)
 		self.speedx = 0
 		self.dead = true
 	end
+end
+
+function megabat:die()
+	if displayInfo:getEnemyData() == self then
+		displayInfo:setEnemyData(nil)
+	end
+
+	bossSong:stop()
+
+	menuSong:play()
+
+	gameAddScore(1000)
+
+	gameDropPowerup(self.x + self.width / 2 - 9, self.y + (self.height / 2) - 9, true, true)
+
+	self.remove = true
 end

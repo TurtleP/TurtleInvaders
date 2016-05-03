@@ -24,13 +24,13 @@ end
 function optionsDraw()
 	love.graphics.setScreen("top")
 
-	love.graphics.setDepth(-INTERFACE_DEPTH)
-
 	for layer = 1, 3 do
 		for j, w in pairs(optionsStarLayers[layer]) do
 			w:draw()
 		end
 	end
+
+	love.graphics.setDepth(-INTERFACE_DEPTH)
 
 	love.graphics.setFont(mainFont)
 

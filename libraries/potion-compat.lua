@@ -109,6 +109,10 @@ end
 if not love.math then
 	love.math = {}
 
+	function love.math.setRandomSeed(...)
+		math.randomseed(...)
+	end
+
 	function love.math.random(...)
 		return math.random(...)
 	end

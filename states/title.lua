@@ -4,7 +4,7 @@ function titleInit(selection)
 	{
 		{"New Game", function() util.changeState("charSelect") end},
 		{"Options Menu", function() util.changeState("options") end},
-		{"Highscores", function() end},
+		{"Highscores", function() util.changeState("highscore", true) end},
 	}
 
 	menuSelectioni = selection or 1
@@ -15,7 +15,6 @@ function titleInit(selection)
 	mainFont = love.graphics.newFont("graphics/monofonto.ttf", 32)
 	logoFont = love.graphics.newFont("graphics/monofonto.ttf", 46)
 
-	createSong("menu")
 	if not menuSong:isPlaying() then
 		menuSong:play()
 	end
