@@ -47,9 +47,6 @@ function achievement:draw()
 	love.graphics.setColor(32, 32, 32, 140)
 	love.graphics.rectangle("fill", x, self.y, width, self.height)
 
-	love.graphics.setColor(255, 255, 255, 140)
-	love.graphics.rectangle("line", x, self.y, width, self.height)
-
 	love.graphics.setColor(255, 255, 255, 255)
 	love.graphics.draw(achievementImage, achievementQuads[self.index], x + 4, self.y + self.height / 2 - 15)
 	love.graphics.print("Unlocked!", x + 41, self.y + self.height / 2 - hudFont:getHeight() / 2)

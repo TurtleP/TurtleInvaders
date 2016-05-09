@@ -24,6 +24,10 @@ function highscoreInit(menu)
 		if not highi then
 			util.changeState("title", 1)
 		else
+			for i = #highscores, highi + 1, -1 do
+				highscores[i] = {highscores[i - 1][1], highscores[i - 1][2], highscores[i - 1][3]}
+			end
+
 			highscores[highi] = {"", difficulties[difficultyi], score}
 	
 			keyboardInput = keyboard:new("Enter your intials.", 6)
@@ -34,6 +38,8 @@ function highscoreInit(menu)
 				saveSettings()
 
 				util.changeState("title", 1)
+
+				keyboardInput = nil
 			end
 		end
 	end
@@ -67,7 +73,7 @@ function highscoreDraw()
 	love.graphics.setFont(mainFont)
 
 	for k = 1, #highscores do
-		local highString = k .. ". " .. highscores[k][1] .. "\t" .. highscores[k][2] .. "\t" .. highscores[k][3]
+		local highString = k .. ". " .. highscores[k][1] .. "    " .. highscores[k][2] .. "    " .. highscores[k][3]
 
 		local color = {44, 130, 201}
 		if k > 1 then
@@ -103,6 +109,10 @@ function highscoreMousePressed(x, y, button)
 end
 
 function highscoreKeyPressed(key)
+	if highi then
+		return
+	end
+
 	if key == "b" then
 		if highscoreFromMenu then
 			util.changeState("title", 3)

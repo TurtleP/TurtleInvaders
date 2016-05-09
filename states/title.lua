@@ -52,8 +52,8 @@ function titleDraw()
 		love.graphics.print(v, util.getWidth() / 2 - mainFont:getWidth(v) / 2, 120 + (k - 1) * 32)
 	end
 
-	love.graphics.draw(batImage, batQuads[menuBatQuadi][2], 200 - mainFont:getWidth(titleOptions[menuSelectioni][1]) / 2 - 32, ((120 + mainFont:getHeight() / 2) - 7) + ((menuSelectioni - 1) * 32))
-	love.graphics.draw(batImage, batQuads[menuBatQuadi][1], 200 - mainFont:getWidth(titleOptions[menuSelectioni][1]) / 2 - 32, ((120 + mainFont:getHeight() / 2) - 7) + ((menuSelectioni - 1) * 32))
+	love.graphics.draw(batImage, batQuads[menuBatQuadi][2], 200 - mainFont:getWidth(titleOptions[menuSelectioni][1]) / 2 - 32, 132 + ((menuSelectioni - 1) * 32))
+	love.graphics.draw(batImage, batQuads[menuBatQuadi][1], 200 - mainFont:getWidth(titleOptions[menuSelectioni][1]) / 2 - 32, 132 + ((menuSelectioni - 1) * 32))
 
 	love.graphics.setDepth(NORMAL_DEPTH)
 end

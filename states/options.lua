@@ -61,6 +61,10 @@ function optionsDraw()
 
 	--GENERAL
 	if optionsTab == 1 then
+
+		love.graphics.setColor(255, 255, 255)
+		love.graphics.print("v" .. versionString, (optionsX + optionsWidth) - logoFont:getWidth("v" .. versionString), optionsY + 186)
+
 		love.graphics.setColor(127, 127, 127)
 		if optionsSelection == 1 then
 			love.graphics.setColor(255, 255, 255)

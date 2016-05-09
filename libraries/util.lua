@@ -43,6 +43,8 @@ function util.clearFonts()
 
 	collectgarbage()
 	
+	collectgarbage()
+	
 	fontCount = 0
 end
 

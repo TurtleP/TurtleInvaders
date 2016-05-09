@@ -99,7 +99,7 @@ function display:draw()
 			if x > enemy:getHealth() then
 				quadi = 2
 			end
-			love.graphics.draw(healthImage, healthQuads[quadi][1], (self.x + self.width) - hudFont:getWidth("Enemy") / 2 - (enemy:getMaxHealth() * 9) / 2 + (x - 1) * 9, self.y + 36)
+			love.graphics.draw(healthImage, healthQuads[quadi][1], ( (self.x + self.width) - hudFont:getWidth("Enemy") / 2 - 27 ) + math.mod((x - 1), 6) * 9, self.y + 36 + math.floor((x - 1) / 6) * 9)
 		end
 	end
 

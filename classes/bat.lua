@@ -1,16 +1,15 @@
 local batAbilities =
 {
-	{"shoot", 2},
-	{"powerup", 8},
-	{"circle", 14}
+	{"shoot", 8},
+	{"circle", 16}
 }
 
 local batPowerups =
 {
 	{"none", 2},
-	{"shotgun", 6},
-	{"laser", 10},
-	{"freeze", 14}
+	{"shotgun", 22},
+	{"laser", 18},
+	{"freeze", 12}
 }
 
 bat = class("bat")
@@ -27,7 +26,7 @@ function bat:init(x, y)
 
 	self.staticSpeed = {self.speedx, self.speedy}
 
-	self.powerupColor = {255, 255, 0}
+	self.powerupColor = {247, 218, 100}
 
 	self.active = true
 
@@ -47,9 +46,9 @@ function bat:init(x, y)
 	end
 
 	local health = 1
-	if currentWave > 3 then
+	if currentWave > 10 then
 		health =  love.math.random(2)
-	elseif currentWave > 6 then
+	elseif currentWave > 20 then
 		health = love.math.random(3)
 	end
 
@@ -222,7 +221,9 @@ function bat:die(player)
 	gameCreateExplosion(self)
 
 	if player then
-		player:addLife(-1)
+		if player:getPowerup() ~= "shield" then
+			player:addLife(-1)
+		end
 		return
 	end
 

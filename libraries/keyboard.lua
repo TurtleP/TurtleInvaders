@@ -53,7 +53,7 @@ function keyboard:draw()
 	love.graphics.translate(40, 240)
 
 	for x = 1, 26 do
-		love.graphics.line(self.x + 5 + (x - 1) * 12, self.y + 10 + love.graphics.getFont():getHeight() - 2, self.x + 10 + (x - 1) * 12, self.y + 10 + love.graphics.getFont():getHeight() - 2)
+		love.graphics.line(self.x + 5 + (x - 1) * 12, self.y + 10 + mainFont:getHeight() - 2, self.x + 10 + (x - 1) * 12, self.y + 10 + mainFont:getHeight() - 2)
 	end
 
 	love.graphics.pop()
@@ -94,6 +94,8 @@ function keyboard:mousepressed(x, y, button)
 			end
 
 			if #self.text < self.maxChars then
+				keyboardSound:play()
+
 				self.text = self.text .. v.text
 			end
 		end
@@ -138,7 +140,7 @@ function keyboardkey:draw()
 		love.graphics.setColor(unpack(util.colorFade(self.fadeTimer, 1, {255, 0, 0}, {255, 255, 255})))
 	end
 
-	love.graphics.print(self.text, (self.x + self.width / 2) - love.graphics.getFont():getWidth(self.text) / 2, (self.y + self.height / 2) - love.graphics.getFont():getHeight() / 2)
+	love.graphics.print(self.text, (self.x + self.width / 2) - mainFont:getWidth(self.text) / 2, (self.y + self.height / 2) - mainFont:getHeight() / 2)
 
 	if self.pressed then
 		love.graphics.setColor(255, 255, 255)

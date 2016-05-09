@@ -7,7 +7,7 @@ function charSelectInit()
 	chooseFont = love.graphics.newFont("graphics/monofonto.ttf", 40)
 	abilityFont = love.graphics.newFont("graphics/monofonto.ttf", 18)
 
-	currentSelection = 1
+	currentCharacterSelection = 1
 
 	charStarLayers = {}
 	for k = 1, 3 do
@@ -74,23 +74,25 @@ function charSelectDraw()
 	love.graphics.print("Choose a character", util.getWidth() / 2 - chooseFont:getWidth("Choose a character") / 2, 20)
 	love.graphics.line(36, 65, chooseFont:getWidth("Choose a character"), 65)
 
-	local selectedCharacter = charSelections[currentSelection].char
-	love.graphics.print(selectedCharacter.name:gsub("^%l", string.upper), util.getWidth() / 2 - chooseFont:getWidth(selectedCharacter.name:gsub("^%l", string.upper)) / 2, 80)
+	if charSelections then
+		local selectedCharacter = charSelections[currentCharacterSelection].char
+		love.graphics.print(selectedCharacter.name:gsub("^%l", string.upper), util.getWidth() / 2 - chooseFont:getWidth(selectedCharacter.name:gsub("^%l", string.upper)) / 2, 80)
 
-	love.graphics.setFont(abilityFont)
+		love.graphics.setFont(abilityFont)
 
-	local description = selectedCharacter.ability.description
-	if not description then
-		description = "Abilities.. WHAT ARE THOSE?"
+		local description = selectedCharacter.ability.description
+		if not description then
+			description = "Abilities.. WHAT ARE THOSE?"
+		end
+		love.graphics.print(description, util.getWidth() / 2 - abilityFont:getWidth(description) / 2, 200)
+
+		if selectedCharacter.animated then
+			love.graphics.draw(selectedCharacter.graphic, selectedCharacter.quads[1], util.getWidth() / 2 - selectedCharacter.width / 2, 164 - selectedCharacter.graphic:getHeight() / 2)
+		else
+			love.graphics.draw(selectedCharacter.graphic, util.getWidth() / 2 - selectedCharacter.width / 2, 164 - selectedCharacter.graphic:getHeight() / 2)
+		end
 	end
-	love.graphics.print(description, util.getWidth() / 2 - abilityFont:getWidth(description) / 2, 200)
-
-	if selectedCharacter.animated then
-		love.graphics.draw(selectedCharacter.graphic, selectedCharacter.quads[1], util.getWidth() / 2 - selectedCharacter.width / 2, 164 - selectedCharacter.graphic:getHeight() / 2)
-	else
-		love.graphics.draw(selectedCharacter.graphic, util.getWidth() / 2 - selectedCharacter.width / 2, 164 - selectedCharacter.graphic:getHeight() / 2)
-	end
-
+	
 	love.graphics.setDepth(NORMAL_DEPTH)
 
 	love.graphics.setScreen("bottom")
@@ -102,7 +104,7 @@ function charSelectDraw()
 	end
 
 	for k, v in pairs(charSelections) do
-		if currentSelection == k then
+		if currentCharacterSelection == k then
 			love.graphics.push()
 
 			love.graphics.translate(40, 240)
@@ -129,13 +131,28 @@ end
 
 function charSelectKeyPressed(key)
 	if key == "cpadright" then
-		currentSelection = math.min(currentSelection + 1, #gameCharacters)
+		currentCharacterSelection = math.min(currentCharacterSelection + 1, #gameCharacters)
 	elseif key == "cpadleft" then
-		currentSelection = math.max(currentSelection - 1, 1)
+		currentCharacterSelection = math.max(currentCharacterSelection - 1, 1)
 	elseif key == "a" then
-		util.changeState("game", charSelections[currentSelection].char)
+		util.changeState("game", charSelections[currentCharacterSelection].char)
 	elseif key == "b" then
 		util.changeState("title", 1)
+	end
+end
+
+function charSelectMousePressed(x, y, button)
+	for k, v in pairs(charSelections) do
+		if v:mousepressed(x, y, button) then
+			currentCharacterSelection = k
+
+			v.taps = v.taps + 1
+			if v.taps == 2 then
+				util.changeState("game", charSelections[currentCharacterSelection].char)
+			end
+		else
+			v.taps = 0
+		end
 	end
 end
 
@@ -150,6 +167,8 @@ function newCharSelection(x, y, chari)
 
 	charselect.char = gameCharacters[chari]
 
+	charselect.taps = 0
+
 	function charselect:draw()
 		local character = self.char
 
@@ -158,6 +177,10 @@ function newCharSelection(x, y, chari)
 			return
 		end	
 		love.graphics.draw(character.graphic, self.x + (self.width / 2) - character.width / 2, self.y + (self.height / 2) - character.height / 2)
+	end
+
+	function charselect:mousepressed(x, y, button)
+		return x > self.x and x < self.x + self.width and y > self.y and y < self.y + self.height
 	end
 
 	return charselect

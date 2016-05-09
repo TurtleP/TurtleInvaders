@@ -27,7 +27,8 @@ function player:init(characterData)
 	self.mask =
 	{
 		["barrier"] = true,
-		["bat"] = true
+		["bat"] = true,
+		["fire"] = true
 	}
 
 	self.maxHealth = 3
@@ -154,25 +155,25 @@ function player:drawShield()
 end
 
 function player:upCollide(name, data)
-	if name == "bat" then
+	if name == "bat" or name == "fire" then
 		return false
 	end
 end
 
 function player:downCollide(name, data)
-	if name == "bat" then
+	if name == "bat" or name == "fire" then
 		return false
 	end
 end
 
 function player:leftCollide(name, data)
-	if name == "bat" then
+	if name == "bat" or name == "fire" then
 		return false
 	end
 end
 
 function player:rightCollide(name, data)
-	if name == "bat" then
+	if name == "bat" or name == "fire" then
 		return false
 	end
 end
@@ -184,10 +185,12 @@ function player:passiveCollide(name, data)
 			if not data.isSuper then
 				self:addLife(1)
 			else
-				self.maxHealth = self.maxHealth + 1
+				self.maxHealth = self.maxHealth + difficultyi
 				self:addLife(self:getMaxHealth())
 			end
 			return
+		elseif data.t == "shield" then
+			shieldSound:play()
 		end
 
 		if self.powerup == "none" then
@@ -207,12 +210,14 @@ end
 function player:triggerAbility()
 	if self.ability then
 		if not self.ability.passive then
-			if abilityKills == (self.maxHealth * 2) then
-				self.ability:trigger(self)
-				abilityKills = 0
-			else
-				if self.ability.active then
-					self.ability:trigger()
+			if self.ability.trigger then
+				if abilityKills == (self.maxHealth * 2) then
+					self.ability:trigger(self)
+					abilityKills = 0
+				else
+					if self.ability.active then
+						self.ability:trigger()
+					end
 				end
 			end
 		end
@@ -238,6 +243,7 @@ function player:shoot()
 				bulletType = self.powerup
 			elseif self.powerup == "mega" then
 				table.insert(objects["bullet"], megacannon:new(self))
+				self:setPowerup("none")
 				return
 			end
 
@@ -256,7 +262,7 @@ function player:getPowerup()
 	return self.powerup
 end
 
-function player:addLife(add)
+function player:addLife(add, pierce)
 	if add < 0 then
 		if self.invincible then
 			return

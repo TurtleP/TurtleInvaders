@@ -13,6 +13,7 @@ function gameInit(playerData)
 	objects["bullet"] = {}
 	objects["boss"] = {}
 	objects["powerup"] = {}
+	objects["fire"] = {}
 
 	explosions = {}
 	fizzles = {}
@@ -25,26 +26,20 @@ function gameInit(playerData)
 
 	objects["barrier"] = 
 	{
-		barrier:new(-16, 0, 16, util.getHeight()),
-		barrier:new(400, 0, 16, util.getHeight())
+		barrier:new(-16, -64, 16, util.getHeight() + 64),
+		barrier:new(400, -64, 16, util.getHeight() + 64)
 	}
 
-	local time = 1.25
+	local time = 1.15
 	if difficultyi == 1 then
 		time = 1.5
 	elseif difficultyi == 3 then
 		time = 1
 	end
-	
+
 	enemyTimer = timer:new(time, 
 		function(self)
-			if objects["boss"][1] then
-				return
-			end
-
 			table.insert(objects["bat"], bat:new(love.math.random(0, 370), -14))
-
-		--	self.maxTimer = (self.maxTime * 0.95) * currentWave
 		end
 	)
 
@@ -57,6 +52,10 @@ function gameInit(playerData)
 			--Boss wave number - 1 because offsets
 			if currentWave == 5 then
 				objects["boss"][1] = megabat:new()
+			elseif currentWave == 17 then
+				objects["boss"][1] = raccoon:new()
+			elseif currentWave == 29 then
+				objects["boss"][1] = phoenix:new()
 			end
 
 			self.maxTimer = self.maxTimer + love.math.random(4)
@@ -86,6 +85,8 @@ function gameInit(playerData)
 	abilityKills = 0
 
 	shakeValue = 0
+
+	objects["boss"][1] = phoenix:new()
 end
 
 function gameNextWave()
@@ -116,7 +117,7 @@ function gameDropPowerup(x, y, oneUp, superUp)
 		return
 	end
 
-	if objects["player"][1]:getPowerup() ~= "none" then
+	if objects["player"][1]:getPowerup() ~= "none" or objects["boss"][1] then
 		return
 	end
 
@@ -270,6 +271,10 @@ function gameDraw()
 	end
 
 	for k, v in pairs(objects["boss"]) do
+		v:draw()
+	end
+
+	for k, v in pairs(objects["fire"]) do
 		v:draw()
 	end
 

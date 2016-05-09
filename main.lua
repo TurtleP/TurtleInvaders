@@ -23,6 +23,8 @@ require 'classes.megacannon'
 require 'classes.fizzle'
 require 'classes.megabat'
 require 'classes.achievement'
+require 'classes.raccoon'
+require 'classes.phoenix'
 
 require 'states.intro'
 require 'states.title'
@@ -57,8 +59,6 @@ function love.load()
 
 	introImage = love.graphics.newImage("graphics/intro/intro.png")
 	potionImage = love.graphics.newImage("graphics/intro/potionlogo.png")
-
-	titleImage = love.graphics.newImage("graphics/menu/title.png")
 
 	batImage = love.graphics.newImage("graphics/game/bat.png")
 	batQuads = {}
@@ -134,6 +134,29 @@ function love.load()
 		achievementQuads[k] = love.graphics.newQuad((k - 1) * 30, 0, 30, 30, achievementImage:getWidth(), achievementImage:getHeight())
 	end
 
+	raccoonImage = love.graphics.newImage("graphics/game/risky.png")
+	raccoonQuads = {}
+	for k = 1, 2 do
+		raccoonQuads[k] = love.graphics.newQuad((k - 1) * 45, 0, 44, 52, raccoonImage:getWidth(), raccoonImage:getHeight())
+	end
+
+	phoenixImage = love.graphics.newImage("graphics/game/phoenix.png")
+	phoenixQuads = {}
+	for k = 1, 4 do
+		phoenixQuads[k] = love.graphics.newQuad((k - 1) * 64, 0, 64, 50, phoenixImage:getWidth(), phoenixImage:getHeight())
+	end
+
+	fireImage = love.graphics.newImage("graphics/game/fireballs.png")
+	fireQuads = {}
+	for k = 1, 2 do
+		fireQuads[k] = love.graphics.newQuad((k - 1) * 15, 0, 13, 15, fireImage:getWidth(), fireImage:getHeight())
+	end
+
+	shieldShards = {}
+	for k = 1, 9 do
+		shieldShards[k] = love.graphics.newImage("graphics/game/shield/" .. k .. ".png")
+	end
+
 	--SET UP ACHIEVEMENTS
 	local achievementNames =
 	{
@@ -156,6 +179,8 @@ function love.load()
 
 	love.graphics.set3D(true)
 	
+	versionString = "0.6.1"
+	
 	waveAdvanceSound = love.audio.newSource("audio/wave.ogg", "static")
 	gameOverSound = love.audio.newSource("audio/gameover.ogg", "static")
 
@@ -174,6 +199,9 @@ function love.load()
 	fizzleSound = love.audio.newSource("audio/evaporate.ogg", "static")
 	megaCannonSound = love.audio.newSource("audio/megacannon.ogg", "static")
 
+	keyboardSound = love.audio.newSource("audio/drip.ogg", "static")
+	shieldSound = love.audio.newSource("audio/shield.ogg")
+	
 	hurtSound = {}
 	for k = 1, 3 do
 		hurtSound[k] = love.audio.newSource("audio/hurt" .. k .. ".ogg", "static")
@@ -273,36 +301,41 @@ end
 
 function loadSettings()
 	defaultSettings()
-
-	if not love.filesystem.isFile("save.txt") then
-		return
-	end
 		
-	local saveData = love.filesystem.read("save.txt")
+	success, value = pcall(love.filesystem.read, "save.txt")
 
-	local keys = saveData:split(";")
+	local saveData
+	if success then
+		saveData = love.filesystem.read("save.txt")
+		
+		if not saveData then
+			return
+		end
 
-	for x = 1, #keys do
-		local keyPairs = keys[x]:split(":")
+		local keys = saveData:split(";")
 
-		local index, value = keyPairs[1], keyPairs[2]
+		for x = 1, #keys do
+			local keyPairs = keys[x]:split(":")
 
-		if index == "shoot" then
-			controls[index] = value
-		elseif index == "ability" then
-			controls[index] = value
-		elseif index == "left" then
-			controls[index] = value
-		elseif index == "right" then
-			controls[index] = value
-		elseif index == "dpad" then
-			useDirectionalPad(util.toBoolean(value))
-		elseif index == "achievement" then
-			achievements[tonumber(value)]:unlock()
-		elseif index == "highscore" then
-			local split = value:split("~")
+			local index, value = keyPairs[1], keyPairs[2]
 
-			highscores[tonumber(split[1])] = {split[2], split[3], tonumber(split[4])}
+			if index == "shoot" then
+				controls[index] = value
+			elseif index == "ability" then
+				controls[index] = value
+			elseif index == "left" then
+				controls[index] = value
+			elseif index == "right" then
+				controls[index] = value
+			elseif index == "dpad" then
+				useDirectionalPad(util.toBoolean(value))
+			elseif index == "achievement" then
+				achievements[tonumber(value)]:unlock()
+			elseif index == "highscore" then
+				local split = value:split("~")
+
+				highscores[tonumber(split[1])] = {split[2], split[3], tonumber(split[4])}
+			end
 		end
 	end
 end

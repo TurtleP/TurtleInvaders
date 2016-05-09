@@ -1,36 +1,37 @@
-megabat = class("megabat")
+raccoon = class("raccoon")
 
-function megabat:init()
-	self.x = 170
-	self.y = -bossImage:getHeight()
+function raccoon:init()
+	self.x = 178
+	self.y = 94
 
-	self.width = 60
-	self.height = 30
-
-	self.active = true
+	self.width = 44
+	self.height = 54
 
 	self.mask =
 	{
-		["bullet"] = true,
 		["barrier"] = true
 	}
 
-	local speeds = {-120, 120}
-	self.speedx = speeds[love.math.random(#speeds)]
-	self.speedy = 0
-
 	self.gravity = 0
 
-	self.timer = 0
 	self.quadi = 1
+	self.timer = 0
+
+	self.active = true
+
+	self.speedx = 0
+	self.speedy = 0
+
+	local speeds = {-180, 180}
+	self.speed = speeds[love.math.random(#speeds)]
 
 	menuSong:stop()
 
 	bossSong:play()
 
-	local health = 60
+	local health = 100
 	if difficultyi > 1 then
-		health = 60 + (difficultyi - 1) * 40
+		health = 100 + (difficultyi - 1) * 60
 	end
 
 	self.realHealth = health 
@@ -41,20 +42,23 @@ function megabat:init()
 
 	self.initialize = false
 
-	displayInfo:setEnemyData(self)
+	self.fade = 0
 
-	self.invincible = false
-	self.invincibleTimer = 0
+	self.fadeIn = true
+
+	self.deathDelay = 0.05
 
 	self.shouldDraw = true
 
-	self.shootTimer = love.math.random(3)
-	self.deathDelay = 0.05
+	self.invincible = false
+	self.invincibleTimer = 0
+	
+	self.fadeTimer = 0
 
-	self.fade = 1
+	displayInfo:setEnemyData(self)
 end
 
-function megabat:update(dt)
+function raccoon:update(dt)
 	if self.dead then
 		if self.fade > 0 then
 			if self.deathDelay > 0 then
@@ -71,15 +75,23 @@ function megabat:update(dt)
 		return
 	end
 
-	self.timer = self.timer + 8 * dt
-	self.quadi = math.floor(self.timer % #bossQuads) + 1
+	if not self.fadeIn then
+		self.fade = math.max(self.fade - 0.6 * dt, 0)
+	else
+		self.fade = math.min(self.fade + 0.6 * dt, 1)
+	end
 
 	if not self.initialize then
-		if self.y + (self.height / 2) < util.getHeight() / 2 then
-			self.speedy = 100
-		else
-			self.speedy = 0
+		if self.fade == 1 then
+			self.speedx = self.speed
+
 			self.initialize = true
+		end
+	else
+		self.fadeTimer = self.fadeTimer + dt
+		if self.fadeTimer > 3 then
+			self.fadeIn = not self.fadeIn
+			self.fadeTimer = 0
 		end
 	end
 
@@ -98,57 +110,34 @@ function megabat:update(dt)
 			self.invincible = false
 		end
 	end
-
-	if self.realHealth < self.realMaxHealth / 2 then
-		if self.shootTimer > 0 then
-			self.shootTimer = self.shootTimer - dt
-		else
-			self:shoot()
-			self.shootTimer = love.math.random(3)
-		end
-	end
 end
 
-function megabat:leftCollide(name, data)
+function raccoon:leftCollide(name, data)
 	if name == "barrier" then
 		self.speedx = -self.speedx
 		return false
 	end
 end
 
-function megabat:rightCollide(name, data)
+function raccoon:rightCollide(name, data)
 	if name == "barrier" then
 		self.speedx = -self.speedx
 		return false
 	end
 end
 
-function megabat:draw()
+function raccoon:draw()
 	if not self.shouldDraw then
 		return
 	end
-	love.graphics.setColor(255, 255, 255, 255 * self.fade)
 
-	love.graphics.draw(bossImage, bossQuads[self.quadi], self.x, self.y)
+	love.graphics.setColor(255, 255, 255, 255 * self.fade)
+	love.graphics.draw(raccoonImage, raccoonQuads[self.quadi], self.x, self.y + math.sin(love.timer.getTime() * 8) * 10)
 
 	love.graphics.setColor(255, 255, 255, 255)
 end
 
-function megabat:shoot()
-	table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height + 1, "normal", {-100, 100}))
-
-	table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height + 1, "normal", {100, 100}))
-end
-
-function megabat:getHealth()
-	return self.health
-end
-
-function megabat:getMaxHealth()
-	return self.maxHealth
-end
-
-function megabat:takeDamage(damageValue)
+function raccoon:takeDamage(damageValue)
 	if self.invincible then
 		return
 	end
@@ -162,11 +151,20 @@ function megabat:takeDamage(damageValue)
 		end
 	else
 		self.speedx = 0
+		self.fade = 1
 		self.dead = true
 	end
 end
 
-function megabat:die()
+function raccoon:getHealth()
+	return self.health
+end
+
+function raccoon:getMaxHealth()
+	return self.maxHealth
+end
+
+function raccoon:die()
 	if displayInfo:getEnemyData() == self then
 		displayInfo:setEnemyData(nil)
 	end
@@ -175,7 +173,7 @@ function megabat:die()
 
 	menuSong:play()
 
-	gameAddScore(1000)
+	gameAddScore(3000)
 
 	gameDropPowerup(self.x + self.width / 2 - 9, self.y + (self.height / 2) - 9, true, true)
 
