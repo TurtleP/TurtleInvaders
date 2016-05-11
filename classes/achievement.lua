@@ -43,6 +43,15 @@ function achievement:draw()
 	if not self.display then
 		return
 	end
+	
+	love.graphics.push()
+	
+	for k, v in pairs(achievements) do
+		if v.display then
+			love.graphics.translate(0, (k - 1) * self.height)
+		end
+	end
+	
 	local x, width = math.floor(400 - hudFont:getWidth("Unlocked!") - 42), hudFont:getWidth("Unlocked!") + 41
 	love.graphics.setColor(32, 32, 32, 140)
 	love.graphics.rectangle("fill", x, self.y, width, self.height)
@@ -50,6 +59,8 @@ function achievement:draw()
 	love.graphics.setColor(255, 255, 255, 255)
 	love.graphics.draw(achievementImage, achievementQuads[self.index], x + 4, self.y + self.height / 2 - 15)
 	love.graphics.print("Unlocked!", x + 41, self.y + self.height / 2 - hudFont:getHeight() / 2)
+	
+	love.graphics.pop()
 end
 
 function achievement:unlock(display)
@@ -58,10 +69,11 @@ function achievement:unlock(display)
 	end
 
 	self.unlocked = true
-
+		
 	if not display then
 		return
 	end
+
 	self.display = true
 
 	saveSettings()

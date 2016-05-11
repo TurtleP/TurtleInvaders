@@ -48,7 +48,9 @@ function megabat:init()
 
 	self.shouldDraw = true
 
-	self.shootTimer = love.math.random(3)
+	self.shootTimerMax = 2.5 * (1 / difficultyi)
+	self.shootTimer = self.shootTimerMax
+
 	self.deathDelay = 0.05
 
 	self.fade = 1
@@ -104,7 +106,6 @@ function megabat:update(dt)
 			self.shootTimer = self.shootTimer - dt
 		else
 			self:shoot()
-			self.shootTimer = love.math.random(3)
 		end
 	end
 end
@@ -138,6 +139,8 @@ function megabat:shoot()
 	table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height + 1, "normal", {-100, 100}))
 
 	table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height + 1, "normal", {100, 100}))
+
+	self.shootTimer = self.shootTimerMax
 end
 
 function megabat:getHealth()
@@ -177,6 +180,8 @@ function megabat:die()
 
 	gameAddScore(1000)
 
+	achievements[1]:unlock(true)
+	
 	gameDropPowerup(self.x + self.width / 2 - 9, self.y + (self.height / 2) - 9, true, true)
 
 	self.remove = true

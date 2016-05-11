@@ -29,7 +29,8 @@ function megacannon:init(player)
 	{
 		["bat"] = true,
 		["powerup"] = true,
-		["bullet"] = true
+		["bullet"] = true,
+		["boss"] = false
 	}
 
 	megaCannonSound:play()
@@ -47,6 +48,10 @@ function megacannon:passiveCollide(name, data)
 		if data.speedy <= 0 then
 			pass = false
 		end
+	end
+
+	if name == "boss" then
+		pass = false
 	end
 
 	if pass then

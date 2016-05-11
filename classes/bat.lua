@@ -1,7 +1,6 @@
 local batAbilities =
 {
 	{"shoot", 8},
-	{"circle", 16}
 }
 
 local batPowerups =
@@ -52,27 +51,35 @@ function bat:init(x, y)
 		health = love.math.random(3)
 	end
 
-	local ability = batAbilities[love.math.random(#batAbilities)]
-	if currentWave >= ability[2] then
-		self.ability = ability[1]
-	end
+	--HANDLE ABILITIES BASED ON DIFFICULTY!
+	local bulletTime = 3 * (1 / difficultyi)
 
-	self.bulletTimer = love.math.random(1, 2)
-	self.angle = 0
-	
-	if self.ability == "shoot" then
-		local powerup = batPowerups[love.math.random(#batPowerups)]
+	local abilityRandom = love.math.random() --0 to 1
 
-		if currentWave >= powerup[2] then
-			self.powerup = powerup[1]
+	if abilityRandom < (.3 * difficultyi) then
+		local abilityData = batAbilities[love.math.random(#batAbilities)]
 
-			if self.powerup == "laser" then
-				self.powerupColor = {255, 73, 56}
-			elseif self.powerup == "freeze" then
-				self.powerupColor = {44, 130, 201}
+		if currentWave > abilityData[2] then
+			self.ability = abilityData[1]
+
+			if abilityData[1] == "shoot" then
+				local powerupRandom = love.math.random()
+
+				if powerupRandom < (.15 * difficultyi) then
+					local powerupData = batPowerups[love.math.random(#batPowerups)]
+
+					if currentWave > powerupData[2] then
+						self.powerup = powerupData[1]
+					end
+				end
 			end
 		end
 	end
+
+	self.bulletTimerMax = bulletTime
+	self.bulletTimer = self.bulletTimerMax
+
+	self.angle = 0
 
 	if self.ability == "circle" then
 		self.mask["barrier"] = false
@@ -197,10 +204,10 @@ function bat:shoot()
 		table.insert(objects["bullet"], bullet:new(self.x + (self.width / 2) - 1, self.y + self.height, self.powerup, {0, 120}))
 	end
 
-	self.bulletTimer = love.math.random(1, 2)
+	self.bulletTimer = self.bulletTimerMax
 end
 
-function bat:die(player)
+function bat:die(player, anti)
 	if not player then
 		if self.health > 1 then
 			self.health = self.health - 1
@@ -232,8 +239,12 @@ function bat:die(player)
 	comboValue = comboValue + 1
 	comboTimeout = 0
 
-	gameAddScore(10)
-
+	local mul = 1
+	if anti then
+		mul = -1
+	end
+	gameAddScore(10 * mul)
+	
 	if self.bulletTimer > 0 and self.bulletTimer < 0.2 then
 		achievements[9]:unlock(true)
 	end

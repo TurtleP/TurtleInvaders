@@ -31,7 +31,7 @@ function raccoon:init()
 
 	local health = 100
 	if difficultyi > 1 then
-		health = 100 + (difficultyi - 1) * 60
+		health = 100 + (difficultyi - 1) * 40
 	end
 
 	self.realHealth = health 
@@ -173,6 +173,8 @@ function raccoon:die()
 
 	menuSong:play()
 
+	achievements[2]:unlock(true)
+	
 	gameAddScore(3000)
 
 	gameDropPowerup(self.x + self.width / 2 - 9, self.y + (self.height / 2) - 9, true, true)

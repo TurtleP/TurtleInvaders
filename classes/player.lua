@@ -31,7 +31,7 @@ function player:init(characterData)
 		["fire"] = true
 	}
 
-	self.maxHealth = 3
+	self.maxHealth = 5
 	self.health = self.maxHealth
 
 	self.ability = characterData.ability
@@ -242,8 +242,9 @@ function player:shoot()
 			if self:isValidBullet(self.powerup) then
 				bulletType = self.powerup
 			elseif self.powerup == "mega" then
-				table.insert(objects["bullet"], megacannon:new(self))
-				self:setPowerup("none")
+				if not megaCannonSound:isPlaying() then
+					table.insert(objects["bullet"], megacannon:new(self))
+				end
 				return
 			end
 
@@ -272,6 +273,8 @@ function player:addLife(add, pierce)
 
 		comboValue = 0
 		comboTimer = 0
+		
+		superPlayer = false
 	else
 		addLifeSound:play()
 	end

@@ -64,7 +64,11 @@ function bullet:passiveCollide(name, data)
 		
 		displayInfo:setEnemyData(data)
 
-		data:die()
+		local anti = false
+		if self.t == "anti" then
+			anti = true
+		end
+		data:die(false, anti)
 
 		if self.t == "laser" then
 			batCount = batCount + 1
@@ -74,10 +78,6 @@ function bullet:passiveCollide(name, data)
 			end
 
 			return
-		end
-
-		if self.t == "anti" then
-			gameAddScore(-10)
 		end
 
 		self.remove = true
@@ -101,7 +101,7 @@ function bullet:passiveCollide(name, data)
 		end
 
 		if self.t == "freeze" then
-			v:setPowerup("freeze")
+			data:setPowerup("freeze")
 		end
 
 		self.remove = true

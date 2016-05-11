@@ -15,6 +15,8 @@ function gameInit(playerData)
 	objects["powerup"] = {}
 	objects["fire"] = {}
 
+	megaCannon = nil
+
 	explosions = {}
 	fizzles = {}
 	abilities = {}
@@ -31,10 +33,10 @@ function gameInit(playerData)
 	}
 
 	local time = 1.15
-	if difficultyi == 1 then
-		time = 1.5
-	elseif difficultyi == 3 then
+	if difficultyi == 2 then
 		time = 1
+	elseif difficultyi == 3 then
+		time = 0.9
 	end
 
 	enemyTimer = timer:new(time, 
@@ -66,7 +68,7 @@ function gameInit(playerData)
 
 	paused = false
 	
-	currentWave = 0
+	currentWave = 28
 	score = 0
 
 	comboValue = 0
@@ -76,17 +78,16 @@ function gameInit(playerData)
 	
 	gameNextWave()
 
-	waveFont = love.graphics.newFont("graphics/monofonto.ttf", 46)
 	hudFont = love.graphics.newFont("graphics/monofonto.ttf", 28)
+	pauseFont = love.graphics.newFont("graphics/monofonto.ttf", 20)
 	
 	displayInfo = display:new()
+	gamePauseMenu = pausemenu:new()
 
 	batKillCount = 0
 	abilityKills = 0
 
 	shakeValue = 0
-
-	objects["boss"][1] = phoenix:new()
 end
 
 function gameNextWave()
@@ -108,7 +109,7 @@ function gameAddScore(add)
 		end
 	end
 
-	score = math.max(0, score + add)
+	score = math.max(score + add, 0)
 end
 
 function gameDropPowerup(x, y, oneUp, superUp)
@@ -125,7 +126,7 @@ function gameDropPowerup(x, y, oneUp, superUp)
 
 	if random < .05 then
 		i = 9
-	elseif random < .1 then
+	elseif random < .15 then
 		i = love.math.random(8)
 	end
 
@@ -296,19 +297,32 @@ function gameDraw()
 
 	love.graphics.pop()
 
-	love.graphics.setFont(waveFont)
 	
 	love.graphics.setDepth(INTERFACE_DEPTH)
 
+	love.graphics.setFont(hudFont)
+
 	if currentWaveFade > 0 then
 		love.graphics.setColor(255, 255, 255, 255 * currentWaveFade)
-		love.graphics.print(waveText, util.getWidth() / 2 - waveFont:getWidth(waveText) / 2, util.getHeight() / 2 - waveFont:getHeight() / 2)
+		love.graphics.print(waveText, util.getWidth() / 2 - hudFont:getWidth(waveText) / 2, util.getHeight() / 2 - hudFont:getHeight() / 2)
 
 		love.graphics.setColor(255, 255, 255, 255)
 	end
 
+	love.graphics.setScreen("bottom")
+
+	if displayInfo then
+		displayInfo:draw()
+	end
+
+	love.graphics.setScreen("top")
+
 	if gameOver then
-		love.graphics.print("Game Over", util.getWidth() / 2 - waveFont:getWidth("Game Over") / 2, util.getHeight() / 2 - waveFont:getHeight() / 2)
+		love.graphics.print("Game Over", util.getWidth() / 2 - hudFont:getWidth("Game Over") / 2, util.getHeight() / 2 - hudFont:getHeight() / 2)
+	end
+
+	for k, v in pairs(achievements) do
+		v:draw()
 	end
 
 	if paused then
@@ -318,37 +332,28 @@ function gameDraw()
 		
 		love.graphics.setColor(255, 255, 255, 255)
 
-		love.graphics.print("Game Paused", util.getWidth() / 2 - waveFont:getWidth("Game Paused") / 2, util.getHeight() / 2 - waveFont:getHeight())
-	end
-
-	love.graphics.setFont(hudFont)
-	
-	if paused then
-		love.graphics.print("Press 'B' to Quit", util.getWidth() / 2 - hudFont:getWidth("Press 'B' to Quit") / 2, util.getHeight() / 2 - hudFont:getHeight() / 2 + 8)
-	end
-
-	for k, v in pairs(achievements) do
-		v:draw()
+		gamePauseMenu:draw()
 	end
 
 	love.graphics.setDepth(NORMAL_DEPTH)
-
-	love.graphics.setScreen("bottom")
-
-	if displayInfo then
-		displayInfo:draw()
-	end
 end
 
 function gameKeyPressed(key)
 	if key == "start" then
-		if not gameOver then
-			paused = not paused
+		if currentWaveFade == 0 then
+			if not gameOver then
+				paused = not paused
 
-			if paused then
-				pauseSound:play()
+				if paused then
+					pauseSound:play()
+				end
 			end
 		end
+	end
+
+	if paused then
+		gamePauseMenu:keyPressed(key)
+		return
 	end
 
 	if key == "b" then

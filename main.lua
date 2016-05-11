@@ -25,6 +25,7 @@ require 'classes.megabat'
 require 'classes.achievement'
 require 'classes.raccoon'
 require 'classes.phoenix'
+require 'classes.pausemenu'
 
 require 'states.intro'
 require 'states.title'
@@ -172,6 +173,7 @@ function love.load()
 		"Double Ping"
 	}
 
+	superPlayer = true
 	achievements = {}
 	for k = 1, 10 do
 		table.insert(achievements, achievement:new(k, achievementNames[k]))
@@ -179,7 +181,7 @@ function love.load()
 
 	love.graphics.set3D(true)
 	
-	versionString = "0.6.1"
+	versionString = "0.7"
 	
 	waveAdvanceSound = love.audio.newSource("audio/wave.ogg", "static")
 	gameOverSound = love.audio.newSource("audio/gameover.ogg", "static")
@@ -211,12 +213,12 @@ function love.load()
 
 	difficulties = 
 	{
-		"Easy",
-		"Medium",
-		"Hard"
+		"Normal",
+		"Hard",
+		"Insane"
 	}
 
-	difficultyi = 2
+	difficultyi = 1
 
 	gameModes =
 	{

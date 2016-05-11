@@ -27,7 +27,7 @@ function util.clearFonts()
 		logoFont = nil
 	end
 
-	if hudFont and waveFont then
+	if hudFont and pauseFont then
 		hudFont = nil
 		waveFont = nil
 	end

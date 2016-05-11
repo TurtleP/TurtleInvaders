@@ -21,7 +21,7 @@ function phoenix:init()
 	finalBossSong:setLooping(true)
 	finalBossSong:play()
 
-	local speeds = {-180, 180}
+	local speeds = {-150, 150}
 	self.speed = speeds[love.math.random(#speeds)]
 
 	self.speedx = 0
@@ -29,7 +29,7 @@ function phoenix:init()
 
 	local health = 140
 	if difficultyi > 1 then
-		health = 140 + (difficultyi - 1) * 60
+		health = 140 + (difficultyi - 1) * 40
 	end
 
 	self.realHealth = health 
@@ -48,7 +48,8 @@ function phoenix:init()
 		["barrier"] = true
 	}
 
-	self.shotTimer = love.math.random(1, 2)
+	self.shotTimerMax = 2 * (1 / difficultyi)
+	self.shotTimer = self.shotTimerMax
 
 	self.shield = nil
 	self.shieldSpawnTimer = 3
@@ -56,6 +57,10 @@ function phoenix:init()
 	self.invincible = false
 	self.invincibleTimer = 0
 	self.shouldDraw = true
+
+	self.deathDelay = 0.05
+
+	self.fade = 1
 
 	self.killTimer = 3
 end
@@ -65,6 +70,21 @@ function phoenix:update(dt)
 		if math.floor(shakeValue) == 0 then
 			self.speedx = self.speed
 			self.initialize = true
+		end
+	else
+		if self.dead then
+			if self.fade > 0 then
+				if self.deathDelay > 0 then
+					self.deathDelay = self.deathDelay - dt
+					shakeValue = 10
+				else
+					table.insert(explosions, explosion:new(love.math.random(self.x, self.x + self.width), love.math.random(self.y, self.y + self.height)))
+					self.deathDelay = 0.05
+				end
+				self.fade = math.max(self.fade - 0.6 * dt, 0)
+			else
+				self:die()
+			end
 		end
 	end
 
@@ -92,27 +112,27 @@ function phoenix:update(dt)
 		return
 	end
 
-	if not self.killBats then
-		self.y = util.clamp(self.y + 120 * dt, -self.height, 60)
-		if self.killTimer > 0 then
-			self.killTimer = self.killTimer - dt
-		else
-			self.killTimer = love.math.random(4, 5)
-			self.killBats = true
-		end
-	else
-		self.y = util.clamp(self.y - 120 * dt, -self.height, 60)
-		if self.y == -self.height then
+	if self.realHealth < self.realMaxHealth - (self.realMaxHealth * .3) then
+		if not self.killBats then
+			self.y = util.clamp(self.y + 120 * dt, -self.height, 60)
 			if self.killTimer > 0 then
 				self.killTimer = self.killTimer - dt
 			else
-				self.killTimer = 3
-				self.killBats = false
+				self.killTimer = love.math.random(4, 5)
+				self.killBats = true
+			end
+		else
+			self.y = util.clamp(self.y - 120 * dt, -self.height, 60)
+			if self.y == -self.height then
+				if self.killTimer > 0 then
+					self.killTimer = self.killTimer - dt
+				else
+					self.killTimer = 3
+					self.killBats = false
+				end
 			end
 		end
-	end
-
-	if self.realHealth < self.realMaxHealth / 2 then
+	elseif self.realHealth < self.realMaxHealth - (self.realMaxHealth * .6) then
 		if self.shieldSpawnTimer > 0 then
 			self.shieldSpawnTimer = self.shieldSpawnTimer - dt
 		else
@@ -125,7 +145,7 @@ function phoenix:update(dt)
 		self.shotTimer = self.shotTimer - dt
 	else
 		self:shoot()
-		self.shotTimer = love.math.random(1, 2)
+		self.shotTimer = self.shotTimerMax
 	end
 end
 
@@ -133,6 +153,8 @@ function phoenix:draw()
 	if not self.shouldDraw then
 		return
 	end
+
+	love.graphics.setColor(255, 255, 255, 255 * self.fade)
 	love.graphics.draw(phoenixImage, phoenixQuads[self.quadi], self.x, self.y + math.sin(love.timer.getTime() * 6) * 8)
 
 	if self.shield then
@@ -191,6 +213,36 @@ end
 
 function phoenix:removeShield()
 	self.shield = nil
+end
+
+function phoenix:die()
+	if displayInfo:getEnemyData() == self then
+		displayInfo:setEnemyData(nil)
+	end
+
+	finalBossSong:stop()
+	finalBossSong = nil
+
+	collectgarbage()
+	
+	achievements[3]:unlock(true)
+	if difficultyi == 1 then
+		achievements[4]:unlock(true)
+	elseif difficultyi == 2 then
+		achievements[5]:unlock(true)
+	else
+		achievements[6]:unlock(true)
+	end
+	
+	if superPlayer then
+		achievements[8]:unlock(true)
+	end
+	
+	bossSong = love.audio.newSource("audio/boss.ogg")
+
+	gameAddScore(6000)
+
+	self.remove = true
 end
 
 ---------------------------------------
