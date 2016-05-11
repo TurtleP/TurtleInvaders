@@ -48,7 +48,14 @@ function megabat:init()
 
 	self.shouldDraw = true
 
-	self.shootTimerMax = 2.5 * (1 / difficultyi)
+	local shootTimerMax = 3
+	if difficultyi == 2 then
+		maxShootTime = 2
+	elseif difficultyi == 3 then
+		maxShootTime = 1
+	end
+	self.shootTimerMax = shootTimerMax
+	
 	self.shootTimer = self.shootTimerMax
 
 	self.deathDelay = 0.05
@@ -182,7 +189,9 @@ function megabat:die()
 
 	achievements[1]:unlock(true)
 	
-	gameDropPowerup(self.x + self.width / 2 - 9, self.y + (self.height / 2) - 9, true, true)
-
+	if objects["player"][1] then
+		objects["player"][1]:addMaxHealth()
+	end
+	
 	self.remove = true
 end

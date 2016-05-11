@@ -177,7 +177,9 @@ function raccoon:die()
 	
 	gameAddScore(3000)
 
-	gameDropPowerup(self.x + self.width / 2 - 9, self.y + (self.height / 2) - 9, true, true)
+	if objects["player"][1] then
+		objects["player"][1]:addMaxHealth()
+	end
 
 	self.remove = true
 end

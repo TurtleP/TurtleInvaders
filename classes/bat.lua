@@ -6,7 +6,6 @@ local batAbilities =
 local batPowerups =
 {
 	{"none", 2},
-	{"shotgun", 22},
 	{"laser", 18},
 	{"freeze", 12}
 }
@@ -52,11 +51,20 @@ function bat:init(x, y)
 	end
 
 	--HANDLE ABILITIES BASED ON DIFFICULTY!
-	local bulletTime = 3 * (1 / difficultyi)
+	
 
 	local abilityRandom = love.math.random() --0 to 1
 
-	if abilityRandom < (.3 * difficultyi) then
+	local bulletTime, shootChance, powerChance = 3, .3, .15
+	if difficultyi == 2 then
+		bulletTime = 2
+		shootChance, powerChance = .35, .2
+	elseif difficultyi == 3 then
+		bulletTime = 1.5
+		shootChance, powerChance = .35, .3
+	end
+	
+	if abilityRandom < shootChance then
 		local abilityData = batAbilities[love.math.random(#batAbilities)]
 
 		if currentWave > abilityData[2] then
@@ -65,7 +73,7 @@ function bat:init(x, y)
 			if abilityData[1] == "shoot" then
 				local powerupRandom = love.math.random()
 
-				if powerupRandom < (.15 * difficultyi) then
+				if powerupRandom < powerChance then
 					local powerupData = batPowerups[love.math.random(#batPowerups)]
 
 					if currentWave > powerupData[2] then

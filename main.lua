@@ -218,7 +218,7 @@ function love.load()
 		"Insane"
 	}
 
-	difficultyi = 1
+	difficultyi = 3
 
 	gameModes =
 	{

@@ -80,7 +80,7 @@ function display:draw()
 			color = 2
 		end
 		
-		love.graphics.draw(healthImage, healthQuads[quadi][color], hudFont:getWidth("Player") / 2 - (player:getMaxHealth() * 9) / 2 + (x - 1) * 9, self.y + 36)
+		love.graphics.draw(healthImage, healthQuads[quadi][color], self.x + math.mod((x - 1), 6) * 9, self.y + 36 + math.floor((x - 1) / 6) * 9)
 	end
 	love.graphics.setColor(255, 255, 255, 255)
 

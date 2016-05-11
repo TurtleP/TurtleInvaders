@@ -48,7 +48,13 @@ function phoenix:init()
 		["barrier"] = true
 	}
 
-	self.shotTimerMax = 2 * (1 / difficultyi)
+	local maxShotTimer = 2.5
+	if difficultyi == 2 then
+		maxShotTimer = 2
+	elseif difficultyi == 3 then
+		maxShotTimer = 1.5
+	end
+	self.shotTimerMax = maxShotTimer
 	self.shotTimer = self.shotTimerMax
 
 	self.shield = nil
@@ -112,7 +118,7 @@ function phoenix:update(dt)
 		return
 	end
 
-	if self.realHealth < self.realMaxHealth - (self.realMaxHealth * .3) then
+	if self.realHealth < self.realMaxHealth - (self.realMaxHealth * .3) and self.realHealth > self.realMaxHealth - (self.realMaxHealth * .6) then
 		if not self.killBats then
 			self.y = util.clamp(self.y + 120 * dt, -self.height, 60)
 			if self.killTimer > 0 then
@@ -132,7 +138,8 @@ function phoenix:update(dt)
 				end
 			end
 		end
-	elseif self.realHealth < self.realMaxHealth - (self.realMaxHealth * .6) then
+	elseif self.realHealth < self.realMaxHealth - (self.realMaxHealth * 0.6) then
+		self.y = util.clamp(self.y + 120 * dt, -self.height, 60)
 		if self.shieldSpawnTimer > 0 then
 			self.shieldSpawnTimer = self.shieldSpawnTimer - dt
 		else
@@ -141,11 +148,13 @@ function phoenix:update(dt)
 		end
 	end
 
-	if self.shotTimer > 0 then
-		self.shotTimer = self.shotTimer - dt
-	else
-		self:shoot()
-		self.shotTimer = self.shotTimerMax
+	if not self.killBats then
+		if self.shotTimer > 0 then
+			self.shotTimer = self.shotTimer - dt
+		else
+			self:shoot()
+			self.shotTimer = self.shotTimerMax
+		end
 	end
 end
 
@@ -163,9 +172,9 @@ function phoenix:draw()
 end
 
 function phoenix:shoot()
-	table.insert(objects["fire"], fire:new(self.x + (self.width / 2) - 6, self.y + self.height, {-180, 180}))
+	table.insert(objects["fire"], fire:new(self.x + (self.width / 2) - 6, self.y + self.height, {-180, 100}))
 
-	table.insert(objects["fire"], fire:new(self.x + (self.width / 2) - 6, self.y + self.height, {180, 180}))
+	table.insert(objects["fire"], fire:new(self.x + (self.width / 2) - 6, self.y + self.height, {180, 100}))
 end
 
 function phoenix:leftCollide(name, data)
@@ -318,6 +327,8 @@ shield = class("shield")
 function shield:init(phoenix)
 	self.parent = phoenix
 
+	self.x = 0
+	self.y = 0
 	self.width = 76
 	self.height = 76
 

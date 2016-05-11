@@ -31,7 +31,7 @@ function player:init(characterData)
 		["fire"] = true
 	}
 
-	self.maxHealth = 5
+	self.maxHealth = 9
 	self.health = self.maxHealth
 
 	self.ability = characterData.ability
@@ -294,6 +294,11 @@ end
 
 function player:getMaxHealth()
 	return self.maxHealth
+end
+
+function player:addMaxHealth()
+	self.maxHealth = self.maxHealth + difficultyi
+	self:addLife(self.maxHealth)
 end
 
 function player:getHealth()
