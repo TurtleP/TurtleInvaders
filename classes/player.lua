@@ -31,7 +31,7 @@ function player:init(characterData)
 		["fire"] = true
 	}
 
-	self.maxHealth = 9
+	self.maxHealth = 3
 	self.health = self.maxHealth
 
 	self.ability = characterData.ability
@@ -286,6 +286,12 @@ function player:addLife(add, pierce)
 
 		gameCreateExplosion(self)
 
+		if self.ability then
+			if self.ability.reset then
+				self.ability:reset()
+			end
+		end
+		
 		gameOver = true
 
 		gameOverSound:play()

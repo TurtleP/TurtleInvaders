@@ -14,9 +14,6 @@ function phoenix:init()
 
 	menuSong:stop()
 
-	bossSong = nil
-	collectgarbage()
-
 	finalBossSong = love.audio.newSource("audio/finalboss.ogg")
 	finalBossSong:setLooping(true)
 	finalBossSong:play()

@@ -1,13 +1,4 @@
 function gameInit(playerData)
-	starFields = {}
-
-	for fieldCount = 1, 3 do
-		starFields[fieldCount] = {}
-		for starCount = 1, math.floor(100 / fieldCount) do
-			table.insert(starFields[fieldCount], star:new(love.math.random(0, 400), love.math.random(0, util.getHeight()), fieldCount))
-		end
-	end
-
 	objects = {}
 	objects["bat"] = {}
 	objects["bullet"] = {}
@@ -68,7 +59,7 @@ function gameInit(playerData)
 
 	paused = false
 	
-	currentWave = 28
+	currentWave = 0
 	score = 0
 
 	comboValue = 0
@@ -242,7 +233,7 @@ function gameDraw()
 	love.graphics.push()
 
 	if shakeValue > 0 then
-		love.graphics.translate(love.math.random() * shakeValue, love.math.random() * shakeValue)
+		love.graphics.translate(love.math.random() * shakeValue, 0)
 	end
 
 	for fieldCount = 1, #starFields do

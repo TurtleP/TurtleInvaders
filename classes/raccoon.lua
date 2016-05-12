@@ -180,6 +180,9 @@ function raccoon:die()
 	if objects["player"][1] then
 		objects["player"][1]:addMaxHealth()
 	end
-
+	
+	bossSong = nil
+	collectgarbage()
+	
 	self.remove = true
 end

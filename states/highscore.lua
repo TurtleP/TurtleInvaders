@@ -4,14 +4,6 @@ function highscoreInit(menu)
 	mainFont = love.graphics.newFont("graphics/monofonto.ttf", 24)
 	logoFont = love.graphics.newFont("graphics/monofonto.ttf", 36)
 
-	highScoreStarLayers = {}
-	for k = 1, 3 do
-		highScoreStarLayers[k] = {}
-		for x = 1, 100 / k do
-			table.insert(highScoreStarLayers[k], star:new(love.math.random(400), love.math.random(240), k))
-		end
-	end
-
 	local highi
 	if not highscoreFromMenu then
 		for x = 1, #highscores do
@@ -54,9 +46,11 @@ end
 function highscoreDraw()
 	love.graphics.setScreen("top")
 
-	for layer = 1, 3 do
-		for j, w in pairs(highScoreStarLayers[layer]) do
-			w:draw()
+	for fieldCount = 1, #starFields do
+		local v = starFields[fieldCount]
+
+		for k, s in pairs(v) do
+			s:draw()
 		end
 	end
 
@@ -91,9 +85,11 @@ function highscoreDraw()
 
 	love.graphics.setScreen("bottom")
 
-	for layer = 1, 3 do
-		for j, w in pairs(highScoreStarLayers[layer]) do
-			w:draw()
+	for fieldCount = 1, #starFields do
+		local v = starFields[fieldCount]
+
+		for k, s in pairs(v) do
+			s:draw()
 		end
 	end
 

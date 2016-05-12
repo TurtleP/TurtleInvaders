@@ -8,15 +8,7 @@ function charSelectInit()
 	abilityFont = love.graphics.newFont("graphics/monofonto.ttf", 18)
 
 	currentCharacterSelection = 1
-
-	charStarLayers = {}
-	for k = 1, 3 do
-		charStarLayers[k] = {}
-		for x = 1, 100 do
-			table.insert(charStarLayers[k], star:new(love.math.random(400), love.math.random(240), k))
-		end
-	end
-
+	
 	charBats = {}
 
 	charTimer = timer:new(2, function()
@@ -64,9 +56,11 @@ function charSelectDraw()
 
 	love.graphics.setDepth(-INTERFACE_DEPTH)
 
-	for layer = 1, 3 do
-		for j, w in pairs(charStarLayers[layer]) do
-			w:draw()
+	for fieldCount = 1, #starFields do
+		local v = starFields[fieldCount]
+
+		for k, s in pairs(v) do
+			s:draw()
 		end
 	end
 
@@ -97,9 +91,11 @@ function charSelectDraw()
 
 	love.graphics.setScreen("bottom")
 
-	for layer = 1, 3 do
-		for j, w in pairs(charStarLayers[layer]) do
-			w:draw()
+	for fieldCount = 1, #starFields do
+		local v = starFields[fieldCount]
+
+		for k, s in pairs(v) do
+			s:draw()
 		end
 	end
 

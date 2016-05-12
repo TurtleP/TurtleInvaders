@@ -218,7 +218,7 @@ function love.load()
 		"Insane"
 	}
 
-	difficultyi = 3
+	difficultyi = 1
 
 	gameModes =
 	{
@@ -245,6 +245,15 @@ function love.load()
 	ENTITY_DEPTH = 1.5
 	NORMAL_DEPTH = 0
 
+	starFields = {}
+
+	for fieldCount = 1, 3 do
+		starFields[fieldCount] = {}
+		for starCount = 1, math.floor(100 / fieldCount) do
+			table.insert(starFields[fieldCount], star:new(love.math.random(0, 400), love.math.random(0, util.getHeight()), fieldCount))
+		end
+	end
+	
 	util.changeState("intro")
 end
 
