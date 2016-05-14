@@ -69,6 +69,10 @@ function util.changeState(toState, ...)
 
 end
 
+function util.lerp(a, b, t) 
+	return (1 - t) * a + t * b 
+end
+
 function util.updateState(dt)
 	if _G[state .. "Update"] then
 		_G[state .. "Update"](dt)

@@ -147,6 +147,8 @@ function ability:reset()
 	self.active = false
 end
 
+--PORTALSHOT--
+
 function newPortalShot(x, y, i, abilityData)
 	local shot = {}
 	shot.colors = {{0, 128, 255, 255}, {255, 128, 0, 255}}
@@ -193,6 +195,8 @@ function newPortalShot(x, y, i, abilityData)
 
 	return shot
 end
+
+--PORTAL--
 
 function newPortal(x, y, i)
 	local portal = {}

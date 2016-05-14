@@ -37,7 +37,7 @@ function player:init(characterData)
 	self.ability = characterData.ability
 
 	if self.ability then
-		if self.ability.init and self.ability.passive then
+		if self.ability.init and (self.ability.passive or self.ability.passiveInit) then
 			self.ability:init(self)
 		end
 		table.insert(abilities, self.ability)
