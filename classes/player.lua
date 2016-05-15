@@ -282,20 +282,24 @@ function player:addLife(add, pierce)
 	self.health = util.clamp(self.health + add, 0, self.maxHealth)
 
 	if self.health == 0 then
-		self.remove = true
-
-		gameCreateExplosion(self)
-
-		if self.ability then
-			if self.ability.reset then
-				self.ability:reset()
-			end
-		end
-		
-		gameOver = true
-
-		gameOverSound:play()
+		self:die()
 	end
+end
+
+function player:die()
+	self.remove = true
+
+	gameCreateExplosion(self)
+
+	if self.ability then
+		if self.ability.reset then
+			self.ability:reset()
+		end
+	end
+		
+	gameOver = true
+
+	gameOverSound:play()
 end
 
 function player:getMaxHealth()

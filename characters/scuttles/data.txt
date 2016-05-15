@@ -1,1 +1,1 @@
-width:40;height:40;shieldwidth:40;shieldheight:40;ability:gecko;shieldspeed:7;shieldcount:4;
+width:38;height:39;shieldwidth:38;shieldheight:39;ability:gecko;shieldspeed:7;shieldcount:4;

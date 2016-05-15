@@ -19,33 +19,17 @@ function util.changeScale(scalar)
 end
 
 function util.clearFonts()
-	if mainFont then
-		mainFont = nil
-	end
-
-	if logoFont then
-		logoFont = nil
-	end
-
-	if hudFont and pauseFont then
-		pauseFont = nil
-		waveFont = nil
-	end
-
-	if warningFont then
-		warningFont = nil
-	end
-
-	if chooseFont and abilityFont then
-		chooseFont = nil
-		abilityFont = nil
-	end
+	mainFont = nil
+	logoFont = nil
+	pauseFont = nil
+	hudFont = nil
+	warningFont = nil
+	chooseFont = nil
+	abilityFont = nil
 
 	collectgarbage()
 	
 	collectgarbage()
-	
-	fontCount = 0
 end
 
 function util.toBoolean(stringCompare)

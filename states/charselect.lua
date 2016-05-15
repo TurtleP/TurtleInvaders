@@ -53,9 +53,7 @@ function charSelectDraw()
 	end
 
 	love.graphics.setScreen("top")
-
-	love.graphics.setDepth(-INTERFACE_DEPTH)
-
+	
 	for fieldCount = 1, #starFields do
 		local v = starFields[fieldCount]
 
@@ -63,6 +61,8 @@ function charSelectDraw()
 			s:draw()
 		end
 	end
+	
+	love.graphics.setDepth(-INTERFACE_DEPTH)
 
 	love.graphics.setFont(chooseFont)
 	love.graphics.print("Choose a character", util.getWidth() / 2 - chooseFont:getWidth("Choose a character") / 2, 20)
@@ -127,9 +127,15 @@ end
 
 function charSelectKeyPressed(key)
 	if key == "cpadright" then
-		currentCharacterSelection = math.min(currentCharacterSelection + 1, #gameCharacters)
+		currentCharacterSelection = currentCharacterSelection + 1
+		if currentCharacterSelection > #gameCharacters then
+			currentCharacterSelection = 1
+		end
 	elseif key == "cpadleft" then
-		currentCharacterSelection = math.max(currentCharacterSelection - 1, 1)
+		currentCharacterSelection = currentCharacterSelection - 1
+		if currentCharacterSelection < 1 then
+			currentCharacterSelection = #gameCharacters
+		end
 	elseif key == "a" then
 		util.changeState("game", charSelections[currentCharacterSelection].char)
 	elseif key == "b" then

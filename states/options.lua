@@ -11,22 +11,16 @@ function optionsInit()
 
 	optionsSelection = 1
 	optionsTab = 1
-
-	optionsStarLayers = {}
-	for k = 1, 3 do
-		optionsStarLayers[k] = {}
-		for x = 1, 100 / k do
-			table.insert(optionsStarLayers[k], star:new(love.math.random(400), love.math.random(240), k))
-		end
-	end
 end
 
 function optionsDraw()
 	love.graphics.setScreen("top")
 
-	for layer = 1, 3 do
-		for j, w in pairs(optionsStarLayers[layer]) do
-			w:draw()
+	for fieldCount = 1, #starFields do
+		local v = starFields[fieldCount]
+
+		for k, s in pairs(v) do
+			s:draw()
 		end
 	end
 
@@ -120,6 +114,17 @@ function optionsDraw()
 	end
 
 	love.graphics.setDepth(NORMAL_DEPTH)
+	
+	love.graphics.setScreen("bottom")
+	
+	for fieldCount = 1, #starFields do
+		local v = starFields[fieldCount]
+
+		for k, s in pairs(v) do
+			s:draw()
+		end
+	end
+	
 end
 
 function optionsKeyPressed(key)
