@@ -126,12 +126,12 @@ function charSelectDraw()
 end
 
 function charSelectKeyPressed(key)
-	if key == "cpadright" then
+	if key == "cpadright" or key == "dright" then
 		currentCharacterSelection = currentCharacterSelection + 1
 		if currentCharacterSelection > #gameCharacters then
 			currentCharacterSelection = 1
 		end
-	elseif key == "cpadleft" then
+	elseif key == "cpadleft" or key == "dleft" then
 		currentCharacterSelection = currentCharacterSelection - 1
 		if currentCharacterSelection < 1 then
 			currentCharacterSelection = #gameCharacters

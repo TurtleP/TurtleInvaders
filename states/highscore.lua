@@ -24,6 +24,8 @@ function highscoreInit(menu)
 	
 			keyboardInput = keyboard:new("Enter your intials.", 6)
 		
+			keyboardInput:open()
+			
 			keyboardInput.onReturn = function()
 				highscores[highi][1] = keyboardInput:getText()
 

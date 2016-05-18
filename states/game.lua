@@ -77,7 +77,10 @@ function gameInit(playerData)
 
 	batKillCount = 0
 	abilityKills = 0
-
+	
+	winFade = 0
+	gameFinished = false
+	
 	shakeValue = 0
 end
 
@@ -138,6 +141,14 @@ function gameUpdate(dt)
 	if not gameOver then
 		if paused then
 			return
+		end
+	end
+	
+	if gameFinished then
+		winFade = math.min(winFade + 0.4 * dt)
+		
+		if winFade == 1 then
+			util.changeState("highscore")
 		end
 	end
 
@@ -324,6 +335,17 @@ function gameDraw()
 		love.graphics.setColor(255, 255, 255, 255)
 
 		gamePauseMenu:draw()
+	end
+	
+	if gameFinished then
+		love.graphics.setColor(0, 0, 0, 255 * winFade)
+		love.graphics.setScreen("top")
+		love.graphics.rectangle("fill", 0, 0, 400, 240)
+		
+		love.graphics.setScreen("bottom")
+		love.graphics.rectangle("fill", 0, 0, 320, 240)
+		
+		love.graphics.setColor(255, 255, 255, 255)
 	end
 
 	love.graphics.setDepth(NORMAL_DEPTH)

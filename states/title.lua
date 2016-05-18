@@ -4,7 +4,8 @@ function titleInit(selection)
 	{
 		{"New Game", function() util.changeState("charSelect") end},
 		{"Options Menu", function() util.changeState("options") end},
-		{"Highscores", function() util.changeState("highscore", true) end},
+	--	{"Online Co-Op", function() end},
+		{"Highscores", function() util.changeState("highscore", true) end}
 	}
 
 	menuSelectioni = selection or 1
@@ -12,7 +13,7 @@ function titleInit(selection)
 
 	menuBatTimer = 0
 
-	mainFont = love.graphics.newFont("graphics/monofonto.ttf", 32)
+	mainFont = love.graphics.newFont("graphics/monofonto.ttf", 30)
 	logoFont = love.graphics.newFont("graphics/monofonto.ttf", 46)
 
 	if not menuSong:isPlaying() then
@@ -49,11 +50,11 @@ function titleDraw()
 	love.graphics.setColor(255, 255, 255)
 	for k = 1, #titleOptions do
 		local v = titleOptions[k][1]
-		love.graphics.print(v, util.getWidth() / 2 - mainFont:getWidth(v) / 2, 120 + (k - 1) * 32)
+		love.graphics.print(v, util.getWidth() / 2 - mainFont:getWidth(v) / 2, 120 + (k - 1) * 30)
 	end
 
-	love.graphics.draw(batImage, batQuads[menuBatQuadi][2], 200 - mainFont:getWidth(titleOptions[menuSelectioni][1]) / 2 - 32, 132 + ((menuSelectioni - 1) * 32))
-	love.graphics.draw(batImage, batQuads[menuBatQuadi][1], 200 - mainFont:getWidth(titleOptions[menuSelectioni][1]) / 2 - 32, 132 + ((menuSelectioni - 1) * 32))
+	love.graphics.draw(batImage, batQuads[menuBatQuadi][2], 200 - mainFont:getWidth(titleOptions[menuSelectioni][1]) / 2 - 32, 132 + ((menuSelectioni - 1) * 30))
+	love.graphics.draw(batImage, batQuads[menuBatQuadi][1], 200 - mainFont:getWidth(titleOptions[menuSelectioni][1]) / 2 - 32, 132 + ((menuSelectioni - 1) * 30))
 
 	love.graphics.setDepth(NORMAL_DEPTH)
 end
@@ -65,5 +66,23 @@ function titleKeyPressed(key)
 		menuSelectioni = math.min(menuSelectioni + 1, #titleOptions)
 	elseif key == "a" then
 		titleOptions[menuSelectioni][2]()
+	elseif key == "cpadright" or key == "dright" then
+		if menuSelectioni == 1 then
+			titleToggleOnline()
+		end
+	elseif key == "cpadleft" or key == "dleft" then
+		if menuSelectioni == 1 then
+			titleToggleOnline()
+		end
+	end
+end
+
+function titleToggleOnline()
+	onlineMenu = not onlineMenu
+	
+	if onlineMenu then
+		titleOptions[1] = {"Online Game", function() util.changeState("netplay") end}
+	else
+		titleOptions[1] = {"New Game", function() util.changeState("charSelect") end}
 	end
 end

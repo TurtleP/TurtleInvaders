@@ -28,13 +28,6 @@ function optionsDraw()
 
 	love.graphics.setFont(mainFont)
 
-	--[[love.graphics.setColor(32, 32, 32, 200)
-
-	love.graphics.rectangle("fill", optionsX, optionsY, optionsWidth, optionsHeight)
-
-	love.graphics.setColor(255, 255, 255, 255)
-	love.graphics.rectangle("line", optionsX, optionsY, optionsWidth, optionsHeight)]]
-
 	--GENERAL
 	love.graphics.setColor(127, 127, 127)
 	if optionsTab == 1 then
@@ -141,11 +134,11 @@ function optionsKeyPressed(key)
 		return
 	end
 
-	if key == "cpaddown" then
+	if key == "cpaddown" or key == "ddown" then
 		optionsSelection = math.min(optionsSelection + 1, 7)
-	elseif key == "cpadup" then
+	elseif key == "cpadup" or key == "dup" then
 		optionsSelection = math.max(optionsSelection - 1, 1)
-	elseif key == "cpadright" then
+	elseif key == "cpadright" or key == "dright" then
 		if optionsSelection == 1 then
 			difficultyi = math.min(difficultyi + 1, #difficulties)
 		elseif optionsSelection == 2 then
@@ -153,7 +146,7 @@ function optionsKeyPressed(key)
 		elseif optionsSelection == 5 then
 			useDirectionalPad(true)
 		end
-	elseif key == "cpadleft" then
+	elseif key == "cpadleft" or key == "dleft" then
 		if optionsSelection == 1 then
 			difficultyi = math.max(difficultyi - 1, 1)
 		elseif optionsSelection == 2 then

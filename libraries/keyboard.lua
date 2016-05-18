@@ -30,11 +30,23 @@ function keyboard:init(hint, max)
 end
 
 function keyboard:update(dt)
-	self.fade = math.min(self.fade + 0.8 * dt, 1)
-
+	if self.open then
+		self.fade = math.min(self.fade + 0.8 * dt, 1)
+	else
+		self.fade = math.max(self.fade - 0.8 * dt, 0)
+	end
+	
 	for k, v in pairs(self.buttons) do
 		v:update(dt)
 	end
+end
+
+function keyboard:open()
+	self.open = true
+end
+
+function keyboard:close()
+	self.open = false
 end
 
 function keyboard:draw()
@@ -72,6 +84,10 @@ function keyboard:getText()
 end
 
 function keyboard:mousepressed(x, y, button)
+	if self.fade ~= 1 then
+		return
+	end
+	
 	for k, v in pairs(self.buttons) do
 		if v:mousepressed(x, y, button) then
 			v.pressed = true

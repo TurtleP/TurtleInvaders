@@ -221,14 +221,3 @@ function love.graphics.clear(r, g, b, a)
 
 	oldclear(r, g, b, a)
 end
-
-fontCount = 0
-local oldNewFont = love.graphics.newFont
-function love.graphics.newFont(path, size)
-	fontCount = fontCount + 1
-	if fontCount > 2 then
-		error("Font limit of 2 reached!")
-	end
-
-	return oldNewFont(path, size)
-end

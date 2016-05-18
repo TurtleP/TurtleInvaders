@@ -34,6 +34,7 @@ require 'states.options'
 require 'states.charselect'
 require 'states.credits'
 require 'states.highscore'
+require 'states.netplay'
 
 io.stdout:setvbuf("no")
 

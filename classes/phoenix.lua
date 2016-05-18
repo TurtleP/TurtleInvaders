@@ -247,6 +247,7 @@ function phoenix:die()
 	bossSong = love.audio.newSource("audio/boss.ogg")
 
 	gameAddScore(6000)
+	gameFinished = true
 
 	self.remove = true
 end
