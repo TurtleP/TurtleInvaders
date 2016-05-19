@@ -11,6 +11,18 @@ function optionsInit()
 
 	optionsSelection = 1
 	optionsTab = 1
+	
+	controlsBlacklist = 
+	{
+		"cpadup",
+		"cpadright",
+		"cpadleft",
+		"cpaddown",
+		"up",
+		"right",
+		"left",
+		"down",
+	}
 end
 
 function optionsDraw()
@@ -127,18 +139,18 @@ function optionsKeyPressed(key)
 			controlSelected = "ability"
 		end
 
-		if key:sub(1, 4) ~= "cpad" and key:sub(1, 1) ~= "d" then
+		if key ~= controlsBlacklist[key] then
 			controls[controlSelected] = key
 			optionsInput = false
 		end
 		return
 	end
 
-	if key == "cpaddown" or key == "ddown" then
+	if key == "cpaddown" or key == "down" then
 		optionsSelection = math.min(optionsSelection + 1, 7)
-	elseif key == "cpadup" or key == "dup" then
+	elseif key == "cpadup" or key == "up" then
 		optionsSelection = math.max(optionsSelection - 1, 1)
-	elseif key == "cpadright" or key == "dright" then
+	elseif key == "cpadright" or key == "right" then
 		if optionsSelection == 1 then
 			difficultyi = math.min(difficultyi + 1, #difficulties)
 		elseif optionsSelection == 2 then
@@ -146,7 +158,7 @@ function optionsKeyPressed(key)
 		elseif optionsSelection == 5 then
 			useDirectionalPad(true)
 		end
-	elseif key == "cpadleft" or key == "dleft" then
+	elseif key == "cpadleft" or key == "left" then
 		if optionsSelection == 1 then
 			difficultyi = math.max(difficultyi - 1, 1)
 		elseif optionsSelection == 2 then

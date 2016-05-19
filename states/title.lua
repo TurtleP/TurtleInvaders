@@ -60,17 +60,17 @@ function titleDraw()
 end
 
 function titleKeyPressed(key)
-	if key == "cpadup" or key == "dup" then
+	if key == "cpadup" or key == "up" then
 		menuSelectioni = math.max(menuSelectioni - 1, 1)
-	elseif key == "cpaddown" or key == "ddown" then
+	elseif key == "cpaddown" or key == "down" then
 		menuSelectioni = math.min(menuSelectioni + 1, #titleOptions)
 	elseif key == "a" then
 		titleOptions[menuSelectioni][2]()
-	elseif key == "cpadright" or key == "dright" then
+	elseif key == "cpadright" or key == "right" then
 		if menuSelectioni == 1 then
 			titleToggleOnline()
 		end
-	elseif key == "cpadleft" or key == "dleft" then
+	elseif key == "cpadleft" or key == "left" then
 		if menuSelectioni == 1 then
 			titleToggleOnline()
 		end

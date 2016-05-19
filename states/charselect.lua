@@ -76,7 +76,7 @@ function charSelectDraw()
 
 		local description = selectedCharacter.ability.description
 		if not description then
-			description = "Abilities.. WHAT ARE THOSE?"
+			description = "No ability set."
 		end
 		love.graphics.print(description, util.getWidth() / 2 - abilityFont:getWidth(description) / 2, 200)
 
@@ -126,12 +126,12 @@ function charSelectDraw()
 end
 
 function charSelectKeyPressed(key)
-	if key == "cpadright" or key == "dright" then
+	if key == "cpadright" or key == "right" then
 		currentCharacterSelection = currentCharacterSelection + 1
 		if currentCharacterSelection > #gameCharacters then
 			currentCharacterSelection = 1
 		end
-	elseif key == "cpadleft" or key == "dleft" then
+	elseif key == "cpadleft" or key == "left" then
 		currentCharacterSelection = currentCharacterSelection - 1
 		if currentCharacterSelection < 1 then
 			currentCharacterSelection = #gameCharacters

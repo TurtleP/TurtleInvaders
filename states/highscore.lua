@@ -108,6 +108,9 @@ end
 
 function highscoreKeyPressed(key)
 	if highi then
+		if key == "a" then
+            keyboardInput:onReturn()
+        end
 		return
 	end
 

@@ -1,17 +1,5 @@
 function loadCharacters()
-	local characters =
-	{
-		"turtle",
-		"gabe",
-		"idiot",
-		"hugo",
-		"astro",
-		"furious",
-		"qwerty",
-		"saulo",
-		"polybius",
-		"scuttles"
-	}
+	local characters = love.filesystem.getDirectoryItems("characters")
 
 	table.sort(characters)
 
@@ -51,6 +39,8 @@ function createCharacter(name)
 		if abilityFunction then
 			character.ability = dofile("characters/" .. name .. "/" .. character.ability .. ".lua")
 		end
+	else
+		character.ability = "No ability."
 	end
 
 	character.quads = {}

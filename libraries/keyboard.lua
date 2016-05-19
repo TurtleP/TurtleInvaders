@@ -24,13 +24,15 @@ function keyboard:init(hint, max)
 		self.buttons[k] = keyboardkey:new(self.x + math.mod(k - 1, 12) * 26, (self.y + 50) + math.floor((k - 1) / 12) * 26, keys[k])
 	end
 
-	self.maxChars = max
+	self.maxChars = max or 10
 
 	self.fade = 0
+	
+	self.enabled = false
 end
 
 function keyboard:update(dt)
-	if self.open then
+	if self.enabled then
 		self.fade = math.min(self.fade + 0.8 * dt, 1)
 	else
 		self.fade = math.max(self.fade - 0.8 * dt, 0)
@@ -42,38 +44,56 @@ function keyboard:update(dt)
 end
 
 function keyboard:open()
-	self.open = true
+	keyboardOpenSound:play()
+	self.enabled = true
+end
+
+function keyboard:setHint(text)
+	self.hint = text
+end
+
+function keyboard:setMaxChars(max)
+	self.maxChars = max
 end
 
 function keyboard:close()
-	self.open = false
+	keyboardCloseSound:play()
+	self.enabled = false
+end
+
+function keyboard:isOpen()
+	return self.enabled
+end
+
+function keyboard:clear()
+	self.text = ""
 end
 
 function keyboard:draw()
 	if #self.text == 0 then
 		love.graphics.setColor(160, 160, 160, 255 * self.fade)
 		
-		love.graphics.print(self.hint, self.x + 2, self.y + 8)
+		love.graphics.print(self.hint, self.x + 2, self.y)
 	else
 		love.graphics.setColor(255, 255, 255, 255 * self.fade)
 		
-		love.graphics.print(self.text, self.x + 2, self.y + 8)
+		love.graphics.print(self.text, self.x + 2, self.y)
 	end
-
+	
+	love.graphics.setColor(255, 255, 255, 255 * self.fade)
+	
 	love.graphics.push()
 
 	love.graphics.translate(40, 240)
 
 	for x = 1, 26 do
-		love.graphics.line(self.x + 5 + (x - 1) * 12, self.y + 10 + mainFont:getHeight() - 2, self.x + 10 + (x - 1) * 12, self.y + 10 + mainFont:getHeight() - 2)
+		love.graphics.line(self.x + 5 + (x - 1) * 12, self.y + mainFont:getHeight(), self.x + 10 + (x - 1) * 12, self.y + mainFont:getHeight())
 	end
 
 	love.graphics.pop()
 
-	love.graphics.setColor(255, 255, 255, 255 * self.fade)
-
 	for k, v in pairs(self.buttons) do
-		v:draw()
+		v:draw(self.fade)
 	end
 
 	love.graphics.setColor(255, 255, 255, 255)
@@ -105,7 +125,7 @@ function keyboard:mousepressed(x, y, button)
 				if self.onReturn then
 					self.onReturn()
 				end
-				self.text = ""
+				self:clear()
 				return
 			end
 
@@ -151,7 +171,11 @@ function keyboardkey:update(dt)
 	end
 end
 
-function keyboardkey:draw()
+function keyboardkey:draw(fade)
+	if not self.pressed then
+		love.graphics.setColor(255, 255, 255, 255 * fade)
+	end
+	
 	if self.pressed then
 		love.graphics.setColor(unpack(util.colorFade(self.fadeTimer, 1, {255, 0, 0}, {255, 255, 255})))
 	end
@@ -159,7 +183,7 @@ function keyboardkey:draw()
 	love.graphics.print(self.text, (self.x + self.width / 2) - mainFont:getWidth(self.text) / 2, (self.y + self.height / 2) - mainFont:getHeight() / 2)
 
 	if self.pressed then
-		love.graphics.setColor(255, 255, 255)
+		love.graphics.setColor(255, 255, 255, 255)
 	end
 end
 

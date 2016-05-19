@@ -36,6 +36,9 @@ require 'states.credits'
 require 'states.highscore'
 require 'states.netplay'
 
+client = require 'socket'.udp()
+client:settimeout(0)
+
 io.stdout:setvbuf("no")
 
 --[[
@@ -159,6 +162,12 @@ function love.load()
 		shieldShards[k] = love.graphics.newImage("graphics/game/shield/" .. k .. ".png")
 	end
 
+	serverExistsImage = love.graphics.newImage("graphics/netplay/serverexists.png")
+	serverQuads = {}
+	for k = 1, 2 do
+		serverQuads[k] = love.graphics.newQuad((k - 1) * 18, 0, 18, 18, serverExistsImage:getWidth(), serverExistsImage:getHeight())
+	end
+
 	--SET UP ACHIEVEMENTS
 	local achievementNames =
 	{
@@ -182,7 +191,7 @@ function love.load()
 
 	love.graphics.set3D(true)
 	
-	versionString = "0.7"
+	versionString = "0.8"
 	
 	waveAdvanceSound = love.audio.newSource("audio/wave.ogg", "static")
 	gameOverSound = love.audio.newSource("audio/gameover.ogg", "static")
@@ -203,6 +212,9 @@ function love.load()
 	megaCannonSound = love.audio.newSource("audio/megacannon.ogg", "static")
 
 	keyboardSound = love.audio.newSource("audio/drip.ogg", "static")
+	keyboardOpenSound = love.audio.newSource("audio/open.ogg", "static")
+	keyboardCloseSound = love.audio.newSource("audio/close.ogg", "static")
+	
 	shieldSound = love.audio.newSource("audio/shield.ogg")
 	
 	hurtSound = {}
@@ -303,8 +315,8 @@ function useDirectionalPad(enable)
 	directionalPadEnable = enable
 
 	if enable then
-		controls["left"] = "dleft"
-		controls["right"] = "dright"
+		controls["left"] = "left"
+		controls["right"] = "right"
 	else
 		controls["left"] = "cpadleft"
 		controls["right"] = "cpadright"

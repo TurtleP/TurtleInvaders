@@ -182,6 +182,8 @@ function raccoon:die()
 	end
 	
 	bossSong = nil
+	
+	collectgarbage()
 	collectgarbage()
 	
 	self.remove = true
