@@ -17,6 +17,8 @@ function charSelectInit()
 
 		table.insert(charBats, temp)
 	end)
+	
+	print(abilityFont:getWidth("        "))
 end
 
 function charSelectUpdate(dt)

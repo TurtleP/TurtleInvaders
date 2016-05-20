@@ -19,7 +19,9 @@ function titleInit(selection)
 	if not menuSong:isPlaying() then
 		menuSong:play()
 	end
-
+	
+	superPlayer = true
+	
 	if bossSong then
 		bossSong:stop()
 	end

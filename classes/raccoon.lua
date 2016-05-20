@@ -186,5 +186,8 @@ function raccoon:die()
 	collectgarbage()
 	collectgarbage()
 	
+	finalBossSong = love.audio.newSource("audio/finalboss.ogg", "static")
+	finalBossSong:setLooping(true)
+	
 	self.remove = true
 end

@@ -13,9 +13,7 @@ function phoenix:init()
 	shakeValue = 20
 
 	menuSong:stop()
-
-	finalBossSong = love.audio.newSource("audio/finalboss.ogg")
-	finalBossSong:setLooping(true)
+	
 	finalBossSong:play()
 
 	local speeds = {-150, 150}

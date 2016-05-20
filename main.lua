@@ -174,27 +174,6 @@ function love.load()
 		serverQuads[k] = love.graphics.newQuad((k - 1) * 18, 0, 18, 18, serverExistsImage:getWidth(), serverExistsImage:getHeight())
 	end
 
-	--SET UP ACHIEVEMENTS
-	local achievementNames =
-	{
-		"Megalovania Bat",
-		"Risky Raccoon",
-		"Phoenix Fizzler",
-		"Easy as Pie",
-		"Average Gamer",
-		"Dedicated Player",
-		"Combo Madness",
-		"Super Player",
-		"Cease Fire",
-		"Double Ping"
-	}
-
-	superPlayer = true
-	achievements = {}
-	for k = 1, 10 do
-		table.insert(achievements, achievement:new(k, achievementNames[k]))
-	end
-
 	love.graphics.set3D(true)
 	
 	versionString = "0.8"
@@ -413,7 +392,27 @@ function defaultSettings(remove)
 	for k = 1, 4 do
 		highscores[k] = {"????", "Unknown", 0}
 	end
-
+	
+	--SET UP ACHIEVEMENTS
+	local achievementNames =
+	{
+		"Megalovania Bat",
+		"Risky Raccoon",
+		"Phoenix Fizzler",
+		"Easy as Pie",
+		"Average Gamer",
+		"Dedicated Player",
+		"Combo Madness",
+		"Super Player",
+		"Cease Fire",
+		"Double Ping"
+	}
+	
+	achievements = {}
+	for k = 1, 10 do
+		table.insert(achievements, achievement:new(k, achievementNames[k]))
+	end
+	
 	if remove then
 		love.filesystem.remove("save.txt")
 	end
