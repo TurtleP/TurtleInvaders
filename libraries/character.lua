@@ -1,5 +1,17 @@
 function loadCharacters()
-	local characters = love.filesystem.getDirectoryItems("characters")
+	local characters =
+	{
+		"astro",
+		"furious",
+		"gabe",
+		"hugo",
+		"idiot",
+		"polybius",
+		"qwerty",
+		"saulo",
+		"scuttles",
+		"turtle"
+	}
 
 	table.sort(characters)
 

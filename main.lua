@@ -36,8 +36,14 @@ require 'states.credits'
 require 'states.highscore'
 require 'states.netplay'
 
-client = require 'socket'.udp()
-client:settimeout(0)
+require 'netplay.lobby'
+require 'netplay.client'
+
+clientSocket = require 'socket'.udp()
+
+if _EMULATEHOMEBREW then
+	clientSocket:settimeout(0)
+end
 
 io.stdout:setvbuf("no")
 
@@ -275,6 +281,10 @@ function love.update(dt)
 
 	for k, v in pairs(achievements) do
 		v:update(dt)
+	end
+	
+	if netplayOnline then
+		client:update(dt)	
 	end
 
 	if isSaving then
