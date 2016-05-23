@@ -39,12 +39,6 @@ require 'states.netplay'
 require 'netplay.lobby'
 require 'netplay.client'
 
-clientSocket = require 'socket'.udp()
-
-if _EMULATEHOMEBREW then
-	clientSocket:settimeout(0)
-end
-
 io.stdout:setvbuf("no")
 
 --[[
@@ -201,6 +195,9 @@ function love.load()
 	keyboardCloseSound = love.audio.newSource("audio/close.ogg", "static")
 	
 	shieldSound = love.audio.newSource("audio/shield.ogg")
+
+	toggleSound = love.audio.newSource("audio/tick.ogg")
+	blipSound = love.audio.newSource("audio/blip.ogg")
 	
 	hurtSound = {}
 	for k = 1, 3 do

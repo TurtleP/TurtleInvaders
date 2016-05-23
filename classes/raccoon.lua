@@ -181,13 +181,5 @@ function raccoon:die()
 		objects["player"][1]:addMaxHealth()
 	end
 	
-	bossSong = nil
-	
-	collectgarbage()
-	collectgarbage()
-	
-	finalBossSong = love.audio.newSource("audio/finalboss.ogg", "static")
-	finalBossSong:setLooping(true)
-	
 	self.remove = true
 end

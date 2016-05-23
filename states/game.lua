@@ -364,6 +364,10 @@ function gameKeyPressed(key)
 		end
 	end
 
+	if key == "y" then
+		objects["player"][1]:setPowerup("shield")
+	end
+	
 	if paused then
 		gamePauseMenu:keyPressed(key)
 		return

@@ -2,6 +2,7 @@ function loadCharacters()
 	local characters =
 	{
 		"astro",
+		"becky",
 		"furious",
 		"gabe",
 		"hugo",

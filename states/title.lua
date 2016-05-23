@@ -83,7 +83,7 @@ function titleToggleOnline()
 	onlineMenu = not onlineMenu
 	
 	if onlineMenu then
-		titleOptions[1] = {"Online Game", function() util.changeState("netplay") end}
+		titleOptions[1] = {"Online Game", function() if love.system.getWifiStrength() > 0 then util.changeState("netplay") end end}
 	else
 		titleOptions[1] = {"New Game", function() util.changeState("charSelect") end}
 	end

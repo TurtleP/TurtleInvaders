@@ -40,6 +40,10 @@ function love.graphics.set3D(enable3D)
 	assert(enable3D and type(enable3D) == "boolean", "Boolean expected: got " .. type(depthValue))
 end
 
+function love.system.getWifiStrength()
+	return 3
+end
+
 local olddraw = love.graphics.draw
 function love.graphics.draw(...)
 	local args = {...}
