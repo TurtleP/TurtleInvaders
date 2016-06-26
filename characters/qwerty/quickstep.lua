@@ -11,11 +11,11 @@ function ability:init(turtle)
 
 	self.maxTimer = 8
 
-	self.active = false
+	self.initialize = false
 end
 
 function ability:update(dt)
-	if not self.active then
+	if not self.initialize then
 		return
 	end
 
@@ -31,14 +31,14 @@ function ability:update(dt)
 	if self.maxTimer > 0 then
 		self.maxTimer = self.maxTimer - dt
 	else
-		self.active = false
+		self.initialize = false
 	end
 end
 
 function ability:trigger(parent)
 	if parent then
 		self:init(parent)
-		self.active = true
+		self.initialize = true
 	end
 
 	--there's gonna be a cooldown, cool? okay.

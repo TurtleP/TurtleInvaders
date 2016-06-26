@@ -56,11 +56,11 @@ function ability:init(turtle)
 
 	self.useTimer = 8
 
-	self.active = true
+	self.initialize = true
 end
 
 function ability:update(dt)
-	if not self.active then
+	if not self.initialize then
 		return
 	end
 
@@ -109,13 +109,13 @@ function ability:createPortals(x, y, i)
 end
 
 function ability:trigger(parent)
-	if parent and not self.active then
+	if parent and not self.initialize then
 		self:init(parent)
 	end
 end
 
 function ability:draw()
-	if not self.active then
+	if not self.initialize then
 		return
 	end
 

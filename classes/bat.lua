@@ -225,7 +225,9 @@ function bat:die(player, anti)
 	self.remove = true
 
 	if not objects["player"][1].ability.passive then
-		abilityKills = util.clamp(abilityKills + 1, 0, objects["player"][1]:getMaxHealth() * 2)
+		if not abilities[1].initialize then
+			abilityKills = util.clamp(abilityKills + 1, 0, objects["player"][1]:getMaxHealth() * 2)
+		end
 	end
 
 	gameCreateExplosion(self)

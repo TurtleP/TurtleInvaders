@@ -20,15 +20,16 @@ function ability:init(parent)
 	self.object = bilst:new(parent.x, parent.y, parent)
 	table.insert(objects["misc"], self.object)
 
-	self.initialized = true
+	self.initialize = true
 end
 
-function ability:removeBilst()
+function ability:reset()
 	self.object = nil
+	self.initialize = false
 end
 
 function ability:update(dt)
-	if self.initialized then
+	if self.initialize then
 		self.object.staticX, self.object.staticY = self.parent.x+14, self.parent.y
 	end
 end
@@ -109,7 +110,7 @@ end
 function bilst:passiveCollide(name, data)
 	if name == "bat" then
 		self.remove = true
-		self.parent:removeBilst()
+		self.parent:reset()
 		gameCreateExplosion(self)
 	end
 end

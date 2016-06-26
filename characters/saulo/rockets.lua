@@ -5,7 +5,7 @@ ability.description = "Bullets will home in on the closest enemy"
 function ability:init(parent)
 	self.setTarget = false
 	
-	self.start = true
+	self.initialize = true
 	
 	self.target = nil
 
@@ -20,7 +20,7 @@ function ability:init(parent)
 end
 
 function ability:update(dt)
-	if not self.start then
+	if not self.initialize then
 		return
 	end
 
@@ -32,7 +32,7 @@ function ability:update(dt)
 end
 
 function ability:trigger(parent)
-	if not parent or self.start then
+	if not parent or self.initialize then
 		return
 	end
 
@@ -41,6 +41,7 @@ end
 
 function ability:reset()
 	self.parent.shoot = oldParentShoot
+	self.initialize = false
 end
 
 --ROCKETS--

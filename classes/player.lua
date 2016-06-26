@@ -22,7 +22,8 @@ function player:init(characterData)
 
 	self.gravity = 0
 
-	self.shootingTimer = 1/3
+	self.maxShootTimer = 1/3
+	self.shootingTimer = self.maxShootTimer
 
 	self.mask =
 	{
@@ -251,7 +252,7 @@ function player:shoot()
 			table.insert(objects["bullet"], bullet:new(self.x + self.width / 2 - 1, self.y - 1, bulletType, {0, -180}))			
 		end
 
-		self.shootingTimer = 1/3
+		self.shootingTimer = self.maxShootTimer
 	end
 end
 

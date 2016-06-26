@@ -230,7 +230,7 @@ function love.load()
 	batSaveTimer = 0
 	batSaveQuadi = 1
 
-	--love.audio.setVolume(0)
+	love.audio.setVolume(0)
 
 	INTERFACE_DEPTH = 3
 	ENTITY_DEPTH = 1.5

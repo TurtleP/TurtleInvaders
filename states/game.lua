@@ -127,7 +127,7 @@ function gameDropPowerup(x, y, oneUp, superUp)
 		return
 	end
 
-	if objects["player"][1]:getPowerup() ~= "none" or objects["boss"][1] then
+	if (objects["player"][1]:getPowerup() ~= "none" or objects["boss"][1]) and not abilities[1].initialize then
 		return
 	end
 

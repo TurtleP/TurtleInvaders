@@ -1,1 +1,1 @@
-width:40;height:40;shieldspeed:8;ability:wrap;shieldwidth:40;shieldheight:40;shieldcount:8;
+width:40;height:40;shieldspeed:8;ability:arkanoid;shieldwidth:40;shieldheight:40;shieldcount:8;
