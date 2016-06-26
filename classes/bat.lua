@@ -12,15 +12,17 @@ local batPowerups =
 
 bat = class("bat")
 
-function bat:init(x, y)
+function bat:init(x, y, velocity, id)
 	self.x = x
 	self.y = y
 
+	self.id = id
+	
 	self.width = 30
 	self.height = 14
 
-	self.speedx = love.math.random(-30, 30)
-	self.speedy = love.math.random(30, 90)
+	self.speedx = velocity[1]
+	self.speedy = velocity[2]
 
 	self.staticSpeed = {self.speedx, self.speedy}
 
@@ -127,13 +129,6 @@ function bat:update(dt)
 			else
 				self:shoot()
 			end
-		end
-
-		if self.ability == "circle" then
-			self.angle = self.angle + 5 * dt
-
-			self.x = self.x + math.cos(self.angle) * 2
-			self.y = self.y + math.sin(self.angle) * 2
 		end
 	end
 	

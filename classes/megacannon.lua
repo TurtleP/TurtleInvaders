@@ -50,7 +50,7 @@ function megacannon:passiveCollide(name, data)
 		end
 	end
 
-	if name == "boss" then
+	if name == "boss" or name == "player" then
 		pass = false
 	end
 

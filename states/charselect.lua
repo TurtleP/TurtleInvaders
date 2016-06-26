@@ -12,13 +12,11 @@ function charSelectInit()
 	charBats = {}
 
 	charTimer = timer:new(2, function()
-		local temp = bat:new(love.math.random(370), -14)
+		local temp = bat:new(love.math.random(370), -14, {love.math.random(-30, 30), love.math.random(30, 90)}, 0)
 		temp.screen = "top"
 
 		table.insert(charBats, temp)
 	end)
-	
-	print(abilityFont:getWidth("        "))
 end
 
 function charSelectUpdate(dt)

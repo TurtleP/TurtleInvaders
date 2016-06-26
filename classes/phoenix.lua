@@ -14,7 +14,7 @@ function phoenix:init()
 
 	menuSong:stop()
 	
-	finalBossSong:play()
+	bossSong:play()
 
 	local speeds = {-150, 150}
 	self.speed = speeds[love.math.random(#speeds)]
@@ -224,11 +224,6 @@ function phoenix:die()
 		displayInfo:setEnemyData(nil)
 	end
 
-	finalBossSong:stop()
-	finalBossSong = nil
-
-	collectgarbage()
-	
 	achievements[3]:unlock(true)
 	if difficultyi == 1 then
 		achievements[4]:unlock(true)
@@ -241,8 +236,6 @@ function phoenix:die()
 	if superPlayer then
 		achievements[8]:unlock(true)
 	end
-	
-	bossSong = love.audio.newSource("audio/boss.ogg")
 
 	gameAddScore(6000)
 	gameFinished = true

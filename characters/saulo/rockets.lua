@@ -32,7 +32,7 @@ function ability:update(dt)
 end
 
 function ability:trigger(parent)
-	if not parent then
+	if not parent or self.start then
 		return
 	end
 

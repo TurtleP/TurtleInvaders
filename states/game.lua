@@ -5,6 +5,7 @@ function gameInit(playerData)
 	objects["boss"] = {}
 	objects["powerup"] = {}
 	objects["fire"] = {}
+	objects["misc"] = {}
 
 	megaCannon = nil
 
@@ -30,9 +31,11 @@ function gameInit(playerData)
 		time = 0.9
 	end
 
+	batCount = 0
+
 	enemyTimer = timer:new(time, 
 		function(self)
-			table.insert(objects["bat"], bat:new(love.math.random(0, 370), -14))
+			gameSpawnBat(love.math.random(0, 370), -14, {love.math.random(-30, 30), love.math.random(30, 90)}, gameAddBatCount())
 		end
 	)
 
@@ -44,7 +47,9 @@ function gameInit(playerData)
 
 			--Boss wave number - 1 because offsets
 			if currentWave == 5 then
-				objects["boss"][1] = megabat:new()
+				local speeds = {-120, 120}
+				
+				objects["boss"][1] = megabat:new(speeds[love.math.random(#speeds)])
 			elseif currentWave == 17 then
 				objects["boss"][1] = raccoon:new()
 			elseif currentWave == 29 then
@@ -82,6 +87,16 @@ function gameInit(playerData)
 	gameFinished = false
 	
 	shakeValue = 0
+end
+
+function gameSpawnBat(x, y, velocity, id)
+	table.insert(objects["bat"], bat:new(x, y, velocity, id))
+end
+
+function gameAddBatCount()
+	batCount = batCount + 1
+
+	return batCount
 end
 
 function gameNextWave()
@@ -281,6 +296,10 @@ function gameDraw()
 		v:draw()
 	end
 
+	for k, v in pairs(objects["misc"]) do
+		v:draw()
+	end
+
 	for k, v in pairs(explosions) do
 		v:draw()
 	end
@@ -362,10 +381,6 @@ function gameKeyPressed(key)
 				end
 			end
 		end
-	end
-
-	if key == "y" then
-		objects["player"][1]:setPowerup("shield")
 	end
 	
 	if paused then

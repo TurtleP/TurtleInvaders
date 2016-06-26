@@ -109,7 +109,9 @@ function ability:createPortals(x, y, i)
 end
 
 function ability:trigger(parent)
-	self:init(parent)
+	if parent and not self.active then
+		self:init(parent)
+	end
 end
 
 function ability:draw()

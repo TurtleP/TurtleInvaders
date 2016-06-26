@@ -32,6 +32,11 @@ function util.clearFonts()
 	collectgarbage()
 end
 
+function util.round(num, idp) --Not by me
+	local mult = 10^(idp or 0)
+	return math.floor(num * mult + 0.5) / mult
+end
+
 function util.toBoolean(stringCompare)
 	return tostring(stringCompare) == "true"
 end
@@ -58,6 +63,8 @@ function util.lerp(a, b, t)
 end
 
 function util.updateState(dt)
+	dt = math.min(1/60, dt)
+	
 	if _G[state .. "Update"] then
 		_G[state .. "Update"](dt)
 	end

@@ -34,10 +34,6 @@ require 'states.options'
 require 'states.charselect'
 require 'states.credits'
 require 'states.highscore'
-require 'states.netplay'
-
-require 'netplay.lobby'
-require 'netplay.client'
 
 io.stdout:setvbuf("no")
 
@@ -314,6 +310,25 @@ function loadSettings()
 		
 	success, value = pcall(love.filesystem.read, "save.txt")
 
+	netsucc, value = pcall(love.filesystem.read, "coop.txt")
+	if netsucc then
+		local netData = love.filesystem.read("coop.txt")
+
+		if not netData then
+			return
+		end
+
+		local keys = netData:split(";")
+
+		for x = 1, #keys do
+			local keyPairs = keys[x]:split(":")
+
+			if keyPairs[1] and keyPairs[2] then
+				table.insert(serverList, {keyPairs[1], keyPairs[2], tonumber(keyPairs[3])})
+			end
+		end
+	end
+
 	local saveData
 	if success then
 		saveData = love.filesystem.read("save.txt")
@@ -345,6 +360,8 @@ function loadSettings()
 				local split = value:split("~")
 
 				highscores[tonumber(split[1])] = {split[2], split[3], tonumber(split[4])}
+			elseif index == "online" then
+				onlineName = value
 			end
 		end
 	end
@@ -369,7 +386,14 @@ function saveSettings()
 		string = string .. "highscore:" .. k .. "~" .. highscores[k][1] .. "~" .. highscores[k][2] .. "~" .. highscores[k][3] .. ";"
 	end
 
+	string = string .. "online:" .. onlineName .. ";"
+
 	love.filesystem.write("save.txt", string)
+end
+
+function saveNetplay(string)
+	isSaving = true
+	love.filesystem.write("coop.txt", string)
 end
 
 function defaultSettings(remove)
@@ -389,6 +413,8 @@ function defaultSettings(remove)
 	for k = 1, 4 do
 		highscores[k] = {"????", "Unknown", 0}
 	end
+
+	serverList = {}
 	
 	--SET UP ACHIEVEMENTS
 	local achievementNames =
@@ -409,6 +435,8 @@ function defaultSettings(remove)
 	for k = 1, 10 do
 		table.insert(achievements, achievement:new(k, achievementNames[k]))
 	end
+	
+	onlineName = ""
 	
 	if remove then
 		love.filesystem.remove("save.txt")

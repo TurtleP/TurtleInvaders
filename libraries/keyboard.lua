@@ -29,6 +29,9 @@ function keyboard:init(hint, max)
 	self.fade = 0
 	
 	self.enabled = false
+
+	self.sineTimer = 0
+	self.sineFade = 1
 end
 
 function keyboard:update(dt)
@@ -37,6 +40,10 @@ function keyboard:update(dt)
 	else
 		self.fade = math.max(self.fade - 0.8 * dt, 0)
 	end
+
+	self.sineTimer = self.sineTimer + 0.5 * dt
+
+	self.sineFade = math.abs( math.sin( self.sineTimer * math.pi ) / 2 ) + 0.5
 	
 	for k, v in pairs(self.buttons) do
 		v:update(dt)
@@ -81,7 +88,14 @@ function keyboard:draw()
 	end
 	
 	love.graphics.setColor(255, 255, 255, 255 * self.fade)
-	
+
+	if self.fade == 1 then
+		love.graphics.setColor(255, 255, 255, 255 * self.sineFade)
+	end
+	love.graphics.rectangle("fill", self.x + 4 + mainFont:getWidth(self.text), self.y + 6, 2, mainFont:getHeight() / 2 + 4)
+
+	love.graphics.setColor(255, 255, 255, 255 * self.fade)
+
 	love.graphics.push()
 
 	love.graphics.translate(40, 240)

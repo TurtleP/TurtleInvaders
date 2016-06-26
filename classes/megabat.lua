@@ -1,6 +1,6 @@
 megabat = class("megabat")
 
-function megabat:init()
+function megabat:init(speedx)
 	self.x = 170
 	self.y = -bossImage:getHeight()
 
@@ -15,8 +15,7 @@ function megabat:init()
 		["barrier"] = true
 	}
 
-	local speeds = {-120, 120}
-	self.speedx = speeds[love.math.random(#speeds)]
+	self.speedx = speedx
 	self.speedy = 0
 
 	self.gravity = 0

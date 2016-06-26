@@ -68,23 +68,5 @@ function titleKeyPressed(key)
 		menuSelectioni = math.min(menuSelectioni + 1, #titleOptions)
 	elseif key == "a" then
 		titleOptions[menuSelectioni][2]()
-	elseif key == "cpadright" or key == "right" then
-		if menuSelectioni == 1 then
-			titleToggleOnline()
-		end
-	elseif key == "cpadleft" or key == "left" then
-		if menuSelectioni == 1 then
-			titleToggleOnline()
-		end
-	end
-end
-
-function titleToggleOnline()
-	onlineMenu = not onlineMenu
-	
-	if onlineMenu then
-		titleOptions[1] = {"Online Game", function() if love.system.getWifiStrength() > 0 then util.changeState("netplay") end end}
-	else
-		titleOptions[1] = {"New Game", function() util.changeState("charSelect") end}
 	end
 end
