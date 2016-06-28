@@ -234,7 +234,7 @@ function love.load()
 
 	for fieldCount = 1, 3 do
 		starFields[fieldCount] = {}
-		for starCount = 1, math.floor(100 / fieldCount) do
+		for starCount = 1, math.floor(60 / fieldCount) do
 			table.insert(starFields[fieldCount], star:new(love.math.random(0, 400), love.math.random(0, util.getHeight()), fieldCount))
 		end
 	end

@@ -42,8 +42,6 @@ function ability:init(turtle)
 
 	self.oldDraw = self.parent.draw
 
-	self.parent.mask["barrier"] = false
-
 	self.timer = 0
 
 	self.reverse = false
@@ -76,12 +74,14 @@ function ability:update(dt)
 
 	if self.portals[1] and self.portals[2] then
 		if self.portals[1].type == "portal" and self.portals[2].type == "portal" then
-			if self.portals[1].colors[self.portals[1].i][4] == 255 and self.portals[2].colors[self.portals[2].i][4] == 255 then
-				if self.parent.x < 8 then
-					self.parent.x = self.parent.x + 393
-				elseif self.parent.x > 393 then
-					self.parent.x = self.parent.x - 393
-				end
+			if self.parent.mask["barrier"] then
+				self.parent.mask["barrier"] = false
+			end
+			
+			if self.parent.x < 8 then
+				self.parent.x = self.parent.x + 393
+			elseif self.parent.x > 393 then
+				self.parent.x = self.parent.x - 393
 			end
 		end
 	end
@@ -121,13 +121,11 @@ function ability:draw()
 
 	if self.portals[1] and self.portals[2] then
 		if self.portals[1].type == "portal" and self.portals[2].type == "portal" then
-			if self.portals[1].colors[self.portals[1].i][4] == 255 and self.portals[2].colors[self.portals[2].i][4] == 255 then
-				if self.parent.shouldDraw and objects["player"][1] then
-					if self.parent.x < 0 then
-						love.graphics.draw(self.parent.graphic, self.parent.animationQuads[self.parent.animationQuadi], self.parent.x + 393, self.parent.y)
-					elseif self.parent.x + self.parent.width > 400 then
-						love.graphics.draw(self.parent.graphic, self.parent.animationQuads[self.parent.animationQuadi], self.parent.x - 393, self.parent.y)
-					end
+			if self.parent.shouldDraw and objects["player"][1] then
+				if self.parent.x < 0 then
+					love.graphics.draw(self.parent.graphic, self.parent.animationQuads[self.parent.animationQuadi], self.parent.x + 393, self.parent.y)
+				elseif self.parent.x + self.parent.width > 400 then
+					love.graphics.draw(self.parent.graphic, self.parent.animationQuads[self.parent.animationQuadi], self.parent.x - 393, self.parent.y)
 				end
 			end
 		end
@@ -144,8 +142,10 @@ function ability:reset()
 	elseif self.parent.x + self.parent.width > 400 then
 		self.parent.x = 400 - self.parent.width
 	end
+	self.portals = {}
 	self.parent.draw = self.oldDraw
 	self.parent.mask["barrier"] = true
+	self.initialize = false
 	self.active = false
 end
 

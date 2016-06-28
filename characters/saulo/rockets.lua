@@ -12,10 +12,18 @@ function ability:init(parent)
 	self.timer = 8
 
 	self.parent = parent
+
+	self.maxTimer = parent.maxShootTimer
+
+	parent.maxShootTimer = 1/2
 	
-	oldParentShoot = parent.shoot
+	self.oldParentShoot = parent.shoot
 	parent.shoot = function(self)
-		table.insert(objects["bullet"], rocket:new(self.x + (self.width / 2) - 1, self.y, "normal", {0, -100}))	
+		if self.shootingTimer == 0 then
+			table.insert(objects["bullet"], rocket:new(self.x + (self.width / 2) - 1, self.y, "normal", {0, -100}))
+			
+			self.shootingTimer = self.maxShootTimer
+		end
 	end
 end
 
@@ -40,8 +48,11 @@ function ability:trigger(parent)
 end
 
 function ability:reset()
-	self.parent.shoot = oldParentShoot
-	self.initialize = false
+	if self.initialize then
+		self.parent.shoot = self.oldParentShoot
+		self.parent.maxShootTimer = self.maxTimer
+		self.initialize = false
+	end
 end
 
 --ROCKETS--
@@ -54,6 +65,8 @@ function rocket:init(x, y)
 	self.mask["player"] = false
 	
 	self.parent = objects["player"][1]
+
+	self.destroyTimer = 0
 end
 
 function rocket:update(dt)
@@ -90,6 +103,12 @@ function rocket:update(dt)
 		local speed = 200
 		self.speedx = speed*math.cos(a)
 		self.speedy = speed*math.sin(a)
+	end
+
+	self.destroyTimer = self.destroyTimer + dt
+	if self.destroyTimer > 2 then
+		gameCreateExplosion(self)
+		self.remove = true
 	end
 end
 

@@ -17,7 +17,7 @@ end
 function ability:init(parent)
 	self.parent = parent
 
-	self.object = bilst:new(parent.x, parent.y, parent)
+	self.object = bilst:new(parent.x, parent.y, parent, self)
 	table.insert(objects["misc"], self.object)
 
 	self.initialize = true
@@ -42,7 +42,7 @@ end
 
 bilst = class("bilst")
 
-function bilst:init(x, y, parent)
+function bilst:init(x, y, parent, becky)
 	self.x = x
 	self.y = y
 
@@ -70,6 +70,7 @@ function bilst:init(x, y, parent)
 	self.coolDown = 1.5
 
 	self.parent = parent
+	self.becky = becky
 end
 
 function bilst:update(dt)
@@ -110,7 +111,7 @@ end
 function bilst:passiveCollide(name, data)
 	if name == "bat" then
 		self.remove = true
-		self.parent:reset()
+		self.becky:reset()
 		gameCreateExplosion(self)
 	end
 end

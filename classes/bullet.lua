@@ -40,11 +40,22 @@ function bullet:init(x, y, t, velocity)
 	self.passive = true
 
 	self.t = t
+
+	self.batCount = 0
+	self.batKillTime = 0
 end
 
 function bullet:update(dt)
 	if self.y < -self.height or self.y > util.getHeight() then
 		self.remove = true
+	end
+
+	if self.batCount > 0 then
+		if self.batKillTime < 0.5 then
+			self.batKillTime = self.batKillTime + dt
+		else
+			self.batCount = 0
+		end
 	end
 end
 
@@ -55,7 +66,6 @@ function bullet:draw()
 	love.graphics.setColor(255, 255, 255)
 end
 
-local batCount = 0
 function bullet:passiveCollide(name, data)
 	if name == "bat" then
 		if self.speedy > 0 then
@@ -71,9 +81,9 @@ function bullet:passiveCollide(name, data)
 		data:die(false, anti)
 
 		if self.t == "laser" then
-			batCount = batCount + 1
+			self.batCount = self.batCount + 1
 
-			if batCount == 2 then
+			if self.batCount == 2 then
 				achievements[10]:unlock(true)
 			end
 

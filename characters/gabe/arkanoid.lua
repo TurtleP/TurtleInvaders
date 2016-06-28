@@ -12,11 +12,13 @@ function ability:init(parent)
 	parent.maxShootTimer = 1.25/3
 
 	parent.shoot = function(self)
-		table.insert(objects["bullet"], bullet:new(self.x + (self.width * 1/5) - 1, self.y - 1, "none", {0, -180}))
-		
-		table.insert(objects["bullet"], bullet:new((self.x + self.width) - 8 - 1, self.y - 1, "none", {0, -180}))
+		if self.shootingTimer == 0 then
+			table.insert(objects["bullet"], bullet:new(self.x + (self.width * 1/5) - 1, self.y - 1, "none", {0, -180}))
+			
+			table.insert(objects["bullet"], bullet:new((self.x + self.width) - 8 - 1, self.y - 1, "none", {0, -180}))
 
-		self.shootingTimer = self.maxShootTimer
+			self.shootingTimer = self.maxShootTimer
+		end
 	end
 
 	self.timer = 8

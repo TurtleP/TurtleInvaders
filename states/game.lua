@@ -123,7 +123,7 @@ function gameDropPowerup(x, y, oneUp, superUp)
 		return
 	end
 
-	if (objects["player"][1]:getPowerup() ~= "none" or objects["boss"][1]) and not abilities[1].initialize then
+	if objects["player"][1]:getPowerup() ~= "none" or objects["boss"][1] or abilities[1].initialize then
 		return
 	end
 
@@ -254,7 +254,7 @@ function gameDraw()
 
 	love.graphics.push()
 
-	if shakeValue > 0 then
+	if shakeValue > 0 and not paused then
 		love.graphics.translate(love.math.random() * shakeValue, 0)
 	end
 
