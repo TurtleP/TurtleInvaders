@@ -157,16 +157,6 @@ function love.load()
 	for k = 1, 9 do
 		shieldShards[k] = love.graphics.newImage("graphics/game/shield/" .. k .. ".png")
 	end
-
-	serverExistsImage = love.graphics.newImage("graphics/netplay/serverexists.png")
-	serverQuads = {}
-	for k = 1, 2 do
-		serverQuads[k] = love.graphics.newQuad((k - 1) * 18, 0, 18, 18, serverExistsImage:getWidth(), serverExistsImage:getHeight())
-	end
-
-	love.graphics.set3D(true)
-	
-	versionString = "0.8"
 	
 	waveAdvanceSound = love.audio.newSource("audio/wave.ogg", "static")
 	gameOverSound = love.audio.newSource("audio/gameover.ogg", "static")
@@ -224,6 +214,10 @@ function love.load()
 	bossSong:setLooping(true)
 
 	gameModei = 1
+
+	love.graphics.set3D(true)
+	
+	versionString = "1.0"
 
 	loadSettings()
 

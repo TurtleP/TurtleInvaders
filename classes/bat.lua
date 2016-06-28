@@ -12,11 +12,9 @@ local batPowerups =
 
 bat = class("bat")
 
-function bat:init(x, y, velocity, id)
+function bat:init(x, y, velocity)
 	self.x = x
 	self.y = y
-
-	self.id = id
 	
 	self.width = 30
 	self.height = 14

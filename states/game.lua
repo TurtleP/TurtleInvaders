@@ -35,7 +35,7 @@ function gameInit(playerData)
 
 	enemyTimer = timer:new(time, 
 		function(self)
-			gameSpawnBat(love.math.random(0, 370), -14, {love.math.random(-30, 30), love.math.random(30, 90)}, gameAddBatCount())
+			gameSpawnBat(love.math.random(0, 370), -14, {love.math.random(-30, 30), love.math.random(30, 90)})
 		end
 	)
 
@@ -46,14 +46,16 @@ function gameInit(playerData)
 			end
 
 			--Boss wave number - 1 because offsets
-			if currentWave == 5 then
-				local speeds = {-120, 120}
-				
-				objects["boss"][1] = megabat:new(speeds[love.math.random(#speeds)])
-			elseif currentWave == 17 then
-				objects["boss"][1] = raccoon:new()
-			elseif currentWave == 29 then
-				objects["boss"][1] = phoenix:new()
+			if gameModei == 1 then --also we don't want bosses in our freaking endless mode
+				if currentWave == 5 then
+					local speeds = {-120, 120}
+					
+					objects["boss"][1] = megabat:new(speeds[love.math.random(#speeds)])
+				elseif currentWave == 17 then
+					objects["boss"][1] = raccoon:new()
+				elseif currentWave == 29 then
+					objects["boss"][1] = phoenix:new()
+				end
 			end
 
 			self.maxTimer = self.maxTimer + love.math.random(4)
@@ -89,14 +91,8 @@ function gameInit(playerData)
 	shakeValue = 0
 end
 
-function gameSpawnBat(x, y, velocity, id)
-	table.insert(objects["bat"], bat:new(x, y, velocity, id))
-end
-
-function gameAddBatCount()
-	batCount = batCount + 1
-
-	return batCount
+function gameSpawnBat(x, y, velocity)
+	table.insert(objects["bat"], bat:new(x, y, velocity))
 end
 
 function gameNextWave()
