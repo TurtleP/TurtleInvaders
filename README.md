@@ -2,7 +2,7 @@
 A fixed-axis shooter with powerups and bosses
 
 # What is this
-A game over a year in the making using Lua and Löve to create a fun game. Now being ported to 3DS homebrew, it's early progress but I'll work on it when not working on other projects.
+A remake of the original Turtle: Invaders using Lua and Löve Potion for 3DS Homebrew to create a fun game.
 
 # License
 See http://creativecommons.org/licenses/by-nc-sa/4.0/ for details
