@@ -217,7 +217,7 @@ function love.load()
 
 	love.graphics.set3D(true)
 	
-	versionString = "1.0.1"
+	versionString = "1.0.2"
 
 	loadSettings()
 

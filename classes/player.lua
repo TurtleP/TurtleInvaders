@@ -227,7 +227,7 @@ end
 
 function player:shoot()
 	if self.shootingTimer == 0 then
-		if self.powerup == "nobullets" or self.powerup == "freeze" then
+		if self.powerup == "nobullets" or self.powerup == "freeze" or megaCannonSound:isPlaying() then
 			return
 		end
 
@@ -243,10 +243,8 @@ function player:shoot()
 			if self:isValidBullet(self.powerup) then
 				bulletType = self.powerup
 			elseif self.powerup == "mega" then
-				if not megaCannonSound:isPlaying() then
-					table.insert(objects["bullet"], megacannon:new(self))
-					self:setPowerup("none")
-				end
+				table.insert(objects["bullet"], megacannon:new(self))
+				self:setPowerup("none")
 				return
 			end
 
