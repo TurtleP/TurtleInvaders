@@ -245,6 +245,7 @@ function player:shoot()
 			elseif self.powerup == "mega" then
 				if not megaCannonSound:isPlaying() then
 					table.insert(objects["bullet"], megacannon:new(self))
+					self:setPowerup("none")
 				end
 				return
 			end
