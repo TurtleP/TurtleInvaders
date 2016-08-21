@@ -35,6 +35,12 @@ require 'states.charselect'
 require 'states.credits'
 require 'states.highscore'
 
+require 'netplay.client'
+require 'netplay.server'
+require 'netplay.netplay'
+require 'netplay.lobby'
+require 'netplay.browser'
+
 io.stdout:setvbuf("no")
 
 --[[
@@ -84,19 +90,11 @@ function love.load()
 			healthQuads[x][y] = love.graphics.newQuad((x - 1) * 8, (y - 1) * 8, 8, 8, healthImage:getWidth(), healthImage:getHeight())
 		end
 	end
-
-	powerupDisplayImage = love.graphics.newImage("graphics/game/powerupdisplay.png")
-	powerupDisplayQuads = {}
-	for y = 1, 2 do
-		for x = 1, 7 do
-			table.insert(powerupDisplayQuads, love.graphics.newQuad((x - 1) * 65, (y - 1) * 65, 64, 64, powerupDisplayImage:getWidth(), powerupDisplayImage:getHeight()))
-		end
-	end
 	
 	powerupImage = love.graphics.newImage("graphics/game/powerups.png")
 	powerupQuads = {}
 	for k = 1, 10 do
-		powerupQuads[k] = love.graphics.newQuad((k - 1) * 19, 0, 18, 18, powerupImage:getWidth(), powerupImage:getHeight())
+		powerupQuads[k] = love.graphics.newQuad((k - 1) * 19, 0, 18, 14, powerupImage:getWidth(), powerupImage:getHeight())
 	end
 
 	megaCannonBaseImage = love.graphics.newImage("graphics/game/boombase.png")
@@ -157,15 +155,16 @@ function love.load()
 	for k = 1, 9 do
 		shieldShards[k] = love.graphics.newImage("graphics/game/shield/" .. k .. ".png")
 	end
+
+	keyboardImage = love.graphics.newImage("graphics/mobile/keyboard.png");keyboardImage:setFilter("linear", "linear")
+	backImage = love.graphics.newImage("graphics/mobile/back.png");backImage:setFilter("linear", "linear")
+	gearImage = love.graphics.newImage("graphics/mobile/options.png");gearImage:setFilter("linear", "linear")
 	
 	waveAdvanceSound = love.audio.newSource("audio/wave.ogg", "static")
 	gameOverSound = love.audio.newSource("audio/gameover.ogg", "static")
 
 	bulletSound = love.audio.newSource("audio/bullet.ogg", "static")
 	laserSound = love.audio.newSource("audio/laser.ogg", "static")
-
-	tabRightSound = love.audio.newSource("audio/tabright.ogg", "static")
-	tabLeftSound = love.audio.newSource("audio/tableft.ogg", "static")
 
 	explodeSound = love.audio.newSource("audio/explode.ogg", "static")
 
@@ -207,38 +206,56 @@ function love.load()
 		"Endless"
 	}
 
-	menuSong = love.audio.newSource("audio/menu.ogg", "static")
+	menuSong = love.audio.newSource("audio/menu.ogg", "stream")
 	menuSong:setLooping(true)
 
-	bossSong = love.audio.newSource("audio/boss.ogg", "static")
+	bossSong = love.audio.newSource("audio/boss.ogg", "stream")
 	bossSong:setLooping(true)
 
 	gameModei = 1
-
-	love.graphics.set3D(true)
 	
-	versionString = "1.0.2"
+	versionString = "2.0"
 
 	loadSettings()
 
 	batSaveTimer = 0
 	batSaveQuadi = 1
 
-	love.audio.setVolume(0)
+	mobileMode = ((love.system.getOS() == "Android") or (love.system.getOS() == "iOS"))
 
-	INTERFACE_DEPTH = 3
-	ENTITY_DEPTH = 1.5
-	NORMAL_DEPTH = 0
+	if not mobileMode then
+		love.window.setMode(400, 240)
+	else
+		love.window.setFullscreen(true, "desktop")
+	end
+
+	local width, height = love.graphics.getDimensions()
+
+	--iOS and its 'highDPI' are a bitch
+	if love.system.getOS() == "iOS" then
+		width, height = love.window.toPixels(love.graphics.getWidth()), love.window.toPixels(love.graphics.getHeight())
+	end
+
+	scale = math.floor( math.max( (width / 400), (height / 240) ) )
 
 	starFields = {}
 
 	for fieldCount = 1, 3 do
 		starFields[fieldCount] = {}
-		for starCount = 1, math.floor(60 / fieldCount) do
-			table.insert(starFields[fieldCount], star:new(love.math.random(0, 400), love.math.random(0, util.getHeight()), fieldCount))
+		for starCount = 1, math.floor(100 / fieldCount) do
+			table.insert(starFields[fieldCount], star:new(love.math.random(width), love.math.random(height), fieldCount))
 		end
 	end
-	
+
+	love.graphics.setLineWidth(love.graphics.getLineWidth() * scale)
+
+	--love.audio.setVolume(0)
+
+	tapTimer = 0
+	tapIsHeld = false
+
+	accelerometerJoystick = nil
+
 	util.changeState("intro")
 end
 
@@ -248,9 +265,23 @@ function love.update(dt)
 	for k, v in pairs(achievements) do
 		v:update(dt)
 	end
-	
+
+	if state ~= "intro" and not paused then
+		for fieldCount = 1, #starFields do
+			local v = starFields[fieldCount]
+
+			for k, s in pairs(v) do
+				s:update(dt)
+			end
+		end
+	end
+
+	if netplayHost then
+		server:update(dt)
+	end
+
 	if netplayOnline then
-		client:update(dt)	
+		client:update(dt)
 	end
 
 	if isSaving then
@@ -262,16 +293,31 @@ function love.update(dt)
 			batSaveTimer = 0
 		end
 	end
+
+	if mobileMode then
+		if tapIsHeld then
+			tapTimer = tapTimer + dt
+		end
+	end
 end
 
 function love.draw()
+	if state ~= "intro" then
+		for fieldCount = 1, #starFields do
+			local v = starFields[fieldCount]
+
+			for k, s in pairs(v) do
+				s:draw()
+			end
+		end
+	end
+
 	util.renderState()
 
-	love.graphics.setScreen("top")
 	if isSaving then
 		love.graphics.setColor(255, 255, 255, 255)
-		love.graphics.draw(batImage, batQuads[batSaveQuadi][1], 366, 216)
-		love.graphics.draw(batImage, batQuads[batSaveQuadi][2], 366, 216)
+		love.graphics.draw(batImage, batQuads[batSaveQuadi][1], love.graphics.getWidth() * .92, love.graphics.getHeight() * .92)
+		love.graphics.draw(batImage, batQuads[batSaveQuadi][2], love.graphics.getWidth() * .92, love.graphics.getHeight() * .92)
 	end
 end
 
@@ -287,27 +333,95 @@ function love.mousepressed(x, y, button)
 	util.mousePressedState(x, y, button)
 end
 
-function useDirectionalPad(enable)
-	directionalPadEnable = enable
+function love.textinput(text)
+	util.textInput(text)
+end
 
-	if enable then
-		controls["left"] = "left"
-		controls["right"] = "right"
+function love.joystickadded(joystick)
+	if mobileMode then
+		if joystick:getName():find("Accelerometer") then
+			accelerometerJoystick = joystick
+		else
+			if joystick:isGamepad() then
+				currentGamePad = joystick
+				accelerometerJoystick = nil
+			end
+		end
 	else
-		controls["left"] = "cpadleft"
-		controls["right"] = "cpadright"
+		local id, instance = joystick:getID()
+
+		if id == 1 then
+			currentGamePad = joystick
+		end
 	end
+end
+
+function love.gamepadpressed(joystick, button)
+	if mobileMode then
+		if joystick == currentGamePad then
+			if button == "dpup" then
+				love.keypressed("up")
+			elseif button == "dpright" then
+				love.keypressed("right")
+			elseif button == "dpdown" then
+				love.keypressed("down")
+			elseif button == "left" then
+				love.keypressed("left")
+			elseif button == "a" then
+				love.keypressed("space")
+			elseif button == "b" then
+				if state == "game" then
+					love.keypressed("lshift")
+				else
+					love.keypressed("escape")
+				end
+			elseif button == "start" then
+				love.keypressed("escape")
+			end
+		end
+	else
+		util.gamePadPressed(joystick, button)
+	end
+end
+
+function love.gamepadreleased(joystick, button)
+	if mobileMode then
+		if state ~= game then
+			return
+		end
+
+		if joystick == currentGamePad then
+			if button == "dpright" then
+				love.keypressed("right")
+			elseif button == "left" then
+				love.keypressed("left")
+			end
+		end
+	else
+		util.gamePadReleased(joystick, button)
+	end
+end
+
+function love.touchpressed(id, x, y, dx, dy, pressure)
+	tapIsHeld = true
+
+	util.touchPressed(id, x, y, pressure)
+end
+
+function love.touchreleased(id, x, y, dx, dy, pressure)
+	if tapTimer > 1 then
+		love.keypressed("escape")
+	end
+	tapTimer = 0
+	tapIsHeld = false
 end
 
 function loadSettings()
 	defaultSettings()
 		
-	success, value = pcall(love.filesystem.read, "save.txt")
+	local saveData = love.filesystem.read("save.txt")
 
-	local saveData
-	if success then
-		saveData = love.filesystem.read("save.txt")
-		
+	if saveData then
 		if not saveData then
 			return
 		end
@@ -319,16 +433,12 @@ function loadSettings()
 
 			local index, value = keyPairs[1], keyPairs[2]
 
-			if index == "shoot" then
-				controls[index] = value
-			elseif index == "ability" then
-				controls[index] = value
-			elseif index == "left" then
-				controls[index] = value
-			elseif index == "right" then
-				controls[index] = value
-			elseif index == "dpad" then
-				useDirectionalPad(util.toBoolean(value))
+			if index == "music" then
+				musicEnabled = util.toBoolean(value)
+				optionsSetSound(true)
+			elseif index == "sound" then
+				soundEnabled = util.toBoolean(value)
+				optionsSetSound(false)
 			elseif index == "achievement" then
 				achievements[tonumber(value)]:unlock()
 			elseif index == "highscore" then
@@ -344,22 +454,18 @@ function saveSettings()
 	isSaving = true
 
 	local string = ""
-	for k, v in pairs(controls) do
-		string = string .. k .. ":" .. v .. ";"
-	end
-	string = string .. "dpad:" .. tostring(directionalPadEnable) .. ";"
-	
+
 	for k = 1, #achievements do
 		if achievements[k].unlocked then
 			string = string .. "achievement:" .. k .. ";"
 		end
 	end
 
+	string = string .. "music:" .. tostring(musicEnabled) .. ";" .. "sound:" .. tostring(soundEnabled) .. ";"
+
 	for k = 1, #highscores do
 		string = string .. "highscore:" .. k .. "~" .. highscores[k][1] .. "~" .. highscores[k][2] .. "~" .. highscores[k][3] .. ";"
 	end
-
-	string = string .. "online:" .. onlineName .. ";"
 
 	love.filesystem.write("save.txt", string)
 end
@@ -367,22 +473,16 @@ end
 function defaultSettings(remove)
 	controls =
 	{
-		left = "cpadleft",
-		right = "cpadright",
-		shoot = "b",
-		ability = "a"
+		left = "a",
+		right = "d",
+		shoot = "space",
+		ability = "lshift"
 	}
-
-	directionalPadEnable = false
-
-	useDirectionalPad(directionalPadEnable)
 
 	highscores = {}
 	for k = 1, 4 do
 		highscores[k] = {"????", "Unknown", 0}
 	end
-
-	serverList = {}
 	
 	--SET UP ACHIEVEMENTS
 	local achievementNames =
@@ -404,13 +504,27 @@ function defaultSettings(remove)
 		table.insert(achievements, achievement:new(k, achievementNames[k]))
 	end
 	
-	onlineName = ""
-	
+	musicEnabled = true
+	soundEnabled = true
+
 	if remove then
+		explodeSound:play()
+
 		love.filesystem.remove("save.txt")
 	end
 end
 
-if _EMULATEHOMEBREW then
-	require 'libraries.3ds'
+local oldDraw = love.graphics.draw
+function love.graphics.draw(...)
+	local vararg = {...}
+
+	if type(vararg[2]) == "number" then
+		oldDraw(vararg[1], vararg[2], vararg[3], vararg[4], scale, scale)
+	else
+		oldDraw(vararg[1], vararg[2], vararg[3], vararg[4], vararg[5], scale, scale)
+	end
+end
+
+function isTapped(x, y, width, height)
+	return aabb(x, y, width, height, love.mouse.getX(), love.mouse.getY(), 8, 8)
 end

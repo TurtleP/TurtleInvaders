@@ -9,7 +9,7 @@ function player:init(characterData)
 	self.graphic = characterData.graphic
 
 	self.x = 200 - self.width / 2
-	self.y = util.getHeight()
+	self.y = util.getHeight() / scale
 
 	self.initialize = false
 
@@ -70,7 +70,7 @@ end
 
 function player:update(dt)
 	if not self.initialize then
-		if self.y > util.getHeight() - self.height then
+		if self.y > util.getHeight() / scale - self.height then
 			self.speedy = - 120
 			return
 		else
@@ -139,19 +139,19 @@ function player:draw()
 	end
 
 	if self.isAnimated then
-		love.graphics.draw(self.graphic, self.animationQuads[self.animationQuadi], self.x, self.y)
+		love.graphics.draw(self.graphic, self.animationQuads[self.animationQuadi], self.x * scale, self.y * scale)
 
 		self:drawShield()
 		return
 	end
-	love.graphics.draw(self.graphic, self.x, self.y)
+	love.graphics.draw(self.graphic, self.x * scale, self.y * scale)
 
 	self:drawShield()
 end
 
 function player:drawShield()
 	if self.powerup == "shield" then
-		love.graphics.draw(self.shieldImage, self.shieldQuads[self.shieldQuad], self.x + (self.width / 2) - self.shieldWidth / 2, self.y + (self.height / 2) - self.shieldHeight / 2)
+		love.graphics.draw(self.shieldImage, self.shieldQuads[self.shieldQuad], (self.x + (self.width / 2) - self.shieldWidth / 2) * scale, (self.y + (self.height / 2) - self.shieldHeight / 2) * scale)
 	end
 end
 
@@ -229,6 +229,16 @@ function player:shoot()
 	if self.shootingTimer == 0 then
 		if self.powerup == "nobullets" or self.powerup == "freeze" or megaCannonSound:isPlaying() then
 			return
+		end
+
+		if self.ability then
+			if self.ability.active then
+				if self.ability.shoot then
+					self.ability:shoot()
+					self.shootingTimer = self.maxShootTimer
+					return
+				end
+			end
 		end
 
 		if self.powerup == "shotgun" then

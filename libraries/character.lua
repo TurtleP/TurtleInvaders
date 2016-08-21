@@ -1,18 +1,5 @@
 function loadCharacters()
-	local characters =
-	{
-		"astro",
-		"becky",
-		"furious",
-		"gabe",
-		"hugo",
-		"idiot",
-		"polybius",
-		"qwerty",
-		"saulo",
-		"scuttles",
-		"turtle"
-	}
+	local characters = love.filesystem.getDirectoryItems("characters")
 
 	table.sort(characters)
 
@@ -47,11 +34,7 @@ function createCharacter(name)
 	character.graphic = love.graphics.newImage("characters/" .. name .. "/ship.png")
 
 	if character.ability then
-		local abilityFunction = pcall(dofile, "characters/" .. name .. "/" .. character.ability .. ".lua")
-
-		if abilityFunction then
-			character.ability = dofile("characters/" .. name .. "/" .. character.ability .. ".lua")
-		end
+		character.ability = love.filesystem.load("characters/" .. name .. "/" .. character.ability .. ".lua")()
 	else
 		character.ability = "No ability."
 	end
@@ -63,12 +46,14 @@ function createCharacter(name)
 		end
 	end
 
-	character.shieldImage = love.graphics.newImage("characters/" .. name .. "/shield.png")
+	if love.filesystem.isFile("characters/" .. name .. "/shield.png") then
+		character.shieldImage = love.graphics.newImage("characters/" .. name .. "/shield.png")
 
-	character.shieldQuads = {}
-	if character.shieldcount then
-		for k = 1, (character.shieldcount or 2) do
-			character.shieldQuads[k] = love.graphics.newQuad((k - 1) * character.shieldwidth, 0, character.shieldwidth, character.shieldheight, character.shieldImage:getWidth(), character.shieldImage:getHeight())
+		character.shieldQuads = {}
+		if character.shieldcount then
+			for k = 1, (character.shieldcount or 2) do
+				character.shieldQuads[k] = love.graphics.newQuad((k - 1) * character.shieldwidth, 0, character.shieldwidth, character.shieldheight, character.shieldImage:getWidth(), character.shieldImage:getHeight())
+			end
 		end
 	end
 

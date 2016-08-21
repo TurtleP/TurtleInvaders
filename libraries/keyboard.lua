@@ -21,7 +21,7 @@ function keyboard:init(hint, max)
 
 	self.buttons = {}
 	for k = 1, #keys do
-		self.buttons[k] = keyboardkey:new(self.x + math.mod(k - 1, 12) * 26, (self.y + 50) + math.floor((k - 1) / 12) * 26, keys[k])
+		self.buttons[k] = keyboardkey:new((love.graphics.getWidth() / 2 - 152 * scale) + math.mod(k - 1, 12) * 26 * scale, love.graphics.getHeight() * 0.45 + math.floor((k - 1) / 12) * 26 * scale, keys[k])
 	end
 
 	self.maxChars = max or 10
@@ -77,34 +77,24 @@ function keyboard:clear()
 end
 
 function keyboard:draw()
+	love.graphics.setColor(0, 0, 0, 220 * self.fade)
+	love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+
 	if #self.text == 0 then
 		love.graphics.setColor(160, 160, 160, 255 * self.fade)
 		
-		love.graphics.print(self.hint, self.x + 2, self.y)
+		love.graphics.print(self.hint, love.graphics.getWidth() * 0.5 - 156 * scale, love.graphics.getHeight() * 0.25)
 	else
 		love.graphics.setColor(255, 255, 255, 255 * self.fade)
 		
-		love.graphics.print(self.text, self.x + 2, self.y)
+		love.graphics.print(self.text, love.graphics.getWidth() * 0.5 - 156 * scale, love.graphics.getHeight() * 0.25)
 	end
-	
-	love.graphics.setColor(255, 255, 255, 255 * self.fade)
-
-	if self.fade == 1 then
-		love.graphics.setColor(255, 255, 255, 255 * self.sineFade)
-	end
-	love.graphics.rectangle("fill", self.x + 4 + mainFont:getWidth(self.text), self.y + 6, 2, mainFont:getHeight() / 2 + 4)
 
 	love.graphics.setColor(255, 255, 255, 255 * self.fade)
-
-	love.graphics.push()
-
-	love.graphics.translate(40, 240)
 
 	for x = 1, 26 do
-		love.graphics.line(self.x + 5 + (x - 1) * 12, self.y + mainFont:getHeight() + 2, self.x + 10 + (x - 1) * 12, self.y + mainFont:getHeight() + 2)
+		love.graphics.rectangle("fill", love.graphics.getWidth() * 0.5 - 156 * scale + (x - 1) * 12 * scale, love.graphics.getHeight() * 0.35, 10 * scale, 2 * scale)
 	end
-
-	love.graphics.pop()
 
 	for k, v in pairs(self.buttons) do
 		v:draw(self.fade)
@@ -161,8 +151,8 @@ function keyboardkey:init(x, y, t)
 	self.x = x
 	self.y = y
 
-	self.width = 26
-	self.height = 26
+	self.width = mainFont:getWidth(t)
+	self.height = mainFont:getHeight() - 6 * scale
 
 	self.text = t
 

@@ -50,8 +50,8 @@ function bubble:update(dt)
 end
 
 function bubble:draw()
-	love.graphics.circle("line", self.x, self.y, 15)
-	love.graphics.circle("fill", self.x - 3, self.y - 3, 3)
+	love.graphics.circle("line", self.x * scale, self.y * scale, 15 * scale)
+	love.graphics.circle("fill", (self.x - 3) * scale, (self.y - 3) * scale, 3 * scale)
 end
 
 function bubble:passiveCollide(name, data)

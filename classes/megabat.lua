@@ -83,7 +83,7 @@ function megabat:update(dt)
 	self.quadi = math.floor(self.timer % #bossQuads) + 1
 
 	if not self.initialize then
-		if self.y + (self.height / 2) < util.getHeight() / 2 then
+		if self.y + (self.height / 2) < (util.getHeight() / scale) / 2 then
 			self.speedy = 100
 		else
 			self.speedy = 0
@@ -136,7 +136,7 @@ function megabat:draw()
 	end
 	love.graphics.setColor(255, 255, 255, 255 * self.fade)
 
-	love.graphics.draw(bossImage, bossQuads[self.quadi], self.x, self.y)
+	love.graphics.draw(bossImage, bossQuads[self.quadi], self.x * scale, self.y * scale)
 
 	love.graphics.setColor(255, 255, 255, 255)
 end

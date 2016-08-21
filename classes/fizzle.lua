@@ -41,17 +41,17 @@ function fizzle:draw()
 	love.graphics.setColor(128, 128, 128, 255 * self.fizzleFade)
 
 	if not self.graphic then
-		love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
+		love.graphics.rectangle("fill", self.x * scale, self.y * scale, self.width * scale, self.height * scale)
 		return
 	elseif not self.quadi then
-		love.graphics.draw(self.graphic, self.x, self.y)
+		love.graphics.draw(self.graphic, self.x * scale, self.y * scale)
 		return
 	end
 
-	love.graphics.draw(self.graphic, self.quads, self.x, self.y)
+	love.graphics.draw(self.graphic, self.quads, self.x * scale, self.y * scale)
 
 	if self.t == "bat" then
-		love.graphics.draw(self.graphic, batQuads[self.quadi][2], self.x, self.y)
+		love.graphics.draw(self.graphic, batQuads[self.quadi][2], self.x * scale, self.y * scale)
 	end
 
 	love.graphics.setColor(255, 255, 255, 255)

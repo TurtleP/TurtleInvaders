@@ -9,25 +9,15 @@ function ability:init(parent)
 
 	self.realShootTimer = parent.maxShootTimer
 
-	parent.maxShootTimer = 1.25/3
-
-	parent.shoot = function(self)
-		if self.shootingTimer == 0 then
-			table.insert(objects["bullet"], bullet:new(self.x + (self.width * 1/5) - 1, self.y - 1, "none", {0, -180}))
-			
-			table.insert(objects["bullet"], bullet:new((self.x + self.width) - 8 - 1, self.y - 1, "none", {0, -180}))
-
-			self.shootingTimer = self.maxShootTimer
-		end
-	end
+	parent.maxShootTimer = 1/3
 
 	self.timer = 8
 
-	self.initialize = true
+	self.active = true
 end
 
 function ability:update(dt)
-	if not self.initialize then
+	if not self.active then
 		return
 	end
 
@@ -39,19 +29,28 @@ function ability:update(dt)
 end
 
 function ability:trigger(parent)
-	self.initialize = false
+	self.active = false
 
 	if parent then
 		self:init(parent)
 	end
 end
 
-function ability:reset()
-	self.parent.shoot = self.realShootFunction
+function ability:shoot()
+	local v = self.parent
+	table.insert(objects["bullet"], bullet:new(v.x + (v.width * 1/5) - 1, v.y - 1, "none", {0, -180}))
+			
+	table.insert(objects["bullet"], bullet:new((v.x + v.width) - 8 - 1, v.y - 1, "none", {0, -180}))
+end
 
+function ability:reset()
+	if not self.parent then
+		return
+	end
+	
 	self.parent.maxShootTimer = self.realShootTimer
 
-	self.initialize = false
+	self.active = false
 end
 
 return ability

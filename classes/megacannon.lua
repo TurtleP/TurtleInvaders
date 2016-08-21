@@ -92,14 +92,14 @@ end
 function megacannon:draw()
 	local x, y = self.parent.x + (self.parent.width / 2) - 40, self.parent.y - 60
 
-	love.graphics.draw(megaCannonBoomImage, megaCannonBoomQuads[self.boomQuadi], x, y)
+	love.graphics.draw(megaCannonBoomImage, megaCannonBoomQuads[self.boomQuadi], x * scale, y * scale)
 	if not self.initialize then
 		return
 	end
 
 	for y = 2, math.floor(self.height / 22) - 1 do
-		love.graphics.draw(megaCannonBeamImage, megaCannonBeamQuads[self.beami], self.parent.x + (self.parent.width / 2) - 11, self.parent.y - 16 - (y + 1) * 22)
+		love.graphics.draw(megaCannonBeamImage, megaCannonBeamQuads[self.beami], (self.parent.x + (self.parent.width / 2) - 11) * scale, (self.parent.y - 16 - (y + 1) * 22) * scale)
 	end
 
-	love.graphics.draw(megaCannonBaseImage, megaCannonBaseQuads[self.baseQuadi], x, y)
+	love.graphics.draw(megaCannonBaseImage, megaCannonBaseQuads[self.baseQuadi], x * scale, y * scale)
 end

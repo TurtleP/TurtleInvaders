@@ -4,8 +4,8 @@ function powerup:init(x, y, t, isSuper)
 	self.x = x
 	self.y = y
 
-	self.width = 18
-	self.height = 18
+	self.width = 14
+	self.height = 14
 
 	self.active = true
 	self.passive = true
@@ -23,7 +23,7 @@ function powerup:init(x, y, t, isSuper)
 end
 
 function powerup:draw()
-	love.graphics.draw(powerupImage, powerupQuads[self.i], self.x, self.y)
+	love.graphics.draw(powerupImage, powerupQuads[self.i], self.x * scale, self.y * scale)
 end
 
 function powerup:getType(i)

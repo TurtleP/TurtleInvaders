@@ -61,7 +61,7 @@ end
 
 function bullet:draw()
 	love.graphics.setColor(unpack(self.color))
-	love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
+	love.graphics.rectangle("fill", self.x * scale, self.y * scale, self.width * scale, self.height * scale)
 
 	love.graphics.setColor(255, 255, 255)
 end

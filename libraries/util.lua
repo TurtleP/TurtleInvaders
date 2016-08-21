@@ -94,6 +94,48 @@ function util.mousePressedState(x, y, button)
 	end
 end
 
+function util.mouseReleasedState(x, y, button)
+	if _G[state .. "MouseReleased"] then
+		_G[state .. "MouseReleased"](x, y, button)
+	end
+end
+
+function util.textInput(text)
+	if _G[state .. "TextInput"] then
+		_G[state .. "TextInput"](text)
+	end
+end
+
+function util.mouseMovedState(x, y, dx, dy)
+	if _G[state .. "MouseMoved"] then
+		_G[state .. "MouseMoved"](x, y, dx, dy)
+	end
+end
+
+function util.gamePadPressed(joystick, button)
+	if _G[state .. "GamePadPressed"] then
+		_G[state .. "GamePadPressed"](joystick, button)
+	end
+end
+
+function util.gamePadReleased(joystick, button)
+	if _G[state .. "GamePadReleased"] then
+		_G[state .. "GamePadReleased"](joystick, button)
+	end
+end
+
+function util.touchPressed(id, x, y, pressure)
+	if _G[state .. "TouchPressed"] then
+		_G[state .. "TouchPressed"](id, x, y, pressure)
+	end
+end
+
+function util.touchReleased(id, x, y, pressure)
+	if _G[state .. "TouchReleased"] then
+		_G[state .. "TouchReleased"](id, x, y, pressure)
+	end
+end
+
 function util.dist(x1,y1, x2,y2) 
 	return ((x2-x1)^2+(y2-y1)^2)^0.5 
 end
@@ -120,9 +162,6 @@ function util.getWidth()
 end
 
 function util.getHeight()
-	if _EMULATEHOMEBREW then
-		return 240
-	end
 	return love.graphics.getHeight()
 end
 

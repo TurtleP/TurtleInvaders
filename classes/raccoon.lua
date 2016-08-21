@@ -132,7 +132,7 @@ function raccoon:draw()
 	end
 
 	love.graphics.setColor(255, 255, 255, 255 * self.fade)
-	love.graphics.draw(raccoonImage, raccoonQuads[self.quadi], self.x, self.y + math.sin(love.timer.getTime() * 8) * 10)
+	love.graphics.draw(raccoonImage, raccoonQuads[self.quadi], self.x * scale, self.y * scale + math.sin(love.timer.getTime() * 8) * 10 * scale)
 
 	love.graphics.setColor(255, 255, 255, 255)
 end

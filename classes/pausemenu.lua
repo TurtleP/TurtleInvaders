@@ -9,11 +9,13 @@ function pausemenu:init()
 			end
 		},
 		{"Exit to Title", 
-			function() 
+			function()
+				paused = false
+				
 				util.changeState("title") 
 			end
 		},
-		{"Quit to Home",
+		{"Quit Game",
 			function()
 				love.event.quit()
 			end
@@ -28,7 +30,7 @@ function pausemenu:draw()
 
 	love.graphics.setFont(pauseFont)
 
-	love.graphics.print("Game Paused", x + (w / 2) - pauseFont:getWidth("Game Paused") / 2, y)
+	love.graphics.print("Game Paused", love.graphics.getWidth() / 2 - pauseFont:getWidth("Game Paused") / 2, love.graphics.getHeight() * 0.3)
 
 	for k = 1, #self.options do
 		local v = self.options[k]
@@ -38,20 +40,35 @@ function pausemenu:draw()
 			love.graphics.setColor(128, 128, 128)
 		end
 
-		love.graphics.print(v[1], x + (w / 2) - pauseFont:getWidth(v[1]) / 2, (y + 28) + (k - 1) * 22)
+		love.graphics.print(v[1], love.graphics.getWidth() / 2 - pauseFont:getWidth(v[1]) / 2, love.graphics.getHeight() * 0.4 + (k - 1) * 22 * scale)
 	end
 
 	love.graphics.setColor(255, 255, 255)
 end
 
 function pausemenu:keyPressed(key)
-	if key == "cpaddown" or key == "down" then
+	if key == "s" or key == "down" then
 		self.selection = math.min(self.selection + 1, #self.options)
-	elseif key == "cpadup" or key == "up" then
+	elseif key == "w" or key == "up" then
 		self.selection = math.max(self.selection - 1, 1)
-	elseif key == "a" then
+	elseif key == "space" then
 		self.options[self.selection][2]()
-	elseif key == "b" then
-		paused = false
+	end
+end
+
+function pausemenu:touchPressed(x, y)
+	for k = 1, #self.options do
+		local v = self.options[k]
+
+		if isTapped(love.graphics.getWidth() / 2 - pauseFont:getWidth(v[1]) / 2, love.graphics.getHeight() * 0.4 + (k - 1) * 22 * scale, pauseFont:getWidth(v[1]), 20 * scale) then
+			
+			if self.selection ~= k then
+				self.selection = k
+			else
+				v[2]()
+			end
+			
+			break
+		end
 	end
 end

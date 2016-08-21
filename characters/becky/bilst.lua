@@ -105,7 +105,7 @@ function bilst:update(dt)
 end
 
 function bilst:draw()
-	love.graphics.draw(bilstImage, bilstQuads[self.quadi], self.x, self.y)
+	love.graphics.draw(bilstImage, bilstQuads[self.quadi], self.x * scale, self.y * scale)
 end
 
 function bilst:passiveCollide(name, data)

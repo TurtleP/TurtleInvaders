@@ -140,10 +140,10 @@ end
 
 function bat:draw()
 	love.graphics.setColor(255, 255, 255)
-	love.graphics.draw(batImage, batQuads[self.quadi][1], self.x, self.y)
+	love.graphics.draw(batImage, batQuads[self.quadi][1], self.x * scale, self.y * scale)
 
 	love.graphics.setColor(unpack(self.powerupColor))
-	love.graphics.draw(batImage, batQuads[self.quadi][2], self.x, self.y)
+	love.graphics.draw(batImage, batQuads[self.quadi][2], self.x * scale, self.y * scale)
 	
 	love.graphics.setColor(255, 255, 255)
 end
@@ -253,8 +253,10 @@ function bat:die(player, anti)
 	end
 
 	local oneup = false
-	if batKillCount % 20 == 0 then
-		oneup = true
+	if objects["player"][1]:getHealth() < objects["player"][1]:getMaxHealth() then
+		if love.math.random() < .15 then
+			oneup = true
+		end
 	end
 
 	gameDropPowerup(self.x + (self.width / 2) - 9, self.y + (self.height / 2) - 9, oneup)

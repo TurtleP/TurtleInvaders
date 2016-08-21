@@ -54,7 +54,7 @@ end
 function ability:doStep(playerSpeed)
 	table.insert(fizzles, fizzle:new(self.parent, "player"))
 
-	self.parent.x = util.clamp(self.parent.x + playerSpeed, 0, 400 - self.parent.width)
+	self.parent.x = util.clamp(self.parent.x + playerSpeed, 0, love.graphics.getWidth() / scale - self.parent.width)
 
 	self.coolDownTriggered = true
 end

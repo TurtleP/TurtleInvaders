@@ -159,7 +159,7 @@ function phoenix:draw()
 	end
 
 	love.graphics.setColor(255, 255, 255, 255 * self.fade)
-	love.graphics.draw(phoenixImage, phoenixQuads[self.quadi], self.x, self.y + math.sin(love.timer.getTime() * 6) * 8)
+	love.graphics.draw(phoenixImage, phoenixQuads[self.quadi], self.x * scale, self.y * scale + math.sin(love.timer.getTime() * 6) * 8 * scale)
 
 	if self.shield then
 		self.shield:draw()
@@ -278,7 +278,7 @@ function fire:update(dt)
 end
 
 function fire:draw()
-	love.graphics.draw(fireImage, fireQuads[self.quadi], self.x, self.y)
+	love.graphics.draw(fireImage, fireQuads[self.quadi], self.x * scale, self.y * scale)
 end
 
 function fire:downCollide(name, data)
@@ -364,7 +364,7 @@ function shield:draw()
 	end
 
 	love.graphics.setColor(color[1], color[2], color[3], 180)
-	love.graphics.circle("fill", self.x, self.y + math.sin(love.timer.getTime() * 6) * 8, self.width / 2)
+	love.graphics.circle("fill", self.x * scale, self.y * scale + math.sin(love.timer.getTime() * 6) * 8 * scale, (self.width / 2) * scale)
 
 	for k, v in pairs(self.shards) do
 		love.graphics.setColor(color[1], color[2], color[3], 180 * v.fade)
@@ -409,5 +409,5 @@ function shard:update(dt)
 end
 
 function shard:draw()
-	love.graphics.draw(shieldShards[self.i], self.x, self.y, self.rotation)
+	love.graphics.draw(shieldShards[self.i], (self.x + self.width / 2) * scale, (self.y + self.height / 2) * scale, self.rotation)
 end

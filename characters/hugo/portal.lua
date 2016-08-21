@@ -49,7 +49,7 @@ function ability:init(turtle)
 	self.portals = {}
 
 	self.parent.draw = function()
-		love.graphics.draw(gunImage, gunQuads[self.gunQuadi], self.parent.x + (self.parent.width / 2) - 28, self.parent.y)
+		love.graphics.draw(gunImage, gunQuads[self.gunQuadi], (self.parent.x + (self.parent.width / 2) - 28) * scale, self.parent.y * scale)
 	end
 
 	self.useTimer = 8
@@ -67,10 +67,10 @@ function ability:update(dt)
 	end
 
 	if self.useTimer > 0 then
-		self.useTimer = self.useTimer - dt
-	else
-		self:reset()
-	end
+				self.useTimer = self.useTimer - dt
+			else
+				self:reset()
+			end
 
 	if self.portals[1] and self.portals[2] then
 		if self.portals[1].type == "portal" and self.portals[2].type == "portal" then
@@ -78,11 +78,12 @@ function ability:update(dt)
 				self.parent.mask["barrier"] = false
 			end
 			
-			if self.parent.x < 8 then
-				self.parent.x = self.parent.x + 393
-			elseif self.parent.x > 393 then
-				self.parent.x = self.parent.x - 393
+			if self.parent.x < self.parent.width / 2 then
+				self.parent.x = self.parent.x + (util.getWidth() / scale - self.parent.width / 2)
+			elseif self.parent.x > util.getWidth() / scale then
+				self.parent.x = self.parent.x - (util.getWidth() / scale - self.parent.width / 2)
 			end
+			
 		end
 	end
 
@@ -123,9 +124,9 @@ function ability:draw()
 		if self.portals[1].type == "portal" and self.portals[2].type == "portal" then
 			if self.parent.shouldDraw and objects["player"][1] then
 				if self.parent.x < 0 then
-					love.graphics.draw(self.parent.graphic, self.parent.animationQuads[self.parent.animationQuadi], self.parent.x + 393, self.parent.y)
-				elseif self.parent.x + self.parent.width > 400 then
-					love.graphics.draw(self.parent.graphic, self.parent.animationQuads[self.parent.animationQuadi], self.parent.x - 393, self.parent.y)
+					love.graphics.draw(self.parent.graphic, self.parent.animationQuads[self.parent.animationQuadi], self.parent.x * scale + (util.getWidth() - self.parent.width / 2), self.parent.y * scale)
+				elseif self.parent.x + self.parent.width > love.graphics.getWidth() / scale then
+					love.graphics.draw(self.parent.graphic, self.parent.animationQuads[self.parent.animationQuadi], self.parent.x * scale - (util.getWidth() - self.parent.width / 2), self.parent.y * scale)
 				end
 			end
 		end
@@ -137,10 +138,14 @@ function ability:draw()
 end
 
 function ability:reset()
+	if not self.parent then
+		return
+	end
+	
 	if self.parent.x < 0 then
 		self.parent.x = 0
-	elseif self.parent.x + self.parent.width > 400 then
-		self.parent.x = 400 - self.parent.width
+	elseif self.parent.x + self.parent.width > love.graphics.getWidth() / scale then
+		self.parent.x = util.getWidth() / scale - self.parent.width
 	end
 	self.portals = {}
 	self.parent.draw = self.oldDraw
@@ -180,10 +185,10 @@ function newPortalShot(x, y, i, abilityData)
 			self.x = self.x + self.speedx * dt
 
 			if self.x < 0 then
-				self.parent:createPortals(0, util.getHeight() - 64, self.quadi)
+				self.parent:createPortals(0, util.getHeight() / scale - 64, self.quadi)
 				self.remove = true
-			elseif self.x > 400 then
-				self.parent:createPortals(393, util.getHeight() - 64, self.quadi)
+			elseif self.x > util.getWidth() / scale then
+				self.parent:createPortals(util.getWidth() / scale - 7, util.getHeight() / scale - 64, self.quadi)
 				self.remove = true
 			end
 		end
@@ -191,7 +196,7 @@ function newPortalShot(x, y, i, abilityData)
 
 	function shot:draw()
 		love.graphics.setColor(unpack(self.colors[self.quadi]))
-		love.graphics.draw(self.graphic, shootingQuads[self.quadi], self.x, self.y)
+		love.graphics.draw(self.graphic, shootingQuads[self.quadi], self.x * scale, self.y * scale)
 		love.graphics.setColor(255, 255, 255)
 	end
 
@@ -232,18 +237,14 @@ function newPortal(x, y, i)
 	portal.offset = offset
 
 	function portal:draw()
-		love.graphics.push()
-
 		love.graphics.setColor(255, 255, 255, self.colors[self.i][4] * self.fade)
-		love.graphics.draw(portalGradientImage, gradientQuads[self.i], self.x + self.offset, self.y)
+		love.graphics.draw(portalGradientImage, gradientQuads[self.i], (self.x + self.offset) * scale, self.y * scale)
 
 		local r, g, b, a = unpack(self.colors[self.i])
 		love.graphics.setColor(r, g, b, a * self.fade)
-		love.graphics.draw(portalImage, portalQuads[self.i], self.x, self.y)
+		love.graphics.draw(portalImage, portalQuads[self.i], self.x * scale, self.y * scale)
 
 		love.graphics.setColor(255, 255, 255, 255)
-
-		love.graphics.pop()
 	end
 
 	return portal

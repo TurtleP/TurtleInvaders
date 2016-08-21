@@ -1,7 +1,6 @@
 local ability = {}
 
 ability.passive = true
-ability.name = "tank"
 ability.description = "More health, but slower speed"
 function ability:init(parent)
 	parent.maxSpeedx = parent.maxSpeedx - 35

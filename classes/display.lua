@@ -4,7 +4,7 @@ function display:init()
 	self.x = 2
 	self.y = 0
 
-	self.width = 316
+	self.width = util.getWidth() / scale
 	self.height = util.getHeight() - self.y
 
 	self.powerupTime = 8
@@ -53,10 +53,7 @@ function display:getEnemyData()
 end
 
 function display:draw()
-	love.graphics.setColor(32, 32, 32, 140)
-	love.graphics.rectangle("fill", 0, 0, 320, 240)
-
-	love.graphics.setColor(255, 255, 255, 255)
+	love.graphics.setColor(255, 255, 255, 160)
 	
 	if objects["player"][1] then
 		self.player = objects["player"][1]
@@ -64,10 +61,10 @@ function display:draw()
 	local player = self.player
 
 	--Player info
-	love.graphics.print("Player", self.x, self.y)
+	love.graphics.print("Player", self.x * scale, self.y * scale)
 
 	for x = 1, player:getMaxHealth() do
-		love.graphics.setColor(255, 255, 255, 255)
+		love.graphics.setColor(255, 255, 255, 160)
 
 		local quadi, color = 1, 1
 		if x > player:getHealth() then
@@ -75,22 +72,22 @@ function display:draw()
 		end
 
 		if abilityKills / 2 >= x then
-			love.graphics.setColor(255, 255, 255, 255 * self.abilityFade)
+			love.graphics.setColor(255, 255, 255, 160 * self.abilityFade)
 
 			color = 2
 		end
 		
-		love.graphics.draw(healthImage, healthQuads[quadi][color], self.x + math.mod((x - 1), 6) * 9, self.y + 36 + math.floor((x - 1) / 6) * 9)
+		love.graphics.draw(healthImage, healthQuads[quadi][color], self.x + 2 * scale + math.mod((x - 1), 6) * 9 * scale, self.y + 26 * scale + math.floor((x - 1) / 6) * 9 * scale)
 	end
-	love.graphics.setColor(255, 255, 255, 255)
+	love.graphics.setColor(255, 255, 255, 160)
 
 	--Score
-	love.graphics.print("Score", self.x + (self.width / 2) - hudFont:getWidth("Score") / 2, self.y)
+	love.graphics.print("Score", love.graphics.getWidth() / 2 - hudFont:getWidth("Score") / 2, self.y * scale)
 
-	love.graphics.print(score, self.x + (self.width / 2) - hudFont:getWidth(score) / 2, self.y + 22)
+	love.graphics.print(score, love.graphics.getWidth() / 2 - hudFont:getWidth(score) / 2, self.y + 18 * scale)
 
 	--Enemy info
-	love.graphics.print("Enemy", (self.x + self.width) - hudFont:getWidth("Enemy"), self.y)
+	love.graphics.print("Enemy", (self.x + self.width) * scale - hudFont:getWidth("Enemy") - 4 * scale, self.y)
 
 	if self.enemyData then
 		local enemy = self.enemyData
@@ -99,32 +96,26 @@ function display:draw()
 			if x > enemy:getHealth() then
 				quadi = 2
 			end
-			love.graphics.draw(healthImage, healthQuads[quadi][1], ( (self.x + self.width) - hudFont:getWidth("Enemy") / 2 - 27 ) + math.mod((x - 1), 6) * 9, self.y + 36 + math.floor((x - 1) / 6) * 9)
+			love.graphics.draw(healthImage, healthQuads[quadi][1], ( (self.x + self.width) * scale - hudFont:getWidth("Enemy") / 2 - 27 * scale ) + math.mod((x - 1), 6) * 9 * scale, self.y + 26 * scale + math.floor((x - 1) / 6) * 9 * scale)
 		end
 	end
 
 	--Powerup info
-	if player:getPowerup() == "none" then
-		love.graphics.print("No", self.x + (self.width / 2) - hudFont:getWidth("No") / 2, self.y + (self.height / 2) - hudFont:getHeight() / 2)
-		
-		love.graphics.print("Powerup", self.x + (self.width / 2) - hudFont:getWidth("Powerup") / 2, self.y + (self.height / 2) + hudFont:getHeight() / 2)
-	else
-		local powerupValue = player:getPowerup()
+	local powerupValue = player:getPowerup()
+	if powerupValue ~= "none" then
 		local powerup, niceName, powerupTimeValue = self:getDisplayInfo(powerupValue)
 
-		love.graphics.setColor(255, 255, 255, 255 * self.powerupFade)
-
-		love.graphics.draw(powerupDisplayImage, powerupDisplayQuads[powerup], self.x + (self.width / 2) - 32, self.y + (self.height / 2) - 22)
-		
-		love.graphics.print(niceName, self.x + (self.width / 2) - hudFont:getWidth(niceName) / 2, self.y + (self.height / 2) + hudFont:getHeight() + 10)
-
-		love.graphics.setColor(255, 255, 255, 255)
-		
+		--display current powerup
+		love.graphics.setColor(255, 255, 255, 160 * self.powerupFade)
+		love.graphics.draw(powerupImage, powerupQuads[powerup], self.x * scale + hudFont:getWidth("Player") + 8 * scale, self.y * scale + hudFont:getHeight() / 2 - powerupImage:getHeight() / 2)
+			
 		if not self.drainPowerup then
 			self.powerupTime = powerupTimeValue
 			self.drainPowerup = true
 		end
 	end
+
+	love.graphics.setColor(255, 255, 255, 255)
 end
 
 function display:getDisplayInfo(powerupValue)
@@ -133,19 +124,19 @@ function display:getDisplayInfo(powerupValue)
 	if powerupValue == "time" then
 		i, name = 2, "Time Slow"
 	elseif powerupValue == "mega" then
-		i, name, time = 3, "Mega Laser", 5
+		i, name, time = 9, "Mega Laser", 5
 	elseif powerupValue == "shield" then
-		i, name = 4, "Shield"
+		i, name = 3, "Shield"
 	elseif powerupValue == "laser" then
-		i, name = 5, "Laser"
+		i, name = 4, "Laser"
 	elseif powerupValue == "freeze" then
-		i, name = 6, "Frozen"
+		i, name = 5, "Frozen"
 	elseif powerupValue == "anti" then
-		i, name = 7, "Anti-Score"
+		i, name = 6, "Anti-Score"
 	elseif powerupValue == "nobullets" then
-		i, name = 8, "No Bullets"
+		i, name = 7, "No Bullets"
 	elseif powerupValue == "nopower" then
-		i, name = 9, "No Powerups"
+		i, name = 8, "No Powerups"
 	end
 
 	return i, name, time

@@ -21,7 +21,7 @@ function gameInit(playerData)
 	objects["barrier"] = 
 	{
 		barrier:new(-16, -64, 16, util.getHeight() + 64),
-		barrier:new(400, -64, 16, util.getHeight() + 64)
+		barrier:new(love.graphics.getWidth() / scale, -64, 16, util.getHeight() + 64)
 	}
 
 	local time = 1.15
@@ -35,7 +35,7 @@ function gameInit(playerData)
 
 	enemyTimer = timer:new(time, 
 		function(self)
-			gameSpawnBat(love.math.random(0, 370), -14, {love.math.random(-30, 30), love.math.random(30, 90)})
+			gameSpawnBat(love.math.random(love.graphics.getWidth() / scale), -14, {love.math.random(-30, 30), love.math.random(30, 90)})
 		end
 	)
 
@@ -76,9 +76,11 @@ function gameInit(playerData)
 	
 	gameNextWave()
 
-	hudFont = love.graphics.newFont("graphics/monofonto.ttf", 28)
-	pauseFont = love.graphics.newFont("graphics/monofonto.ttf", 20)
+	hudFont = love.graphics.newFont("graphics/monofonto.ttf", 20 * scale)
+	pauseFont = love.graphics.newFont("graphics/monofonto.ttf", 20 * scale)
 	
+	waveFont = love.graphics.newFont("graphics/monofonto.ttf", 32 * scale)
+
 	displayInfo = display:new()
 	gamePauseMenu = pausemenu:new()
 
@@ -136,7 +138,7 @@ function gameDropPowerup(x, y, oneUp, superUp)
 	end
 
 	if i then
-		if i == lastDrop then
+		if i == lastDrop or (i == 3 and not objects["player"][1].shieldImage) then
 			gameDropPowerup(x, y, oneUp)
 
 			return
@@ -222,14 +224,6 @@ function gameUpdate(dt)
 		return
 	end
 
-	for fieldCount = 1, #starFields do
-		local v = starFields[fieldCount]
-
-		for k, s in pairs(v) do
-			s:update(dt)
-		end
-	end
-
 	enemyTimer:update(dt)
 
 	waveTimer:update(dt)
@@ -247,26 +241,32 @@ function gameUpdate(dt)
 	physicsupdate(dt)
 
 	displayInfo:update(dt)
+
+	if mobileMode then
+		if not accelerometerJoystick then
+			return
+		end
+		
+		local axisX = accelerometerJoystick:getAxis(1)
+
+		local deadzone = 0.08
+		if axisX > deadzone then
+			objects["player"][1]:moveRight(true)
+		elseif axisX < -deadzone then
+			objects["player"][1]:moveLeft(true)
+		elseif axisX > -deadzone and axisX < deadzone then
+			objects["player"][1]:moveRight(false)
+			objects["player"][1]:moveLeft(false)
+		end
+	end
 end
 
 function gameDraw()
-	love.graphics.setScreen("top")
-
 	love.graphics.push()
 
 	if shakeValue > 0 and not paused then
-		love.graphics.translate(love.math.random() * shakeValue, 0)
+		love.graphics.translate(love.math.random() * shakeValue * scale, 0)
 	end
-
-	for fieldCount = 1, #starFields do
-		local v = starFields[fieldCount]
-
-		for k, s in pairs(v) do
-			s:draw()
-		end
-	end
-
-	love.graphics.setDepth(ENTITY_DEPTH)
 
 	for k, v in pairs(objects["bat"]) do
 		v:draw()
@@ -310,32 +310,25 @@ function gameDraw()
 		v:draw()
 	end
 
-	love.graphics.setDepth(NORMAL_DEPTH)
-
 	love.graphics.pop()
 
-	
-	love.graphics.setDepth(INTERFACE_DEPTH)
-
-	love.graphics.setFont(hudFont)
+	love.graphics.setFont(waveFont)
 
 	if currentWaveFade > 0 then
 		love.graphics.setColor(255, 255, 255, 255 * currentWaveFade)
-		love.graphics.print(waveText, util.getWidth() / 2 - hudFont:getWidth(waveText) / 2, util.getHeight() / 2 - hudFont:getHeight() / 2)
+		love.graphics.print(waveText, util.getWidth() / 2 - waveFont:getWidth(waveText) / 2, util.getHeight() / 2 - waveFont:getHeight() / 2)
 
 		love.graphics.setColor(255, 255, 255, 255)
 	end
 
-	love.graphics.setScreen("bottom")
-
-	if displayInfo then
-		displayInfo:draw()
+	if gameOver then
+		currentWaveFade = 0
+		love.graphics.print("Game Over", util.getWidth() / 2 - waveFont:getWidth("Game Over") / 2, util.getHeight() / 2 - waveFont:getHeight() / 2)
 	end
 
-	love.graphics.setScreen("top")
-
-	if gameOver then
-		love.graphics.print("Game Over", util.getWidth() / 2 - hudFont:getWidth("Game Over") / 2, util.getHeight() / 2 - hudFont:getHeight() / 2)
+	love.graphics.setFont(hudFont)
+	if displayInfo then
+		displayInfo:draw()
 	end
 
 	for k, v in pairs(achievements) do
@@ -345,7 +338,7 @@ function gameDraw()
 	if paused then
 		love.graphics.setColor(0, 0, 0, 140)
 
-		love.graphics.rectangle("fill", 0, 0, 400, 240)
+		love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
 		
 		love.graphics.setColor(255, 255, 255, 255)
 
@@ -354,20 +347,14 @@ function gameDraw()
 	
 	if gameFinished then
 		love.graphics.setColor(0, 0, 0, 255 * winFade)
-		love.graphics.setScreen("top")
 		love.graphics.rectangle("fill", 0, 0, 400, 240)
-		
-		love.graphics.setScreen("bottom")
-		love.graphics.rectangle("fill", 0, 0, 320, 240)
 		
 		love.graphics.setColor(255, 255, 255, 255)
 	end
-
-	love.graphics.setDepth(NORMAL_DEPTH)
 end
 
 function gameKeyPressed(key)
-	if key == "start" then
+	if key == "escape" then
 		if currentWaveFade == 0 then
 			if not gameOver then
 				paused = not paused
@@ -382,12 +369,6 @@ function gameKeyPressed(key)
 	if paused then
 		gamePauseMenu:keyPressed(key)
 		return
-	end
-
-	if key == "b" then
-		if paused then
-			util.changeState("title", 1)
-		end
 	end
 
 	if not objects["player"][1] or paused then
@@ -417,6 +398,69 @@ function gameKeyReleased(key)
 	end
 end
 
+function gameGamePadPressed(joystick, button)
+	if button == "start" then
+		if currentWaveFade == 0 then
+			if not gameOver then
+				paused = not paused
+
+				if paused then
+					pauseSound:play()
+				end
+			end
+		end
+	end
+	
+	if paused then
+		gamePauseMenu:keyPressed(key)
+		return
+	end
+
+	if not objects["player"][1] or paused then
+		return
+	end
+
+	if key == controls["left"] then
+		objects["player"][1]:moveLeft(true)
+	elseif key == controls["right"] then
+		objects["player"][1]:moveRight(true)
+	elseif key == controls["shoot"] then
+		objects["player"][1]:shoot()
+	elseif key == controls["ability"] then
+		objects["player"][1]:triggerAbility()
+	end
+end
+
+function gameGamePadReleased(joystick, button)
+	if not objects["player"][1] then
+		return
+	end
+
+	if key == controls["left"] then
+		objects["player"][1]:moveLeft(false)
+	elseif key == controls["right"] then
+		objects["player"][1]:moveRight(false)
+	end
+end
+
 function gameCreateExplosion(self)
 	table.insert(explosions, explosion:new(self.x + (self.width / 2) - 8, self.y + (self.height / 2) - 8))
+end
+
+function gameTouchPressed(id, x, y, pressure)
+	if paused then
+		gamePauseMenu:touchPressed(x, y)
+	else
+		local player = objects["player"][1]
+
+		if not player then
+			return
+		end
+		
+		if isTapped(player.x * scale, player.y * scale, player.width * scale, player.height * scale) then
+			player:triggerAbility()
+		else
+			player:shoot()
+		end
+	end
 end
