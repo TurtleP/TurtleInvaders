@@ -61,7 +61,7 @@ function titleKeyPressed(key)
 		menuSelectioni = math.max(menuSelectioni - 1, 1)
 	elseif key == "s" or key == "down" then
 		menuSelectioni = math.min(menuSelectioni + 1, #titleOptions)
-	elseif key == "space" then
+	elseif key == "space" or key == "return" then
 		titleOptions[menuSelectioni][2]()
 	elseif key == "escape" then
 		love.event.quit()

@@ -156,9 +156,15 @@ function love.load()
 		shieldShards[k] = love.graphics.newImage("graphics/game/shield/" .. k .. ".png")
 	end
 
-	keyboardImage = love.graphics.newImage("graphics/mobile/keyboard.png");keyboardImage:setFilter("linear", "linear")
-	backImage = love.graphics.newImage("graphics/mobile/back.png");backImage:setFilter("linear", "linear")
-	gearImage = love.graphics.newImage("graphics/mobile/options.png");gearImage:setFilter("linear", "linear")
+	bufferImage = love.graphics.newImage("graphics/netplay/buffer.png")
+	bufferQuads = {}
+	for k = 1, 3 do
+		bufferQuads[k] = love.graphics.newQuad((k - 1) * 9, 0, 9, 9, bufferImage:getWidth(), bufferImage:getHeight())
+	end
+
+	keyboardImage = love.graphics.newImage("graphics/mobile/keyboard.png")
+	backImage = love.graphics.newImage("graphics/mobile/back.png")
+	gearImage = love.graphics.newImage("graphics/mobile/options.png")
 	
 	waveAdvanceSound = love.audio.newSource("audio/wave.ogg", "static")
 	gameOverSound = love.audio.newSource("audio/gameover.ogg", "static")
@@ -249,7 +255,7 @@ function love.load()
 
 	love.graphics.setLineWidth(love.graphics.getLineWidth() * scale)
 
-	--love.audio.setVolume(0)
+	love.audio.setVolume(0)
 
 	tapTimer = 0
 	tapIsHeld = false
@@ -519,9 +525,9 @@ function love.graphics.draw(...)
 	local vararg = {...}
 
 	if type(vararg[2]) == "number" then
-		oldDraw(vararg[1], vararg[2], vararg[3], vararg[4], scale, scale)
+		oldDraw(vararg[1], vararg[2], vararg[3], vararg[4], scale, scale, vararg[5], vararg[6])
 	else
-		oldDraw(vararg[1], vararg[2], vararg[3], vararg[4], vararg[5], scale, scale)
+		oldDraw(vararg[1], vararg[2], vararg[3], vararg[4], vararg[5], scale, scale, vararg[6], vararg[7])
 	end
 end
 

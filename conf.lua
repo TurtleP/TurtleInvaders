@@ -3,5 +3,4 @@ function love.conf(t)
 	t.identity = "Turtle Invaders"
 	t.externalstorage = true
 	t.window.highdpi = true
-	t.window.borderless = true
 end

@@ -51,7 +51,7 @@ function pausemenu:keyPressed(key)
 		self.selection = math.min(self.selection + 1, #self.options)
 	elseif key == "w" or key == "up" then
 		self.selection = math.max(self.selection - 1, 1)
-	elseif key == "space" then
+	elseif key == "space" or key == "return" then
 		self.options[self.selection][2]()
 	end
 end

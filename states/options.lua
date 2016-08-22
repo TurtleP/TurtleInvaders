@@ -225,7 +225,7 @@ function optionsKeyPressed(key)
 		elseif optionsSelection == 2 then
 			optionsChangeMode(-1)
 		end
-	elseif key == "space" then
+	elseif key == "space" or key == "return" then
 		if optionsTab == 1 then
 			if optionsSelection == 7 then
 				defaultSettings(true)

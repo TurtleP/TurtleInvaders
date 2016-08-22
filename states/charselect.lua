@@ -81,7 +81,7 @@ function charSelectKeyPressed(key)
 		charSelectChangeChars(1)
 	elseif key == "a" or key == "left" then
 		charSelectChangeChars(-1)
-	elseif key == "space" then
+	elseif key == "space" or key == "return" then
 		util.changeState("game", charSelections[currentCharacterSelection].char)
 	elseif key == "escape" then
 		util.changeState("title", 1)
