@@ -63,8 +63,6 @@ function util.lerp(a, b, t)
 end
 
 function util.updateState(dt)
-	dt = math.min(1/60, dt)
-	
 	if _G[state .. "Update"] then
 		_G[state .. "Update"](dt)
 	end

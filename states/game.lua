@@ -243,6 +243,15 @@ function gameUpdate(dt)
 	displayInfo:update(dt)
 
 	if mobileMode then
+		if tapTimer > 1 then
+			if not objects["player"][1] then
+				return
+			end
+		
+			objects["player"][1]:triggerAbility()
+			tapTimer = 0
+		end
+	
 		if not accelerometerJoystick then
 			return
 		end
@@ -448,6 +457,11 @@ function gameCreateExplosion(self)
 end
 
 function gameTouchPressed(id, x, y, pressure)
+	if isTapped(util.getWidth() * 0.005, util.getHeight() - (pauseImage:getHeight() + 2) * scale, 16 * scale, 16 * scale) then
+		paused = not paused
+		return
+	end
+	
 	if paused then
 		gamePauseMenu:touchPressed(x, y)
 	else
@@ -457,10 +471,10 @@ function gameTouchPressed(id, x, y, pressure)
 			return
 		end
 		
-		if isTapped(player.x * scale, player.y * scale, player.width * scale, player.height * scale) then
-			player:triggerAbility()
-		else
-			player:shoot()
-		end
+		player:shoot()
 	end
+end
+
+function gameTouchReleased(id, x, y, pressure)
+	tapTimer = 0
 end

@@ -59,6 +59,7 @@ function netplayInit()
 			function()
 				if not clientSocket then
 					client:init()
+					clientSocket:setsockname("255.255.255.255", 25545)
 				end
 
 				if not netplayOnline then
@@ -79,11 +80,7 @@ function netplayInit()
 
 				if not netplayOnline then
 					if not getData then
-						clientSocket:setpeername("localhost", 25545)
-
-						succ, msg = clientSocket:send("connect;" .. nickName .. ";")
-
-						sendData = true
+						client:connect("localhost", 25545)
 					end
 				end
 			end
@@ -129,6 +126,8 @@ function netplayInit()
 		"Searching.",
 		"Searching .",
 	}
+
+	searchTimer = 0
 end
 
 function netplayUpdate(dt)
@@ -138,6 +137,16 @@ function netplayUpdate(dt)
 		toolTipPosition = toolTipPosition - (60 * scale) * dt
 		if toolTipPosition + logoFont:getWidth(toolTips[netplaySelectioni]) < 0 then
 			toolTipPosition = netplayX + netplayWidth * scale
+		end
+	end
+
+	if not getData then
+		if client:hasInformation() then
+			if not sendData then
+				client:init()
+
+				client:connect()
+			end
 		end
 	end
 	
@@ -159,21 +168,31 @@ function netplayUpdate(dt)
 			end
 		end
 	elseif getData then
+		local data, ip, port = clientSocket:receivefrom()
+
+		searchTimer = searchTimer + dt
+		if searchTimer > 3 then
+			getData = false
+			client:shutdown()
+			searchTimer = 0
+		end
+
+		if data then
+			if data == partyName then
+				client:setInformation(ip, port)
+				client:shutdown()
+				getData = false
+			end
+		end
+	end
+
+	if sendData or getData then
 		for i = 1, #bufferData - 1 do
 			local bufferDirection = 1
 			if i == 2 then
 				bufferDirection = -1
 			end
 			bufferData[i][1] = bufferData[i][1] + (bufferDirection * 2 * dt)
-		end
-
-		local data, ip, port = clientSocket:receivefrom()
-		if data then
-			local cmd = data:split(";")
-			
-			if cmd[1] == partyName then
-				error("HOLY SHIT BATMAN")
-			end
 		end
 	end
 end
@@ -298,7 +317,10 @@ function netplayKeyPressed(key)
 				partyName = partyName:sub(1, -2)
 			end
 		elseif key == "return" then
-			love.keyboard.setTextInput(false)
+			if mobileMode then
+				love.keyboard.setTextInput(false)
+			end
+			
 			netplayTextEntry = false
 		end
 		return
@@ -309,7 +331,7 @@ function netplayKeyPressed(key)
 	elseif key == "w" or key == "up" then
 		netplayChangeSelection(-1)
 	elseif key == "space" then
-		netplaySelectionFunctions[netplaySelectioni][2]()    
+		netplaySelectionFunctions[netplaySelectioni][2]()	
 	elseif key == "escape" then
 		util.changeState("title", 2)
 	end

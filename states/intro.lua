@@ -72,8 +72,8 @@ function introDraw()
 		love.graphics.print(v, util.getWidth() / 2 - warningFont:getWidth(v) / 2, textStartPositionY + (y - 1) * 24 * scale)
 	end
 
-	love.graphics.draw(batImage, batQuads[introBatQuadi][2], util.getWidth() / 2 - 16 * scale, textStartPositionY + (5 - 1) * 32 * scale)
-	love.graphics.draw(batImage, batQuads[introBatQuadi][1], util.getWidth() / 2 - 16 * scale, textStartPositionY + (5 - 1) * 32 * scale)
+	love.graphics.draw(batImage, batQuads[introBatQuadi][2], util.getWidth() / 2 - 16 * scale, textStartPositionY + (1 + (5 - 1) * 32) * scale)
+	love.graphics.draw(batImage, batQuads[introBatQuadi][1], util.getWidth() / 2 - 16 * scale, textStartPositionY + (1 + (5 - 1) * 32) * scale)
 end
 
 function skipIntro()

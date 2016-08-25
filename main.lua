@@ -41,6 +41,8 @@ require 'netplay.netplay'
 require 'netplay.lobby'
 require 'netplay.browser'
 
+socket = require 'socket'
+
 io.stdout:setvbuf("no")
 
 --[[
@@ -156,6 +158,8 @@ function love.load()
 		shieldShards[k] = love.graphics.newImage("graphics/game/shield/" .. k .. ".png")
 	end
 
+	readyImage = love.graphics.newImage("graphics/netplay/ready.png")
+	
 	bufferImage = love.graphics.newImage("graphics/netplay/buffer.png")
 	bufferQuads = {}
 	for k = 1, 3 do
@@ -165,6 +169,8 @@ function love.load()
 	keyboardImage = love.graphics.newImage("graphics/mobile/keyboard.png")
 	backImage = love.graphics.newImage("graphics/mobile/back.png")
 	gearImage = love.graphics.newImage("graphics/mobile/options.png")
+	pauseImage = love.graphics.newImage("graphics/mobile/pause.png")
+	chatImage = love.graphics.newImage("graphics/mobile/speech.png")
 	
 	waveAdvanceSound = love.audio.newSource("audio/wave.ogg", "static")
 	gameOverSound = love.audio.newSource("audio/gameover.ogg", "static")
@@ -180,6 +186,9 @@ function love.load()
 
 	fizzleSound = love.audio.newSource("audio/evaporate.ogg", "static")
 	megaCannonSound = love.audio.newSource("audio/megacannon.ogg", "static")
+
+	tabRightSound = love.audio.newSource("audio/tabright.ogg", "static")
+	tabLeftSound = love.audio.newSource("audio/tableft.ogg", "static")
 
 	keyboardSound = love.audio.newSource("audio/drip.ogg", "static")
 	keyboardOpenSound = love.audio.newSource("audio/open.ogg", "static")
@@ -229,13 +238,14 @@ function love.load()
 
 	mobileMode = ((love.system.getOS() == "Android") or (love.system.getOS() == "iOS"))
 
+	local width, height = love.graphics.getDimensions()
+	
 	if not mobileMode then
 		love.window.setMode(400, 240)
 	else
-		love.window.setFullscreen(true, "desktop")
+		love.window.setMode(width, height, {borderless = true})
+		--love.window.setFullscreen(true, "desktop")
 	end
-
-	local width, height = love.graphics.getDimensions()
 
 	--iOS and its 'highDPI' are a bitch
 	if love.system.getOS() == "iOS" then
@@ -266,6 +276,8 @@ function love.load()
 end
 
 function love.update(dt)
+	dt = math.min(1/60, dt)
+
 	util.updateState(dt)
 
 	for k, v in pairs(achievements) do
@@ -415,10 +427,7 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
 end
 
 function love.touchreleased(id, x, y, dx, dy, pressure)
-	if tapTimer > 1 then
-		love.keypressed("escape")
-	end
-	tapTimer = 0
+	util.touchReleased(id, x, y, pressure)
 	tapIsHeld = false
 end
 

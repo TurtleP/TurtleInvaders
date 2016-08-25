@@ -5,7 +5,7 @@ function server:init(name)
 	
 	logs = {}
 	
-	self.socket = require 'socket'.udp()
+	self.socket = socket.udp()
 	self.socket:settimeout(0)
 	
 	self.resynctimer = -5
@@ -53,7 +53,7 @@ function server:update(dt)
 				
 				table.insert(self.clients, {nick = cmd[2], ip = ip, port = port, id = #self.clients + 1})
 				
-				resynctimer = 0
+				self.resynctimer = 0
 			else
 				self.socket:sendto("full;", ip, port)
 				

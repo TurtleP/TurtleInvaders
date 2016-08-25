@@ -3,10 +3,10 @@ ability.passive = false
 ability.description = "Deploy Bilst, a crafty bot to defend her."
 
 --[[
-    Make the robot move in an arc in front of Becky.
-    It'll shoot if a bat is in its sight.
-    If shot, it gets destroyed.
-    It's timed for 8s of usage.
+	Make the robot move in an arc in front of Becky.
+	It'll shoot if a bat is in its sight.
+	If shot, it gets destroyed.
+	It's timed for 8s of usage.
 ]]
 local bilstImage = love.graphics.newImage("characters/becky/biltz.png")
 local bilstQuads = {}

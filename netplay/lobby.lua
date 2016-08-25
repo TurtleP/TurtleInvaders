@@ -11,6 +11,7 @@ function lobbyInit(playerID, playerNick)
 	
 	chooseFont = love.graphics.newFont("graphics/monofonto.ttf", 40 * scale)
 	mainFont = love.graphics.newFont("graphics/monofonto.ttf", 18 * scale)
+	countDownFont = love.graphics.newFont("graphics/monofonto.ttf", 24 * scale)
 	
 	myLobbyID = playerID
 	currentLobbySelection = playerID
@@ -30,22 +31,10 @@ function lobbyInit(playerID, playerNick)
 
 	chatLog = {}
 
-	chatKeyboard = keyboard:new("Enter chat text.", 24)
-
-	chatKeyboard.onReturn = function()
-		if #chatKeyboard:getText() == 0 then
-			return
-		end
-
-		local chatString = client:getUsername() .. ": " .. chatKeyboard:getText()
-
-		lobbyInsertChat(chatString)
-
-		table.insert(clientTriggers, "chat;" .. chatString .. ";")
-	end
-
 	chatText = ""
 	chatState = false
+
+	lobbyInputFade = 0
 end
 
 function lobbyUpdate(dt)
@@ -59,16 +48,31 @@ function lobbyUpdate(dt)
 			lobbyTimer = 0
 		end
 	end
+
+	if chatState then
+		if love.keyboard.hasTextInput() then
+			lobbyInputFade = math.min(lobbyInputFade + dt / 0.3, 1)
+		else
+			lobbyInputFade = math.max(lobbyInputFade - dt / 0.3, 0)
+		end
+	end
 end
 
 function lobbyDraw()
-	local position = util.getWidth() * 0.01
 	if mobileMode then
-		love.graphics.draw(backImage, util.getHeight() * 0.01, util.getHeight() * 0.011)
+		local position = util.getWidth() * 0.01
+		
+		love.graphics.draw(backImage, util.getWidth() * 0.01, util.getHeight() * 0.011)
+
 		position = util.getWidth() * 0.06
+
+		if chatState then
+			love.graphics.draw(keyboardImage, util.getWidth() * 0.11, util.getHeight() * 0.011)
+		end
+
+		love.graphics.draw(chatImage, position, util.getHeight() * 0.011)
 	end
 
-	love.graphics.print("@", position, util.getHeight() * 0 - 2 * scale)
 
 	love.graphics.setFont(chooseFont)
 
@@ -86,15 +90,6 @@ function lobbyDraw()
 			description = "No ability set."
 		end
 		love.graphics.print(description, util.getWidth() / 2 - mainFont:getWidth(description) / 2, love.graphics.getHeight() * 0.85)
-
-	    if lobbyCountDown then
-	    	love.graphics.setColor(0, 0, 0, 255 * lobbyFade)
-		    love.graphics.rectangle("fill", 0, 0, 400, 240)
-	    
-		    love.graphics.setColor(255, 255, 255, 255)
-
-	    	love.graphics.print("Game starting in " .. math.floor(lobbyTimer) .. "s", util.getWidth() / 2 - mainFont:getWidth("Game starting in " .. math.floor(lobbyTimer) .. "s") / 2, util.getHeight() / 2 - mainFont:getHeight() / 2)
-	    end
 	else
 		love.graphics.setColor(255, 255, 255, 255)
 
@@ -113,12 +108,30 @@ function lobbyDraw()
 
 		love.graphics.rectangle("line", util.getWidth() * 0.05, util.getHeight() * 0.88, util.getWidth() * 0.9, 1 * scale)
 
+		local textPositionX, textPositionY = util.getWidth() * 0.05, util.getHeight() * 0.9
+		if mobileMode then
+			if love.keyboard.hasTextInput() then
+				local t = ": Type your message"
+				if #chatText > 0 then
+					t = ": " .. chatText
+				end
+
+				textPositionX, textPositionY = util.getWidth() / 2 - mainFont:getWidth(client:getUsername() .. t) / 2, util.getHeight() * 0.26
+
+				love.graphics.setColor(0, 0, 0, 180 * lobbyInputFade)
+
+				love.graphics.rectangle("fill", 0, 0, util.getWidth(), util.getHeight())
+
+				love.graphics.setColor(255, 255, 255, 255 * lobbyInputFade)
+			end
+		end
+
 		if #chatText == 0 then
 			love.graphics.setColor(180, 180, 180)
-			love.graphics.print(client:getUsername() .. ": Type your message", util.getWidth() * 0.05, util.getHeight() * 0.9)
+			love.graphics.print(client:getUsername() .. ": Type your message", textPositionX, textPositionY)
 		else
 			love.graphics.setColor(200, 200, 200)
-			love.graphics.print(client:getUsername() .. ": " .. chatText, util.getWidth() * 0.05, util.getHeight() * 0.9)
+			love.graphics.print(client:getUsername() .. ": " .. chatText, textPositionX, textPositionY)
 		end
 	end
 	
@@ -135,7 +148,7 @@ function lobbyDraw()
 			end
 		end
 		
-	   if lobbyCursors then    
+	   if lobbyCursors then	
 			for k, v in pairs(lobbyCursors) do
 				v:draw()
 			end
@@ -143,8 +156,14 @@ function lobbyDraw()
 
 		if lobbyCountDown then
 			love.graphics.setColor(0, 0, 0, 255 * lobbyFade)
-			love.graphics.rectangle("fill", 0, 0, 320, 240)
+			love.graphics.rectangle("fill", 0, 0, util.getWidth(), util.getHeight())
 			love.graphics.setColor(255, 255, 255, 255)
+
+			love.graphics.setFont(countDownFont)
+		
+			love.graphics.setColor(255, 255, 255, 255)
+
+			love.graphics.print("Game starting in " .. math.floor(lobbyTimer) .. "s", util.getWidth() / 2 - countDownFont:getWidth("Game starting in " .. math.floor(lobbyTimer) .. "s") / 2, util.getHeight() / 2 - countDownFont:getHeight() / 2)
 		end
 	end
 	
@@ -175,7 +194,11 @@ function lobbyKeyPressed(key)
 			chatText = chatText:sub(1, -2)
 		elseif key == "return" then
 			lobbyInsertChat(client:getUsername() .. ": " .. chatText)
+			table.insert(clientTriggers, "chat;" .. client:getUsername() .. ": " .. chatText .. ";")
+
 			chatText = ""
+		elseif key == "escape" then
+			love.keyboard.setTextInput(false)
 		end
 		return
 	end
@@ -185,13 +208,9 @@ function lobbyKeyPressed(key)
 			if lobbyCharacters[myLobbyID] then
 				lobbyCharacters[myLobbyID] = nil
 				
-				lobbyCards[myLobbyID]:setReady(false)
+				lobbyCursors[myLobbyID]:setReady(false)
 
 				charSelections[lobbyCursors[myLobbyID].selection].selected = false
-			end
-		elseif key == "space" or key == "return" then
-			if lobbyCharacters[myLobbyID] then
-				lobbyCards[myLobbyID]:setReady(true)
 			end
 		end
 		return
@@ -200,9 +219,9 @@ function lobbyKeyPressed(key)
 		
 			if netplayHost then
 				server:shutdown()
-				client:shutdown()
+				client:close()
 			else
-				client:shutdown()
+				client:close()
 			end
 
 			util.changeState("netplay")
@@ -236,6 +255,8 @@ function lobbyKeyPressed(key)
 				lobbyCharacters[myLobbyID] = currentLobbySelection
 
 				charSelections[lobbyCursors[myLobbyID].selection].selected = true
+
+				lobbyCursors[myLobbyID]:setReady(true)
 			end
 		end
 	end
@@ -250,94 +271,45 @@ function lobbyTouchPressed(id, x, y, pressure)
 			else
 				lobbyCharacters[myLobbyID] = currentLobbySelection
 
-				charSelections[lobbyCursors[myLobbyID].selection].selected = true
+				if not lobbyCursors[myLobbyID].ready then
+					charSelections[lobbyCursors[myLobbyID].selection].selected = true
+
+					lobbyCursors[myLobbyID]:setReady(true)
+				else
+					charSelections[lobbyCursors[myLobbyID].selection].selected = false
+
+					lobbyCursors[myLobbyID]:setReady(false)
+				end
 			end
 			
 			break
 		end
 	end
 
-	if isTapped(util.getWidth() * 0.01, util.getHeight() * 0.011, 16 * scale, 16 * scale) then
-		clientSocket:setpeername("*")
+	if chatState then
+		if isTapped(util.getWidth() * 0.11, util.getHeight() * 0.011, 16 * scale, 16 * scale) then
+			love.keyboard.setTextInput(not love.keyboard.hasTextInput())
+		elseif isTapped(util.getWidth() * 0.05, util.getHeight() * 0.9, util.getWidth() * 0.9, mainFont:getHeight()) then
+			love.keyboard.setTextInput(true)
+		end
+
+		if love.keyboard.hasTextInput() then
+			return
+		end
+	end
+
+	if isTapped(util.getWidth() * 0.01, util.getHeight() * 0.011, 14 * scale, 16 * scale) then
+		if netplayHost then
+			server:shutdown()
+			client:close()
+		else
+			client:close()
+		end
 
 		util.changeState("netplay")
-	end
-end
-
-function lobbyMousePressed(x, y, button)
-	local position = util.getWidth() * 0.01
-	if mobileMode then
-		position = util.getWidth() * 0.1
-	end
-
-	if isTapped(position, util.getHeight() * 0.011, 16 * scale, 16 * scale) then
+	elseif isTapped(util.getWidth() * 0.06, util.getHeight() * 0.011, 16 * scale, 16 * scale) then
 		chatState = not chatState
 	end
-end
-
-function newLobbyCard(x, name, id)
-	local card = {}
-	
-	card.x = x
-	card.y = 68
-	card.width = mainFont:getWidth("        ") --lazy but whatever. It's monospaced.
-	card.height = 136
-	
-	card.name = name
-	
-	card.id = id
-	
-	card.character = gameCharacters[myLobbyID]
-	
-	card.ready = false
-	card.playToggleSound = false
-	
-	function card:draw()
-		self.character = charSelections[lobbyCursors[self.id].selection].char
-		if not self.character.animated then
-			love.graphics.draw(self.character.graphic, self.x + self.width / 2 - self.character.graphic:getWidth() / 2, self.y + self.height / 2 - self.character.graphic:getHeight() / 2)
-		else
-			love.graphics.draw(self.character.graphic, self.character.quads[1], self.x + self.width / 2 - self.character.width / 2, self.y + self.height / 2 - self.character.height / 2)
-		end
-		love.graphics.print(self.name, self.x + self.width / 2 - mainFont:getWidth(self.name) / 2, self.y + 9)
-		
-		local quadi = 2
-		if self.ready then
-			quadi = 1
-		end
-		love.graphics.draw(serverExistsImage, serverQuads[quadi], self.x + (self.width / 2) - 9, self.y + self.height - 36)
-	end
-
-	function card:setReady(ready)
-		self.ready = ready
-
-		if self.ready then
-			if not self.playToggleSound then
-				toggleSound:play()
-				self.playToggleSound = true
-			end
-		else
-			self.playToggleSound = false
-		end
-		
-		local countReady = 0
-		for k = 1, #lobbyCards do
-			if lobbyCards[k].ready then
-				countReady = countReady + 1
-			end
-		end
-
-		if countReady == #lobbyCards then
-			lobbyCountDown = true
-		else
-			lobbyCountDown = false
-
-			lobbyFade = 0
-			lobbyTimer = 3
-		end
-	end
-	  
-	return card
 end
 
 function newCursor(playerID)
@@ -358,6 +330,30 @@ function newCursor(playerID)
 		self.x = charSelections[selection].x
 		self.y = charSelections[selection].y
 		self.selection = selection
+	end
+
+	function cursor:setReady(isReady)
+		self.ready = isReady
+
+		if #lobbyCursors <= 1 then
+			return
+		end
+		
+		local countReady = 0
+		for k = 1, #lobbyCursors do
+			if lobbyCursors[k].ready then
+				countReady = countReady + 1
+			end
+		end
+
+		if countReady == #lobbyCursors then
+			lobbyCountDown = true
+		else
+			lobbyCountDown = false
+
+			lobbyFade = 0
+			lobbyTimer = 3
+		end
 	end
 	
 	function cursor:draw()
@@ -380,6 +376,10 @@ function newCursor(playerID)
 		love.graphics.line((v.x - offset) * scale, ((v.y + v.height - 8) + offset) * scale, (v.x - offset) * scale, (((v.y + v.height) + offset) * scale))
 		
 		love.graphics.setColor(255, 255, 255, 255)
+
+		if self.ready then
+			love.graphics.draw(readyImage, (self.x + self.width / 2 - readyImage:getWidth() / 2) * scale, (self.y + self.height / 2 - readyImage:getHeight() / 2) * scale)
+		end
 	end
 	
 	function cursor:move(i)

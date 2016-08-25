@@ -215,6 +215,10 @@ function player:triggerAbility()
 				if abilityKills == (self.maxHealth * 2) then
 					self.ability:trigger(self)
 					abilityKills = 0
+					
+					if mobileMode then
+						love.system.vibrate(0.1)
+					end
 				else
 					if self.ability.active then
 						self.ability:trigger()

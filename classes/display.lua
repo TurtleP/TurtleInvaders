@@ -60,6 +60,10 @@ function display:draw()
 	end
 	local player = self.player
 
+	if mobileMode then
+		love.graphics.draw(pauseImage, util.getWidth() * 0.005, util.getHeight() - pauseImage:getHeight() * scale  - 2 * scale)
+	end
+	
 	--Player info
 	love.graphics.print("Player", self.x * scale, self.y * scale)
 
