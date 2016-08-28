@@ -193,8 +193,16 @@ function lobbyKeyPressed(key)
 		if key == "backspace" then
 			chatText = chatText:sub(1, -2)
 		elseif key == "return" then
+			if #chatText == 0 then
+				return
+			end
+			
 			lobbyInsertChat(client:getUsername() .. ": " .. chatText)
 			table.insert(clientTriggers, "chat;" .. client:getUsername() .. ": " .. chatText .. ";")
+
+			if mobileMode then
+				love.keyboard.setTextInput(false)
+			end
 
 			chatText = ""
 		elseif key == "escape" then
@@ -233,30 +241,32 @@ function lobbyKeyPressed(key)
 	elseif key == "a" or key == "left" then
 		lobbyCursors[myLobbyID]:move(-1)
 	elseif key == "space" or "return" then
-		if not lobbyCharacters[myLobbyID] then
-			
-			local pass = true
-			
-			for k = #lobbyCharacters, 1, -1 do
-				if k ~= myLobbyID then
-					if charSelections[k].selected then
-						if lobbyCursors[myLobbyID].selection == k then
-							explodeSound:play()
+		if not chatState then
+			if not lobbyCharacters[myLobbyID] then
+				
+				local pass = true
+				
+				for k = #lobbyCharacters, 1, -1 do
+					if k ~= myLobbyID then
+						if charSelections[k].selected then
+							if lobbyCursors[myLobbyID].selection == k then
+								explodeSound:play()
 
-							pass = false
-							
-							break
+								pass = false
+								
+								break
+							end
 						end
 					end
 				end
-			end
 
-			if pass then
-				lobbyCharacters[myLobbyID] = currentLobbySelection
+				if pass then
+					lobbyCharacters[myLobbyID] = currentLobbySelection
 
-				charSelections[lobbyCursors[myLobbyID].selection].selected = true
+					charSelections[lobbyCursors[myLobbyID].selection].selected = true
 
-				lobbyCursors[myLobbyID]:setReady(true)
+					lobbyCursors[myLobbyID]:setReady(true)
+				end
 			end
 		end
 	end

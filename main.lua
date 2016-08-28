@@ -265,7 +265,7 @@ function love.load()
 
 	love.graphics.setLineWidth(love.graphics.getLineWidth() * scale)
 
-	love.audio.setVolume(0)
+	--love.audio.setVolume(0)
 
 	tapTimer = 0
 	tapIsHeld = false
@@ -429,6 +429,10 @@ end
 function love.touchreleased(id, x, y, dx, dy, pressure)
 	util.touchReleased(id, x, y, pressure)
 	tapIsHeld = false
+end
+
+function love.touchmoved(id, x, y, dx, dy, pressure)
+	util.touchMoved(id, x, y, dx, dy, pressure)
 end
 
 function loadSettings()

@@ -134,6 +134,12 @@ function util.touchReleased(id, x, y, pressure)
 	end
 end
 
+function util.touchMoved(id, x, y, dx, dy, pressure)
+	if _G[state .. "TouchMoved"] then
+		_G[state .. "TouchMoved"](id, x, y, dx, dy, pressure)
+	end
+end
+
 function util.dist(x1,y1, x2,y2) 
 	return ((x2-x1)^2+(y2-y1)^2)^0.5 
 end

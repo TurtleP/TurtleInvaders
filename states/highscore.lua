@@ -20,7 +20,7 @@ function highscoreInit(menu)
 				highscores[i] = {highscores[i - 1][1], highscores[i - 1][2], highscores[i - 1][3]}
 			end
 
-			highscores[highi] = {"????", difficulties[difficultyi], score}
+			highscores[highi] = {"", difficulties[difficultyi], score}
 	
 			if mobileMode then
 				love.keyboard.setTextInput(true)
@@ -76,6 +76,10 @@ function highscoreDraw()
 		love.graphics.print(highString, util.getWidth() / 2 - mainFont:getWidth(highString) / 2,  (love.graphics.getHeight() * 0.4) + (k - 1) * 32 * scale)
 	end
 
+	if not mobileMode then
+		return
+	end
+
 	if highi then
 		love.graphics.setColor(0, 0, 0, 180 * inputFade)
 
@@ -112,13 +116,19 @@ function highscoreTextInput(text)
 		return
 	end
 		
-	if #inputName < 8 then
-		if colorFadeTime == 1 then
-			colorFadeTime = 0
-				
-			keyboardSound:play()
+	if not mobileMode then
+		if #highscores[highi][1] < 8 then
+			highscores[highi][1] = highscores[highi][1] .. text
+		end
+	else
+		if #inputName < 8 then
+			if colorFadeTime == 1 then
+				colorFadeTime = 0
+					
+				keyboardSound:play()
 
-			inputName = inputName .. text
+				inputName = inputName .. text
+			end
 		end
 	end
 end
@@ -150,17 +160,26 @@ end
 function highscoreKeyPressed(key)
 	if highi then
 		if key == "backspace" then
+			if not mobileMode then
+				highscores[highi][1] = highscores[highi][1]:sub(1, -2)
+				return
+			end
 			inputName = inputName:sub(1, -2)
 		elseif key == "return" then
-			if #inputName > 0 then
-				highscores[highi][1] = inputName
-
-				love.keyboard.setTextInput(false)
-				
-				saveSettings()
-
-				util.changeState("title", 1)
+			if mobileMode then
+				if #inputName > 0 then
+					highscores[highi][1] = inputName
+					love.keyboard.setTextInput(false)
+				end
+			else
+				if #highscores[highi][1] == 0 then
+					return
+				end
 			end
+
+			saveSettings()
+
+			util.changeState("title", 1)
 		end
 		return
 	end

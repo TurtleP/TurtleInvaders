@@ -178,7 +178,13 @@ function netplayUpdate(dt)
 		end
 
 		if data then
-			if data == partyName then
+			local serverData = data:split(";")
+
+			if serverData[1] ~= "Turtle: Invaders" then
+				return
+			end
+
+			if serverData[2] == partyName then
 				client:setInformation(ip, port)
 				client:shutdown()
 				getData = false
@@ -294,6 +300,10 @@ function netplayTouchPressed(id, x, y, pressure)
 		local v = netplaySelectionFunctions[k][1]
 
 		if v ~= "" then
+			if netplayTextEntry then
+				return
+			end
+
 			if isTapped(netplayX + 16 * scale, netplayY + (32 + (k - 1) * 22) * scale, logoFont:getWidth(v), 16 * scale) then
 				
 				if netplaySelectioni ~= k then
@@ -317,6 +327,10 @@ function netplayKeyPressed(key)
 				partyName = partyName:sub(1, -2)
 			end
 		elseif key == "return" then
+			if #nickName == 0 or #partyName == 0 then
+				return
+			end
+
 			if mobileMode then
 				love.keyboard.setTextInput(false)
 			end

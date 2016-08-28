@@ -36,7 +36,7 @@ function server:update(dt)
 	if broadCastTimer < 1 then
 		broadCastTimer = broadCastTimer + dt
 	else
-		self.socket:sendto(serverName, "255.255.255.255", 25545)
+		self.socket:sendto("Turtle: Invaders;" .. serverName .. ";" .. #self.clients .. ";", "255.255.255.255", 25545)
 		broadCastTimer = 0
 	end
 
@@ -76,7 +76,7 @@ function server:update(dt)
 
 			table.insert(logs, "A new wave has begun!")
 		elseif cmd[1] == "ping" then
-			socket:sendto("pong;" .. serverName .. ";" .. #clients .. "/4" .. ";", ip, port)
+			self.socket:sendto("pong;" .. #self.clients .. ";", ip, port)
 		elseif cmd[1] == "setpowerup" then
 			self:sendDataToClients(data, ip)
 		elseif cmd[1] == "spawnbat" then
