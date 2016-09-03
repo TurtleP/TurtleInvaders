@@ -1,14 +1,9 @@
-_EMULATEHOMEBREW = (love.system.getOS() ~= "3ds")
-
 util = require 'libraries.util'
 class = require 'libraries.middleclass'
 
 require 'libraries.physics'
 require 'libraries.character'
 require 'libraries.functions'
-
-require 'libraries.potion-compat'
-require 'libraries.keyboard'
 
 require 'classes.star'
 require 'classes.timer'
@@ -40,22 +35,11 @@ require 'netplay.server'
 require 'netplay.netplay'
 require 'netplay.lobby'
 require 'netplay.browser'
+require 'netplay.win'
 
 socket = require 'socket'
 
 io.stdout:setvbuf("no")
-
---[[
-	A note worth reading:
-
-	This game was originally made for PC/Mac/Linux/Android devices. This is the Nintendo 3DS homebrew port. You know what I have to work with here?
-	Right now it's Love Potion 1.0.8 which can only use up to two fonts and we haven't got audio streaming. This is a big deal since the original
-	version used a shitton of audio and fonts. I've got to hotswap fonts and music as needed so it's a pain but worth it!
-
-	If you enjoy this, please private message me on GBATemp.net (TurtleP)! You can find my website at:
-
-	http://TurtleP.github.io/
---]]
 
 love.math.setRandomSeed( os.time() )
 
@@ -159,12 +143,16 @@ function love.load()
 	end
 
 	readyImage = love.graphics.newImage("graphics/netplay/ready.png")
+
+	platformImage = love.graphics.newImage("graphics/netplay/platform.png")
 	
 	bufferImage = love.graphics.newImage("graphics/netplay/buffer.png")
 	bufferQuads = {}
 	for k = 1, 3 do
 		bufferQuads[k] = love.graphics.newQuad((k - 1) * 9, 0, 9, 9, bufferImage:getWidth(), bufferImage:getHeight())
 	end
+
+	confettiImage = love.graphics.newImage("graphics/netplay/confetti.png")
 
 	keyboardImage = love.graphics.newImage("graphics/mobile/keyboard.png")
 	backImage = love.graphics.newImage("graphics/mobile/back.png")
@@ -244,7 +232,12 @@ function love.load()
 		love.window.setMode(400, 240)
 	else
 		love.window.setMode(width, height, {borderless = true})
-		--love.window.setFullscreen(true, "desktop")
+		
+		controlTypes = 
+		{
+			"Accelerometer",
+			"Swipe n' Tap"
+		}
 	end
 
 	--iOS and its 'highDPI' are a bitch
@@ -309,12 +302,6 @@ function love.update(dt)
 		if batSaveTimer > 12 then
 			isSaving = false
 			batSaveTimer = 0
-		end
-	end
-
-	if mobileMode then
-		if tapIsHeld then
-			tapTimer = tapTimer + dt
 		end
 	end
 end
@@ -421,14 +408,11 @@ function love.gamepadreleased(joystick, button)
 end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
-	tapIsHeld = true
-
 	util.touchPressed(id, x, y, pressure)
 end
 
 function love.touchreleased(id, x, y, dx, dy, pressure)
 	util.touchReleased(id, x, y, pressure)
-	tapIsHeld = false
 end
 
 function love.touchmoved(id, x, y, dx, dy, pressure)
@@ -464,6 +448,12 @@ function loadSettings()
 				local split = value:split("~")
 
 				highscores[tonumber(split[1])] = {split[2], split[3], tonumber(split[4])}
+			elseif index == "control" then
+				local split = value:split("~")
+
+				controls[split[1]] = split[2]
+			elseif index == "mobile" then
+				controlTypei = tonumber(value)
 			end
 		end
 	end
@@ -486,6 +476,12 @@ function saveSettings()
 		string = string .. "highscore:" .. k .. "~" .. highscores[k][1] .. "~" .. highscores[k][2] .. "~" .. highscores[k][3] .. ";"
 	end
 
+	for k, v in pairs(controls) do
+		string = string .. "control:" .. k .. "~" .. v .. ";"
+	end
+
+	string = string .. "mobile:" .. controlTypei .. ";"
+
 	love.filesystem.write("save.txt", string)
 end
 
@@ -497,6 +493,8 @@ function defaultSettings(remove)
 		shoot = "space",
 		ability = "lshift"
 	}
+
+	controlTypei = 1
 
 	highscores = {}
 	for k = 1, 4 do

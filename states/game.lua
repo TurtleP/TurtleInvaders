@@ -158,9 +158,13 @@ function gameUpdate(dt)
 	end
 	
 	if gameFinished then
-		winFade = math.min(winFade + 0.4 * dt)
+		winFade = math.min(winFade + 0.4 * dt, 1)
 		
 		if winFade == 1 then
+			if netplayOnline then
+				util.changeState("win")
+				return
+			end
 			util.changeState("highscore")
 		end
 	end
@@ -219,6 +223,9 @@ function gameUpdate(dt)
 
 	if gameOver then
 		if not gameOverSound:isPlaying() then
+			if netplayOnline then
+				return
+			end
 			util.changeState("highscore")
 		end
 		return
@@ -243,7 +250,11 @@ function gameUpdate(dt)
 	displayInfo:update(dt)
 
 	if mobileMode then
-		if tapTimer > 1 then
+		if tapIsHeld then
+			tapTimer = tapTimer + dt
+		end
+
+		if tapTimer > 0.5 then
 			if not objects["player"][1] then
 				return
 			end
@@ -252,7 +263,7 @@ function gameUpdate(dt)
 			tapTimer = 0
 		end
 	
-		if not accelerometerJoystick then
+		if not accelerometerJoystick or controlTypei == 2 then
 			return
 		end
 		
@@ -356,7 +367,7 @@ function gameDraw()
 	
 	if gameFinished then
 		love.graphics.setColor(0, 0, 0, 255 * winFade)
-		love.graphics.rectangle("fill", 0, 0, 400, 240)
+		love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
 		
 		love.graphics.setColor(255, 255, 255, 255)
 	end
@@ -456,6 +467,32 @@ function gameCreateExplosion(self)
 	table.insert(explosions, explosion:new(self.x + (self.width / 2) - 8, self.y + (self.height / 2) - 8))
 end
 
+function gameTouchMoved(id, x, y, dx, dy, pressure)
+	if controlTypei ~= 2 then
+		return
+	end
+
+	if not swipeID then
+		swipeID = id
+		
+		tapIsHeld = false
+		tapTimer = 0
+	else
+	    if id ~= swipeID then
+	        return
+	    end
+	end
+
+	local deadzone = 20
+	if dx > deadzone then
+		objects["player"][1]:moveRight(true)
+		objects["player"][1]:moveLeft(false)
+	elseif dx < -deadzone then
+		objects["player"][1]:moveLeft(true)
+		objects["player"][1]:moveRight(false)
+	end
+end
+
 function gameTouchPressed(id, x, y, pressure)
 	if isTapped(util.getWidth() * 0.005, util.getHeight() - (pauseImage:getHeight() + 2) * scale, 16 * scale, 16 * scale) then
 		paused = not paused
@@ -465,6 +502,16 @@ function gameTouchPressed(id, x, y, pressure)
 	if paused then
 		gamePauseMenu:touchPressed(x, y)
 	else
+		if controlTypei == 2 then
+			if id == swipeID then
+				return
+			else
+				tapIsHeld = true
+			end
+		else
+			tapIsHeld = true
+		end
+
 		local player = objects["player"][1]
 
 		if not player then
@@ -476,5 +523,17 @@ function gameTouchPressed(id, x, y, pressure)
 end
 
 function gameTouchReleased(id, x, y, pressure)
+	tapIsHeld = false
 	tapTimer = 0
+
+	if controlTypei == 2 then
+		if id ~= swipeID then
+			return
+		end
+
+		objects["player"][1]:moveRight(false)
+		objects["player"][1]:moveLeft(false)
+
+		swipeID = nil
+	end
 end

@@ -170,6 +170,8 @@ function highscoreKeyPressed(key)
 				if #inputName > 0 then
 					highscores[highi][1] = inputName
 					love.keyboard.setTextInput(false)
+				else
+					return
 				end
 			else
 				if #highscores[highi][1] == 0 then
@@ -179,6 +181,16 @@ function highscoreKeyPressed(key)
 
 			saveSettings()
 
+			if netplayOnline then
+				for i = 1, #lobbyCursors do
+					charSelections[lobbyCursors[i].selection].selected = false
+					lobbyCursors[i]:setReady(false)
+					lobbyCursors[i]:setPosition(i)
+				end
+				
+				util.changeState("lobby", myLobbyID, nickName)
+				return
+			end
 			util.changeState("title", 1)
 		end
 		return

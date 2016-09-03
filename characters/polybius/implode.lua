@@ -4,7 +4,7 @@ ability.description = "Reflect colliding projectiles"
 function ability:init(parent)
 	self.parent = parent
 
-	self.active = true
+	self.initialize = true
 
 	self.timer = 0
 	self.fade = 1
@@ -19,7 +19,7 @@ function ability:trigger(parent)
 end
 
 function ability:update(dt)
-	if not self.active then
+	if not self.initialize then
 		return
 	end
 
@@ -49,7 +49,7 @@ function ability:update(dt)
 end
 
 function ability:reset()
-	self.active = false
+	self.initialize = false
 end
 
 function ability:intersects(x, y, width, height)
@@ -67,11 +67,12 @@ function ability:intersects(x, y, width, height)
 end
 
 function ability:draw()
-	if not self.active then
+	if not self.initialize then
 		return
 	end
 
-	love.graphics.setScissor(self.parent.x * scale, (self.parent.y - self.parent.height / 2) * scale, self.parent.width * scale, self.parent.width / 2 * scale)
+	--love.graphics.rectangle("line", (self.parent.x - self.parent.width / 2) * scale, (self.parent.y - 30) * scale, (self.parent.width * 2) * scale, (self.parent.width / 4) * scale)
+	love.graphics.setScissor((self.parent.x - self.parent.width / 2) * scale, (self.parent.y - 30) * scale, (self.parent.width * 2) * scale, (self.parent.width / 2) * scale)
 
 	love.graphics.setColor(255, 255, 255, 255 * self.fade)
 	

@@ -1,13 +1,14 @@
 local batAbilities =
 {
-	{"shoot", 8},
+	{"none", 0},
+	{"shoot", 2},
 }
 
 local batPowerups =
 {
-	{"none", 2},
 	{"laser", 18},
-	{"freeze", 12}
+	{"freeze", 12},
+	{"shotgun", 8}
 }
 
 bat = class("bat")
@@ -19,10 +20,11 @@ function bat:init(x, y, velocity)
 	self.width = 30
 	self.height = 14
 
+	self.staticX = x
+	self.staticY = y
+
 	self.speedx = velocity[1]
 	self.speedy = velocity[2]
-
-	self.staticSpeed = {self.speedx, self.speedy}
 
 	self.powerupColor = {247, 218, 100}
 
@@ -51,7 +53,6 @@ function bat:init(x, y, velocity)
 	end
 
 	--HANDLE ABILITIES BASED ON DIFFICULTY!
-	
 
 	local abilityRandom = love.math.random() --0 to 1
 
@@ -89,10 +90,6 @@ function bat:init(x, y, velocity)
 
 	self.angle = 0
 
-	if self.ability == "circle" then
-		self.mask["barrier"] = false
-	end
-
 	self.maxHealth = health
 	self.health = self.maxHealth
 
@@ -100,27 +97,11 @@ function bat:init(x, y, velocity)
 end
 
 function bat:update(dt)
+	if self.frozen then
+	    return
+	end
+	
 	if objects then
-		if objects["player"][1] then
-			if objects["player"][1]:getPowerup() == "time" then
-				dt = dt / 4
-
-				self.speedx = self.staticSpeed[1] / 2
-				self.speedy = self.staticSpeed[2] / 2
-
-				if self.setSpeeds then
-					self.setSpeeds = false
-				end
-			else
-				if not self.setSpeeds then
-					self.speedx = self.staticSpeed[1]
-					self.speedy = self.staticSpeed[2]
-
-					self.setSpeeds = true
-				end
-			end
-		end
-
 		if self.ability == "shoot" then
 			if self.bulletTimer > 0 then
 				self.bulletTimer = self.bulletTimer - dt
@@ -260,4 +241,9 @@ function bat:die(player, anti)
 	end
 
 	gameDropPowerup(self.x + (self.width / 2) - 9, self.y + (self.height / 2) - 9, oneup)
+end
+
+function bat:freeze(frozen)
+   self.frozen = frozen
+   self.active = not frozen
 end

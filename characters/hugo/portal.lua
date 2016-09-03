@@ -67,10 +67,10 @@ function ability:update(dt)
 	end
 
 	if self.useTimer > 0 then
-				self.useTimer = self.useTimer - dt
-			else
-				self:reset()
-			end
+		self.useTimer = self.useTimer - dt
+	else
+		self:reset()
+	end
 
 	if self.portals[1] and self.portals[2] then
 		if self.portals[1].type == "portal" and self.portals[2].type == "portal" then

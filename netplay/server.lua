@@ -45,7 +45,6 @@ function server:update(dt)
 	if data then
 		cmd = data:split(";")
 		if cmd[1] == "connect" then
-			print(data)
 			if #self.clients < 4 then
 				self.socket:sendto("connected;" .. #self.clients + 1 .. ";" .. cmd[2] .. ";" .. serverName .. ";", ip, port)
 				
@@ -65,29 +64,7 @@ function server:update(dt)
 			self:sendDataToClients(data, ip)
 
 			table.insert(logs, cmd[2])
-		elseif cmd[1] == "moveplayer" then
-			self:sendDataToClients(data, ip)
-		elseif cmd[1] == "shootplayer" then
-			self:sendDataToClients(data, ip)
-		elseif cmd[1] == "batdata" then
-			self:sendDataToClients(data, ip)
-		elseif cmd[1] == "wave" then
-			self:sendDataToClients(data, ip)
-
-			table.insert(logs, "A new wave has begun!")
-		elseif cmd[1] == "ping" then
-			self.socket:sendto("pong;" .. #self.clients .. ";", ip, port)
-		elseif cmd[1] == "setpowerup" then
-			self:sendDataToClients(data, ip)
-		elseif cmd[1] == "spawnbat" then
-			self:sendDataToClients(data, ip)
-		elseif cmd[1] == "spawnpowerup" then
-			self:sendDataToClients(data, ip)
-		elseif cmd[1] == "spawnmegabat" then
-			self:sendDataToClients(data, ip)
-		elseif cmd[1] == "megabatshoot" then
-			self:sendDataToClients(data, ip)
-		elseif cmd[1] == "useability" then
+		elseif cmd[1] == "gameover" then
 			self:sendDataToClients(data, ip)
 		end
 	end

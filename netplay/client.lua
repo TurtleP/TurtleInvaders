@@ -8,6 +8,9 @@ local clientSyncLobbyTime = 0.25
 function client:init()
 	clientSocket = socket.udp()
 	clientSocket:settimeout(0)
+
+	self.gameOver = false
+	clientScores = {}
 end
 
 function client:connect(ip, port)
@@ -86,6 +89,8 @@ function client:update(dt)
 			util.changeState("netplay")
 
 			netplayOnline = false
+		elseif cmd[1] == "gameover" then
+			table.insert(clientScores, {cmd[2], tonumber(cmd[3]), tonumber(cmd[4])})
 		end
 	end
 
@@ -95,6 +100,20 @@ function client:update(dt)
 		else
 			clientSocket:send("lobbydata;" .. myLobbyID .. ";" .. lobbyCursors[myLobbyID].selection .. ";" .. tostring(lobbyCursors[myLobbyID].ready) .. ";" .. tostring(lobbyCharacters[myLobbyID]) .. ";")
 			clientSyncLobbyTimer = 0
+		end
+	end
+	
+	if self.gameOver then
+		if #clientScores ==  #lobbyCursors then
+			gameFinished = true
+		end
+	end
+
+	if gameOver then
+		if not self.gameOver then
+			table.insert(clientScores, {nickName, score, lobbyCursors[myLobbyID].selection})
+			table.insert(clientTriggers, "gameover;" .. nickName .. ";" .. score .. ";" .. lobbyCursors[myLobbyID].selection .. ";")
+			self.gameOver = true
 		end
 	end
 

@@ -19,10 +19,10 @@ function lobbyInit(playerID, playerNick)
 	
 	playerCursorColors =
 	{
-		{255, 55, 0, 95},
-		{0, 55, 255, 95},
-		{255, 205, 0, 95},
-		{55, 255, 9, 95}
+		{255, 55, 0},
+		{0, 55, 255},
+		{255, 205, 0},
+		{55, 255, 9}
 	}
 
 	lobbyCountDown = false
@@ -225,13 +225,12 @@ function lobbyKeyPressed(key)
 	else
 		if key == "escape" then
 		
+			client:disconnect()
 			if netplayHost then
-				server:shutdown()
-				client:close()
-			else
-				client:close()
+				server:destroyServer()
 			end
-
+			client:close()
+			
 			util.changeState("netplay")
 		end
 	end
@@ -309,12 +308,11 @@ function lobbyTouchPressed(id, x, y, pressure)
 	end
 
 	if isTapped(util.getWidth() * 0.01, util.getHeight() * 0.011, 14 * scale, 16 * scale) then
+		client:disconnect()
 		if netplayHost then
-			server:shutdown()
-			client:close()
-		else
-			client:close()
+			server:destroyServer()
 		end
+		client:close()
 
 		util.changeState("netplay")
 	elseif isTapped(util.getWidth() * 0.06, util.getHeight() * 0.011, 16 * scale, 16 * scale) then

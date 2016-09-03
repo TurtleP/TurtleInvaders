@@ -64,20 +64,22 @@ function browserUpdate(dt)
 			end
 		end
 	else
-		local data, msg = clientSocket:receive()
-		
-		if data then
-			local cmd = data:split(";")
-			if cmd[1] == "connected" then
-				onlineName = nickName
+		if sendData then
+			local data, msg = clientSocket:receive()
+			
+			if data then
+				local cmd = data:split(";")
+				if cmd[1] == "connected" then
+					onlineName = nickName
 
-				saveSettings()
-										
-				util.changeState("lobby", tonumber(cmd[2]), cmd[3])
+					saveSettings()
+											
+					util.changeState("lobby", tonumber(cmd[2]), cmd[3])
 
-				netplayOnline = true
+					netplayOnline = true
 
-				sendData = false				
+					sendData = false				
+				end
 			end
 		end
 	end
@@ -159,10 +161,12 @@ end
 
 function browserTouchMoved(id, x, y, dx, dy)
 	if dy ~= 0 then
-		if isTapped(browserX, browserY + (28 * scale), browserWidth * scale, browserHeight * scale) then
-			browserSmoothScroll = util.clamp(browserSmoothScroll - dy / 6, 0, (#serverList - 6) * 26)
+		if #serverList > 6 then
+			if isTapped(browserX, browserY + (28 * scale), browserWidth * scale, browserHeight * scale) then
+				browserSmoothScroll = util.clamp(browserSmoothScroll - dy / 6, 0, (#serverList - 6) * 26)
+			end
+			browserIsScrolling = true
 		end
-		browserIsScrolling = true
 	else
 		browserIsScrolling = false
 

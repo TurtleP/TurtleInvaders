@@ -14,21 +14,42 @@ function optionsInit()
 
 	optionsSelections =
 	{
-		{"Difficulty:", function() optionsChangeDifficulty(1) end},
-		{"Game Mode:", function() optionsChangeMode(1) end},
-		{"", function() end},
-		{"Sound Effects:", function() optionsToggleSound(false) end},
-		{"Music:", function() optionsToggleSound(true) end},
-		{"", function() end},
-		{"Delete data", function() defaultSettings(true) end},
-		{"View credits", function() util.changeState("credits") end}
+		{
+			{"Difficulty:", function() optionsChangeDifficulty(1) end},
+			{"Game Mode:", function() optionsChangeMode(1) end},
+			{"", function() end},
+			{"Sound effects:", function() optionsToggleSound(false) end},
+			{"Music:", function() optionsToggleSound(true) end},
+			{"", function() end},
+			{"Delete data", function() defaultSettings(true) end},
+			{"View credits", function() util.changeState("credits") end}
+		},
+		{
+			{"Controls type:", function() optionsChangeControls(1) end}
+		}
 	}
 
+	controlsTextX = optionsX
+	controlsScrollDelay = 0.4
 	optionsDelay = 0.1
 end
 
 function optionsUpdate(dt)
 	optionsDelay = math.max(optionsDelay - dt, 0)
+
+	if mobileMode then
+		if optionsTab == 2 then
+			if controlsScrollDelay > 0 then
+				controlsScrollDelay = controlsScrollDelay - dt
+			else
+				controlsTextX = controlsTextX - (60 * scale) * dt
+
+				if controlsTextX + mainFont:getWidth(controlsText) < optionsX then
+					controlsTextX = optionsX + optionsWidth * scale
+				end
+			end
+		end
+	end
 end
 
 function optionsDraw()
@@ -46,25 +67,18 @@ function optionsDraw()
 	love.graphics.print("General", optionsX, optionsY + 2 * scale)	
 
 	--CONTROLS
-	if not mobileMode then
-		love.graphics.setColor(127, 127, 127)
-		if optionsTab == 2 then
-			love.graphics.setColor(255, 255, 255)
-		end
-		love.graphics.print("Controls", optionsX + 98 * scale, optionsY + 2 * scale)
-	end	
-
-	--ACHIEVEMENTS
-	local achievementTextX, tabIndex = optionsX + 210 * scale, 3
-	if mobileMode then
-		achievementTextX, tabIndex = optionsX + 98 * scale, 2
-	end
-
 	love.graphics.setColor(127, 127, 127)
-	if optionsTab == tabIndex then
+	if optionsTab == 2 then
 		love.graphics.setColor(255, 255, 255)
 	end
-	love.graphics.print("Achievements", achievementTextX, optionsY + 2 * scale)
+	love.graphics.print("Controls", optionsX + 98 * scale, optionsY + 2 * scale)
+
+	--ACHIEVEMENTS
+	love.graphics.setColor(127, 127, 127)
+	if optionsTab == 3 then
+		love.graphics.setColor(255, 255, 255)
+	end
+	love.graphics.print("Achievements", optionsX + 210 * scale, optionsY + 2 * scale)
 
 	love.graphics.setFont(logoFont)
 
@@ -121,33 +135,75 @@ function optionsDraw()
 		love.graphics.print("View Credits", optionsX + 16 * scale, optionsY + 186 * scale)
 	end
 
-	if not mobileMode and optionsTab == 2 then
-		love.graphics.setColor(127, 127, 127)
-		if optionsSelection == 1 then
-			love.graphics.setColor(255, 255, 255)
-		end
-		love.graphics.print("Move Left: " .. controls["left"]:gsub("^%l", string.upper), optionsX + 16, optionsY + 32 * scale)
+	if optionsTab == 2 then
+		if not mobileMode then
+			love.graphics.setColor(127, 127, 127)
+			if optionsSelection == 1 then
+				love.graphics.setColor(255, 255, 255)
+			end
+			love.graphics.print("Move Left: " .. controls["left"]:gsub("^%l", string.upper), optionsX + 16 * scale, optionsY + 32 * scale)
 
-		love.graphics.setColor(127, 127, 127)
-		if optionsSelection == 2 then
-			love.graphics.setColor(255, 255, 255)
-		end
-		love.graphics.print("Move Right: " .. controls["right"]:gsub("^%l", string.upper), optionsX + 16, optionsY + 54 * scale)
+			love.graphics.setColor(127, 127, 127)
+			if optionsSelection == 2 then
+				love.graphics.setColor(255, 255, 255)
+			end
+			love.graphics.print("Move Right: " .. controls["right"]:gsub("^%l", string.upper), optionsX + 16 * scale, optionsY + 54 * scale)
 
-		love.graphics.setColor(127, 127, 127)
-		if optionsSelection == 3 then
+			love.graphics.setColor(127, 127, 127)
+			if optionsSelection == 3 then
+				love.graphics.setColor(255, 255, 255)
+			end
+			love.graphics.print("Shoot: " .. controls["shoot"]:gsub("^%l", string.upper), optionsX + 16 * scale, optionsY + 76 * scale)
+			
+			love.graphics.setColor(127, 127, 127)
+			if optionsSelection == 4 then
+				love.graphics.setColor(255, 255, 255)
+			end
+			love.graphics.print("Use Ability: " .. controls["ability"]:gsub("^%l", string.upper), optionsX + 16 * scale, optionsY + 98 * scale)
+		else
+			love.graphics.setColor(127, 127, 127)
+			if optionsSelection == 1 then
+				love.graphics.setColor(255, 255, 255)
+			end
+			love.graphics.print("Controls type: " .. controlTypes[controlTypei], optionsX + 16 * scale, optionsY + 32 * scale)
+
+			love.graphics.setColor(127, 127, 127)
+			local text = "Tilt left"
+			if controlTypei == 2 then
+				text = "Swipe left"
+			end
+
+			love.graphics.print("Move Left: " .. text, optionsX + 16 * scale, optionsY + 76 * scale)
+
+			local text = "Tilt right"
+			if controlTypei == 2 then
+				text = "Swipe right"
+			end
+			love.graphics.print("Move Right: " .. text, optionsX + 16 * scale, optionsY + 98 * scale)
+
+			local text = "Tap"
+			if controlTypei == 2 then
+			    text = "Secondary tap"
+			end
+			love.graphics.print("Shoot: " .. text, optionsX + 16 * scale, optionsY + 120 * scale)
+
+			love.graphics.print("Use ability: Hold " .. text:gsub("^%l", string.lower), optionsX + 16 * scale, optionsY + 142 * scale)
+
 			love.graphics.setColor(255, 255, 255)
-		end
-		love.graphics.print("Shoot: " .. controls["shoot"]:gsub("^%l", string.upper), optionsX + 16, optionsY + 76 * scale)
+
+			controlsText = "Tilt the device to move; tap to shoot (hold for ability)."
+			if controlTypei == 2 then
+				controlsText = "Swipe left or right to move; secondary tap to shoot (hold for ability)."
+			end
+			love.graphics.setScissor(optionsX, optionsY + optionsHeight * scale - mainFont:getHeight(), optionsWidth * scale, mainFont:getHeight())
+
+			love.graphics.print(controlsText, controlsTextX, optionsY + 186 * scale)
 		
-		love.graphics.setColor(127, 127, 127)
-		if optionsSelection == 4 then
-			love.graphics.setColor(255, 255, 255)
+			love.graphics.setScissor()
 		end
-		love.graphics.print("Use Ability: " .. controls["ability"]:gsub("^%l", string.upper), optionsX + 16, optionsY + 98 * scale)
 	end
 
-	if optionsTab == tabIndex then
+	if optionsTab == 3 then
 		for k = 1, #achievements do
 			love.graphics.setColor(127, 127, 127)
 			if achievements[k].unlocked then
@@ -160,27 +216,12 @@ function optionsDraw()
 end
 
 function optionsTouchPressed(id, x, y, pressure)
-	for k = 1, #optionsSelections do
-		local v = optionsSelections[k][1]
-
-		if v ~= "" then
-			if isTapped(optionsX + 16 * scale, optionsY + (32 + (k - 1) * 22) * scale, logoFont:getWidth(v), 16 * scale) then
-				
-				if optionsSelection ~= k then
-					optionsSelection = k
-				else
-					optionsSelections[optionsSelection][2]()
-				end
-
-				break
-			end
-		end
-	end
-
 	if isTapped(optionsX, optionsY + 6 * scale, mainFont:getWidth("General"), 20 * scale) then
-		optionsTab = 1
-	elseif isTapped(optionsX + 98 * scale, optionsY + 6 * scale, mainFont:getWidth("Achievements"), 20 * scale) then
-		optionsTab = 2
+		optionsChangeTab(1)
+	elseif isTapped(optionsX + 98 * scale, optionsY + 6 * scale, mainFont:getWidth("Controls"), 20 * scale) then
+		optionsChangeTab(2)
+	elseif isTapped(optionsX + 210 * scale, optionsY + 2 * scale, mainFont:getWidth("Achievements"), 20 * scale) then
+		optionsChangeTab(3)
 	end
 
 	if optionsDelay > 0 then
@@ -188,7 +229,29 @@ function optionsTouchPressed(id, x, y, pressure)
 	end
 
 	if isTapped(util.getWidth() * 0.01, util.getHeight() * 0.011, 16 * scale, 16 * scale) then
+	    saveSettings()
 		util.changeState("title")
+	end
+
+	if optionsTab == 3 then
+		return
+	end
+
+	for k = 1, #optionsSelections[optionsTab] do
+		local v = optionsSelections[optionsTab][k][1]
+
+		if v ~= "" then
+			if isTapped(optionsX + 16 * scale, optionsY + (32 + (k - 1) * 22) * scale, logoFont:getWidth(v), 16 * scale) then
+				
+				if optionsSelection ~= k then
+					optionsSelection = k
+				else
+					optionsSelections[optionsTab][optionsSelection][2]()
+				end
+
+				break
+			end
+		end
 	end
 end
 
@@ -303,7 +366,12 @@ function optionsGamePadPressed(joystick, button)
 	end
 end
 
-function optionsChangeTab()
+function optionsChangeTab(i)
+	if i then
+		optionsTab = i
+		optionsSelection = 1
+		return
+	end
 	optionsTab = optionsTab + 1
 
 	local max = 3
@@ -377,6 +445,20 @@ function optionsToggleSound(bgm)
 			end
 		end
 	end
+end
+
+function optionsChangeControls(add)
+	if not mobileMode then
+		return
+	end
+
+	controlTypei = controlTypei + add
+	if controlTypei > #controlTypes then
+		controlTypei = 1
+	end
+	
+	controlsTextX = optionsX
+	controlsScrollDelay = 0.4
 end
 
 function optionsSetSound(bgm)
