@@ -1,6 +1,6 @@
 powerup = class("powerup")
 
-function powerup:init(x, y, t, isSuper)
+function powerup:init(x, y)
 	self.x = x
 	self.y = y
 
@@ -15,39 +15,9 @@ function powerup:init(x, y, t, isSuper)
 	self.speedx = 0
 	self.speedy = 100
 
-	self.t = self:getType(t)
-
-	self.i = t
-
-	self.isSuper = isSuper
+	self.t = "oneup"
 end
 
 function powerup:draw()
-	love.graphics.draw(powerupImage, powerupQuads[self.i], self.x * scale, self.y * scale)
-end
-
-function powerup:getType(i)
-	local returnType = "shotgun"
-
-	if i == 2 then
-		returnType = "time"
-	elseif i == 3 then
-		returnType = "shield"
-	elseif i == 4 then
-		returnType = "laser"
-	elseif i == 5 then
-		returnType = "freeze"
-	elseif i == 6 then
-		returnType = "anti"
-	elseif i == 7 then
-		returnType = "nobullets"
-	elseif i == 8 then
-		returnType = "nopower"
-	elseif i == 9 then
-		returnType = "mega"
-	elseif i == 10 then
-		returnType = "oneup"
-	end
-
-	return returnType
+	love.graphics.draw(heartImage, self.x * scale, self.y * scale)
 end

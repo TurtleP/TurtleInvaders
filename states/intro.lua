@@ -123,13 +123,11 @@ function introTouchPressed(id, x, y, dx, dy, pressure)
 end
 
 function introTimersSkip()
-	introTaps = math.min(introTaps + 1, 3)
-
-	if introTaps == 1 then
+	if introTimer < 3 then
 		introTimer = 3
 		introTurtleFade = 0
 		introPotionFade = 1
-	elseif introTaps == 2 then
+	elseif introTimer < 5 then
 		introTimer = 5
 		introTurtleFade = 0
 		introPotionFade = 0
@@ -137,7 +135,7 @@ function introTimersSkip()
 		if not mobileMode then
 			skipIntro()
 		end
-	elseif introTaps == 3 then
+	elseif introTimer < 10 then
 		skipIntro()
 	end
 end

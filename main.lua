@@ -79,9 +79,11 @@ function love.load()
 	
 	powerupImage = love.graphics.newImage("graphics/game/powerups.png")
 	powerupQuads = {}
-	for k = 1, 10 do
-		powerupQuads[k] = love.graphics.newQuad((k - 1) * 19, 0, 18, 14, powerupImage:getWidth(), powerupImage:getHeight())
+	for k = 1, 11 do
+		powerupQuads[k] = love.graphics.newQuad((k - 1) * 16, 0, 16, 16, powerupImage:getWidth(), powerupImage:getHeight())
 	end
+
+	heartImage = love.graphics.newImage("graphics/game/heart.png")
 
 	megaCannonBaseImage = love.graphics.newImage("graphics/game/boombase.png")
 	megaCannonBaseQuads = {}
@@ -271,6 +273,14 @@ end
 function love.update(dt)
 	dt = math.min(1/60, dt)
 
+	if netplayHost then
+		server:update(dt)
+	end
+
+	if netplayOnline then
+		client:update(dt)
+	end
+	
 	util.updateState(dt)
 
 	for k, v in pairs(achievements) do
@@ -285,14 +295,6 @@ function love.update(dt)
 				s:update(dt)
 			end
 		end
-	end
-
-	if netplayHost then
-		server:update(dt)
-	end
-
-	if netplayOnline then
-		client:update(dt)
 	end
 
 	if isSaving then
@@ -417,6 +419,16 @@ end
 
 function love.touchmoved(id, x, y, dx, dy, pressure)
 	util.touchMoved(id, x, y, dx, dy, pressure)
+end
+
+function love.quit()
+	if netplayOnline then
+		client:disconnect()
+		if netplayHost then
+			server:destroyServer()
+		end
+		client:close()
+	end
 end
 
 function loadSettings()

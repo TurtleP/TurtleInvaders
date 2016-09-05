@@ -14,6 +14,21 @@ function highscoreInit(menu)
 		end
 
 		if not highi then
+			if netplayOnline then
+				if charSelections then
+					for k, v in pairs(charSelections) do
+						v.selected = false
+					end
+				end
+
+				for k = 1, #lobbyCursors do
+					lobbyCursors[k]:setReady(false)
+					lobbyCursors[k]:setPosition(k)
+				end
+				
+				util.changeState("lobby", myLobbyID, nickName)
+				return
+			end
 			util.changeState("title", 1)
 		else
 			for i = #highscores, highi + 1, -1 do
@@ -182,10 +197,15 @@ function highscoreKeyPressed(key)
 			saveSettings()
 
 			if netplayOnline then
-				for i = 1, #lobbyCursors do
-					charSelections[lobbyCursors[i].selection].selected = false
-					lobbyCursors[i]:setReady(false)
-					lobbyCursors[i]:setPosition(i)
+				if charSelections then
+					for k, v in pairs(charSelections) do
+						v.selected = false
+					end
+				end
+
+				for k = 1, #lobbyCursors do
+					lobbyCursors[k]:setReady(false)
+					lobbyCursors[k]:setPosition(k)
 				end
 				
 				util.changeState("lobby", myLobbyID, nickName)

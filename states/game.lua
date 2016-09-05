@@ -7,6 +7,23 @@ function gameInit(playerData)
 	objects["fire"] = {}
 	objects["misc"] = {}
 
+	powerupList =
+	{
+		"shotgun",
+		"shield",
+		"laser",
+		"freeze",
+		"anti",
+		"nobullets",
+		"mega"
+	}
+
+	if netplayOnline then
+		table.insert(powerupList, "blindness")
+		table.insert(powerupList, "deflect")
+		table.insert(powerupList, "confusion")
+	end
+
 	megaCannon = nil
 
 	explosions = {}
@@ -119,9 +136,9 @@ function gameAddScore(add)
 	score = math.max(score + add, 0)
 end
 
-function gameDropPowerup(x, y, oneUp, superUp)
+function gameDropPowerup(x, y, oneUp)
 	if oneUp then
-		table.insert(objects["powerup"], powerup:new(x, y, 10, superUp))
+		table.insert(objects["powerup"], powerup:new(x, y, 10))
 		return
 	end
 
@@ -129,25 +146,7 @@ function gameDropPowerup(x, y, oneUp, superUp)
 		return
 	end
 
-	local random, i = love.math.random()
-
-	if random < .05 then
-		i = 9
-	elseif random < .15 then
-		i = love.math.random(8)
-	end
-
-	if i then
-		if i == lastDrop or (i == 3 and not objects["player"][1].shieldImage) then
-			gameDropPowerup(x, y, oneUp)
-
-			return
-		end
-
-		table.insert(objects["powerup"], powerup:new(x, y, i))
-
-		lastDrop = i
-	end
+	displayInfo:startRoulette()
 end
 
 function gameUpdate(dt)

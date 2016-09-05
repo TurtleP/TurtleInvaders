@@ -17,6 +17,12 @@ function display:init()
 
 	self.abilityFade = 1
 	self.abilitySine = 0
+
+	self.rouletteInit = false
+	self.rouletteTime = 0
+	self.rouletteIndex = 0
+	self.rouletteTotalTime = 0
+	self.rouletteMaxTime = 0.1
 end
 
 function display:update(dt)
@@ -42,6 +48,30 @@ function display:update(dt)
 	else
 		self.abilitySine = 0
 	end
+
+	if self.rouletteInit then
+		if self.rouletteTotalTime < 5 then
+			if self.rouletteTime < self.rouletteMaxTime then
+				self.rouletteTime = self.rouletteTime + dt
+			else
+				local rand = love.math.random(#powerupList)
+				self.rouletteIndex = rand
+				self.rouletteTime = 0
+
+				if self.rouletteTotalTime > 1 then
+					self.rouletteMaxTime = self.rouletteMaxTime + 6 * dt
+				end
+			end
+			self.rouletteTotalTime = self.rouletteTotalTime + dt
+		else
+			self.rouletteInit = false
+			self.rouletteTotalTime = 0
+			self.rouletteTime = 0
+			self.rouletteMaxTime = 0.1
+
+			objects["player"][1]:setPowerup(powerupList[self.rouletteIndex])
+		end
+	end
 end
 
 function display:setEnemyData(enemy)
@@ -50,6 +80,14 @@ end
 
 function display:getEnemyData()
 	return self.enemyData
+end
+
+function display:startRoulette()
+	if love.math.random() > .05 then
+		return
+	end
+
+	self.rouletteInit = true
 end
 
 function display:draw()
@@ -107,7 +145,7 @@ function display:draw()
 	--Powerup info
 	local powerupValue = player:getPowerup()
 	if powerupValue ~= "none" then
-		local powerup, niceName, powerupTimeValue = self:getDisplayInfo(powerupValue)
+		local powerup, powerupTimeValue = self:getDisplayInfo(powerupValue)
 
 		--display current powerup
 		love.graphics.setColor(255, 255, 255, 160 * self.powerupFade)
@@ -117,31 +155,44 @@ function display:draw()
 			self.powerupTime = powerupTimeValue
 			self.drainPowerup = true
 		end
+	else
+		if not self.rouletteInit or not powerupQuads[self.rouletteIndex] then
+			return
+		end
+
+		local powerup = self:getDisplayInfo(powerupList[self.rouletteIndex])
+
+		love.graphics.setColor(255, 255, 255, 160)
+		love.graphics.draw(powerupImage, powerupQuads[powerup], self.x * scale + hudFont:getWidth("Player") + 8 * scale, self.y * scale + hudFont:getHeight() / 2 - powerupImage:getHeight() / 2)
 	end
 
 	love.graphics.setColor(255, 255, 255, 255)
 end
 
 function display:getDisplayInfo(powerupValue)
-	local i, name, time = 1, "Shotgun", 8
+	local i, time = 1, 8
 
-	if powerupValue == "time" then
-		i, name = 2, "Time Slow"
-	elseif powerupValue == "mega" then
-		i, name, time = 9, "Mega Laser", 5
-	elseif powerupValue == "shield" then
-		i, name = 3, "Shield"
+	if powerupValue == "shield" then
+		i = 2
 	elseif powerupValue == "laser" then
-		i, name = 4, "Laser"
+		i = 3
 	elseif powerupValue == "freeze" then
-		i, name = 5, "Frozen"
+		i = 4
 	elseif powerupValue == "anti" then
-		i, name = 6, "Anti-Score"
+		i = 5
 	elseif powerupValue == "nobullets" then
-		i, name = 7, "No Bullets"
-	elseif powerupValue == "nopower" then
-		i, name = 8, "No Powerups"
+		i = 6
+	elseif powerupValue == "mega" then
+		i, time = 7, 5
+	elseif powerupValue == "blindness" then
+		i = 8
+	elseif powerupValue == "bomb" then
+		i = 9
+	elseif powerupValue == "deflect" then
+		i = 10
+	elseif powerupValue == "confusion" then
+		i = 11
 	end
 
-	return i, name, time
+	return i, time
 end

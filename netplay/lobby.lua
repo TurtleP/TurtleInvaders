@@ -6,8 +6,10 @@ function lobbyInit(playerID, playerNick)
 		end
 	end
 
-	lobbyCursors = {}
-	lobbyCharacters = {}
+	if not lobbyCursors then
+		lobbyCursors = {}
+		lobbyCharacters = {}
+	end
 	
 	chooseFont = love.graphics.newFont("graphics/monofonto.ttf", 40 * scale)
 	mainFont = love.graphics.newFont("graphics/monofonto.ttf", 18 * scale)

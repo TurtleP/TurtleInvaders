@@ -66,6 +66,10 @@ function player:init(characterData)
 
 	self.shieldWidth = characterData.shieldwidth
 	self.shieldHeight = characterData.shieldheight
+
+	if not self.shieldImage then
+		table.remove(powerupList, 2)
+	end
 end
 
 function player:update(dt)
@@ -190,12 +194,6 @@ function player:passiveCollide(name, data)
 				self:addLife(self:getMaxHealth())
 			end
 			return
-		elseif data.t == "shield" then
-			shieldSound:play()
-		end
-
-		if self.powerup == "none" then
-			self.powerup = data.t
 		end
 	end
 end
@@ -270,6 +268,10 @@ function player:shoot()
 end
 
 function player:setPowerup(powerup)
+	if powerup == "shield" then
+		shieldSound:play()
+	end
+
 	self.powerup = powerup
 end
 
@@ -277,7 +279,7 @@ function player:getPowerup()
 	return self.powerup
 end
 
-function player:addLife(add, pierce)
+function player:addLife(add)
 	if add < 0 then
 		if self.invincible then
 			return

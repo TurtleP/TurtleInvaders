@@ -387,13 +387,13 @@ function optionsChangeTab(i)
 end
 
 function optionsChangeItem(i)
-	local max = #optionsSelections
+	local max = #optionsSelections[optionsTab]
 	if optionsTab == 2 then
 		max = 4
-	end
-
-	if (optionsSelection + i == 3) or (optionsSelection + i == 6)  then
-		optionsSelection = optionsSelection + i
+	else
+		if (optionsSelection + i == 3) or (optionsSelection + i == 6)  then
+			optionsSelection = optionsSelection + i
+		end
 	end
 
 	optionsSelection = util.clamp(optionsSelection + i, 1, max)

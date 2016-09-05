@@ -20,6 +20,8 @@ function server:init(name)
 	table.insert(logs, "Server initialzed!")
 	table.insert(logs, ":: Server version is " .. serverVersion)
 
+	self.scores = {}
+
 	serverName = name or "My Party"
 	netplayHost = true
 
@@ -33,17 +35,19 @@ function server:shutdown()
 end
 
 function server:update(dt)
-	if broadCastTimer < 1 then
-		broadCastTimer = broadCastTimer + dt
-	else
-		self.socket:sendto("Turtle: Invaders;" .. serverName .. ";" .. #self.clients .. ";", "255.255.255.255", 25545)
-		broadCastTimer = 0
+	if state == "lobby" then
+		if broadCastTimer < 1 then
+			broadCastTimer = broadCastTimer + dt
+		else
+			self.socket:sendto("Turtle: Invaders;" .. serverName .. ";" .. #self.clients .. ";", "255.255.255.255", 25545)
+			broadCastTimer = 0
+		end
 	end
 
-	data, ip, port = self.socket:receivefrom()
+	local data, ip, port = self.socket:receivefrom()
 
 	if data then
-		cmd = data:split(";")
+		local cmd = data:split(";")
 		if cmd[1] == "connect" then
 			if #self.clients < 4 then
 				self.socket:sendto("connected;" .. #self.clients + 1 .. ";" .. cmd[2] .. ";" .. serverName .. ";", ip, port)
@@ -66,6 +70,30 @@ function server:update(dt)
 			table.insert(logs, cmd[2])
 		elseif cmd[1] == "gameover" then
 			self:sendDataToClients(data, ip)
+		elseif cmd[1] == "score" then
+			self.scores[tonumber(cmd[2])] = {ip, tonumber(cmd[3])}
+
+			if #self.scores <= 1 then
+				return
+			end
+
+			table.sort(self.scores, function(a, b) return a[2] > b[2] end)
+
+			for k = 1, #self.clients do
+				self.socket:sendto("disablebomb;", self.clients[k].ip, self.clients[k].port)
+			end
+
+			if self.scores then
+				if self.scores[#self.scores][2] == tonumber(cmd[3]) then
+					self.socket:sendto("enablebomb;", ip, port)
+				end
+			end
+		elseif cmd[1] == "blindness" then
+			self:sendDataToClients(data, ip)
+		elseif cmd[1] == "bomb" then
+			self:sendDataToClients(data, self.scores[1][1], port)
+		elseif cmd[1] == "confusion" then
+			self:sendDataToClients(data, ip, port)
 		end
 	end
 	
@@ -111,6 +139,7 @@ end
 function server:sendDataToClients(string, ip)
 	for k, v in ipairs(self.clients) do
 		if ip ~= v.ip then
+			print("Sending data: " .. string .. " to ip: " .. v.ip)
 			self.socket:sendto(string, v.ip, v.port)
 		end
 	end

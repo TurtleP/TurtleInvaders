@@ -41,7 +41,7 @@ function charSelectDraw()
 	end
 
 	love.graphics.setFont(chooseFont)
-	love.graphics.print("Choose a character", util.getWidth() / 2 - chooseFont:getWidth("Choose a character") / 2, love.graphics.getHeight() * .05)
+	love.graphics.print("Character Select", util.getWidth() / 2 - chooseFont:getWidth("Character Select") / 2, love.graphics.getHeight() * .05)
 
 	if charSelections then
 		local selectedCharacter = charSelections[currentCharacterSelection].char

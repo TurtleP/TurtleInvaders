@@ -2,7 +2,7 @@ function winInit()
 	smallFont = love.graphics.newFont("graphics/monofonto.ttf", 28 * scale)
 	headerFont = love.graphics.newFont("graphics/monofonto.ttf", 36 * scale)
 
-	clientScores = {{"", 200, love.math.random(#gameCharacters)}, {"ayylmao", 1000, love.math.random(#gameCharacters)}, {"", 420, love.math.random(#gameCharacters)}}
+	--clientScores = {{"", 200, love.math.random(#gameCharacters)}, {"ayylmao", 1000, love.math.random(#gameCharacters)}, {"", 420, love.math.random(#gameCharacters)}}
 	table.sort(clientScores, function(a, b) return a[2] > b[2] end)
 
 	for k = 1, #clientScores do
@@ -25,30 +25,37 @@ function winInit()
 		{55, 255, 9}
 	}
 
-	confettiObjects = {}
-
-	for i = 1, 120 do
-		confettiObjects[i] = newConfetti(util.getWidth() / 2, -(40 * scale))
-	end
-
 	rivalsFade = 0
+
+	rivalsFireworkDelay = 0
+	rivalsFireworkMaxTime = 0
+	rivalsFireworks = {}
 end
 
 function winUpdate(dt)
-	for i = #confettiObjects, 1, -1 do
-		if confettiObjects[i].remove then
-			table.remove(confettiObjects, i)
+	for i = #rivalsFireworks, 1, -1 do
+		if rivalsFireworks[i].remove then
+			table.remove(rivalsFireworks, i)
 		end
 	end
 
-	for k, v in pairs(confettiObjects) do
+	for k, v in pairs(rivalsFireworks) do
 		v:update(dt)
 	end
 
-	if #confettiObjects == 0 then
+	if rivalsFireworkMaxTime < 8 then
+		if rivalsFireworkDelay < 0.2 then
+			rivalsFireworkDelay = rivalsFireworkDelay + dt
+		else
+			table.insert(rivalsFireworks, explosion:new(love.math.random((util.getWidth() / scale) * 0.25, (util.getWidth() / scale) * 0.75), love.math.random((util.getHeight() / scale) * 0.25, (util.getHeight() / scale) * 0.50)))
+			rivalsFireworkDelay = 0
+		end
+		rivalsFireworkMaxTime = rivalsFireworkMaxTime + dt
+	else
 		rivalsFade = math.min(rivalsFade + 0.4 * dt, 1)
 		if rivalsFade == 1 then
 			util.changeState("highscore")
+			rivalsFireworkMaxTime = 0
 		end
 	end
 end
@@ -74,7 +81,7 @@ function winDraw()
 		end
 	end
 	
-	for k, v in pairs(confettiObjects) do
+	for k, v in pairs(rivalsFireworks) do
 		v:draw()
 	end
 
@@ -104,48 +111,4 @@ function newWinPortrait(x, y, place,i)
 	end
 
 	return portrait
-end
-
-function newConfetti(x, y)
-	local confetti = {}
-
-	confetti.x = x
-	confetti.y = y
-
-	confetti.speed = love.math.random(60, 120)
-	confetti.speedx = love.math.random(-80, 80)
-
-	local colors = 
-	{
-		{255, 0, 0},
-		{0, 255, 0},
-		{0, 0, 255}
-	}
-
-	confetti.rotation = 0
-	confetti.direction = math.floor(love.math.random())
-
-	confetti.color = colors[love.math.random(#colors)]
-
-	function confetti:update(dt)
-		self.y = self.y + self.speed * dt
-		self.x = self.x + self.speedx * dt
-
-		if self.direction == 1 then
-			self.rotation = self.rotation + 16 * dt
-		else
-			self.rotation = self.rotation - 16 * dt
-		end
-
-		if self.y > util.getHeight() then
-			self.remove = true
-		end
-	end
-
-	function confetti:draw()
-		love.graphics.setColor(self.color)
-		love.graphics.draw(confettiImage, self.x + confettiImage:getWidth() / 2, (self.y + confettiImage:getWidth() / 2) * scale, self.rotation, scale, scale, confettiImage:getWidth() / 2, confettiImage:getHeight() / 2)
-	end
-
-	return confetti
 end
