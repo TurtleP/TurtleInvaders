@@ -1,14 +1,12 @@
 function lobbyInit(playerID, playerNick)
-	if not charSelections then
-		charSelections = {}
-		for x = 1, #gameCharacters do
-			charSelections[x] = newCharSelection((love.graphics.getWidth() / scale) / 2 - 170 + (math.mod( (x - 1), 6 ) * 60), ((love.graphics.getHeight() / scale) * 0.57) - 60 + math.floor( (x - 1) / 6 ) * 60, x)
-		end
+	charSelections = {}
+	for x = 1, #gameCharacters do
+		charSelections[x] = newCharSelection((love.graphics.getWidth() / scale) / 2 - 170 + (math.mod( (x - 1), 6 ) * 60), ((love.graphics.getHeight() / scale) * 0.57) - 60 + math.floor( (x - 1) / 6 ) * 60, x)
 	end
 
+	lobbyCharacters = {}
 	if not lobbyCursors then
 		lobbyCursors = {}
-		lobbyCharacters = {}
 	end
 	
 	chooseFont = love.graphics.newFont("graphics/monofonto.ttf", 40 * scale)

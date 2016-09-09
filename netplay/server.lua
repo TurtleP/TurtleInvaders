@@ -73,19 +73,17 @@ function server:update(dt)
 		elseif cmd[1] == "score" then
 			self.scores[tonumber(cmd[2])] = {ip, tonumber(cmd[3])}
 
-			if #self.scores <= 1 then
-				return
-			end
+			if #self.scores > 1 then
+				table.sort(self.scores, function(a, b) return a[2] > b[2] end)
 
-			table.sort(self.scores, function(a, b) return a[2] > b[2] end)
+				for k = 1, #self.clients do
+					self.socket:sendto("disablebomb;", self.clients[k].ip, self.clients[k].port)
+				end
 
-			for k = 1, #self.clients do
-				self.socket:sendto("disablebomb;", self.clients[k].ip, self.clients[k].port)
-			end
-
-			if self.scores then
-				if self.scores[#self.scores][2] == tonumber(cmd[3]) then
-					self.socket:sendto("enablebomb;", ip, port)
+				if self.scores then
+					if self.scores[#self.scores][2] == tonumber(cmd[3]) then
+						self.socket:sendto("enablebomb;", ip, port)
+					end
 				end
 			end
 		elseif cmd[1] == "blindness" then

@@ -223,6 +223,12 @@ function gameUpdate(dt)
 	if gameOver then
 		if not gameOverSound:isPlaying() then
 			if netplayOnline then
+				if not client.gameOver then
+					table.insert(clientScores, {nickName, score, lobbyCursors[myLobbyID].selection})
+
+					clientSocket:send("gameover;" .. nickName .. ";" .. score .. ";" .. lobbyCursors[myLobbyID].selection .. ";")
+					client.gameOver = true
+				end
 				return
 			end
 			util.changeState("highscore")

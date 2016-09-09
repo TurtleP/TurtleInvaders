@@ -77,7 +77,7 @@ function highscoreDraw()
 	love.graphics.setFont(mainFont)
 
 	for k = 1, #highscores do
-		local highString = k .. ". " .. highscores[k][1] .. "	" .. highscores[k][2] .. "	" .. highscores[k][3]
+		local highString = k .. ". " .. highscoreStablizeName(highscores[k][1]) .. "	" .. highscores[k][2] .. "	" .. highscoreStablizeScore(highscores[k][3])
 
 		local color = {44, 130, 201}
 		if k > 1 then
@@ -124,6 +124,16 @@ function highscoreDraw()
 
 		love.graphics.setColor(255, 255, 255, 255)
 	end
+end
+
+function highscoreStablizeName(text)
+	local format = text
+	return format .. string.rep(" ", 8 - #text)
+end
+
+function highscoreStablizeScore(text)
+	local format = text
+	return format .. string.rep(" ", 5 - #tostring(text))
 end
 
 function highscoreTextInput(text)

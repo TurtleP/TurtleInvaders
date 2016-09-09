@@ -104,7 +104,7 @@ function client:update(dt)
 		elseif cmd[1] == "blindness" then
 			clientIsBlind = true
 		elseif cmd[1] == "enablebomb" then
-			local pass = true
+			--[[local pass = true
 
 			for k = 1, #powerupList do
 				if powerupList[k] == "bomb" then
@@ -115,14 +115,14 @@ function client:update(dt)
 
 			if pass then
 				table.insert(powerupList, "bomb")
-			end
+			end]]
 		elseif cmd[1] == "disablebomb" then
-			for k = 1, #powerupList do
+			--[[for k = 1, #powerupList do
 				if powerupList[k] == "bomb" then
 					table.remove(powerupList, k)
 					break
 				end
-			end
+			end]]
 		elseif cmd[1] == "bomb" then
 			if objects["player"][1] then
 				objects["player"][1]:addLife(-1)
@@ -146,7 +146,7 @@ function client:update(dt)
 		end
 	end
 	
-	if self.gameOver then
+	if gameOver then
 		if #clientScores == #lobbyCursors then
 			gameFinished = true
 		end
@@ -233,16 +233,6 @@ player.moveRight = function(self, move)
 	end
 
 	oldPlayerMoveRight(self, move)
-end
-
-player.die = function(self)
-	if netplayOnline then
-		table.insert(clientScores, {nickName, score, lobbyCursors[myLobbyID].selection})
-
-		table.insert(clientTriggers, "gameover;" .. nickName .. ";" .. score .. ";" .. lobbyCursors[myLobbyID].selection .. ";")
-	end
-
-	oldPlayerDie(self)
 end
 
 function gameUpdate(dt)
