@@ -8,6 +8,7 @@ function optionsInit()
 	
 	mainFont = love.graphics.newFont("graphics/monofonto.ttf", 24 * scale)
 	logoFont = love.graphics.newFont("graphics/monofonto.ttf", 16 * scale)
+	calibrationFont = love.graphics.newFont("graphics/monofonto.ttf", 40 * scale)
 
 	optionsSelection = 1
 	optionsTab = 1
@@ -25,13 +26,31 @@ function optionsInit()
 			{"View credits", function() util.changeState("credits") end}
 		},
 		{
-			{"Controls type:", function() optionsChangeControls(1) end}
+			{"Controls type:", function() optionsChangeControls(1) end},
+			{"", function() end},
+			{"", function() end},
+			{"", function() end},
+			{"", function() end},
+			{"", function() end},
+			{"Calibrate accelerometer", function() if controlTypei == 1 then calibrationMode = true end end}
 		}
 	}
 
 	controlsTextX = optionsX
 	controlsScrollDelay = 0.4
 	optionsDelay = 0.1
+
+	calibrationMode = false
+	calibrationFade = 0
+	calibrationRectangleWidth = 0
+
+	calibrationPrompt =
+	{
+		"Please tilt the device slightly",
+		"at a comfortable position",
+		"to calibrate the accelerometer.",
+		"Tap anywhere when done."
+	}
 end
 
 function optionsUpdate(dt)
@@ -39,6 +58,28 @@ function optionsUpdate(dt)
 
 	if mobileMode then
 		if optionsTab == 2 then
+			if calibrationMode then
+				if calibrationFade < 1 then
+					calibrationFade = math.min(calibrationFade + dt / 0.4, 1)
+				else
+					local deadZoneCapture = math.abs(util.round(accelerometerJoystick:getAxis(currentAxis), 2))
+
+					calibrationRectangleWidth = (deadZoneCapture / 1) * 100
+
+					if deadZoneCapture == 0 then
+						return
+					end
+
+					currentDeadZone = deadZoneCapture
+				end
+				return
+			else
+				if calibrationFade > 0 then
+					calibrationFade = math.max(calibrationFade - dt / 0.4, 0)
+					return
+				end
+			end
+
 			if controlsScrollDelay > 0 then
 				controlsScrollDelay = controlsScrollDelay - dt
 			else
@@ -161,40 +202,49 @@ function optionsDraw()
 			end
 			love.graphics.print("Use Ability: " .. controls["ability"]:gsub("^%l", string.upper), optionsX + 16 * scale, optionsY + 98 * scale)
 		else
+			if calibrationMode then
+				love.graphics.setColor(0, 0, 0, 200 * calibrationFade)
+				love.graphics.rectangle("fill", 0, 0, util.getWidth(), util.getHeight())
+
+				love.graphics.setColor(255, 255, 255, 255 * calibrationFade)
+				love.graphics.setFont(mainFont)
+			
+				for y = 1, #calibrationPrompt do
+					love.graphics.print(calibrationPrompt[y], util.getWidth() / 2 - mainFont:getWidth(calibrationPrompt[y]) / 2, util.getHeight() / 2 - (mainFont:getHeight() * 3) / 2 + (y - 1) * 24 * scale)
+				end
+
+				love.graphics.rectangle("fill", optionsX, util.getHeight() * 0.8, calibrationRectangleWidth * scale, 16 * scale)
+				
+				love.graphics.draw(backImage, util.getHeight() * 0.01, util.getHeight() * 0.011)
+
+				return
+			end
+
 			love.graphics.setColor(127, 127, 127)
 			if optionsSelection == 1 then
 				love.graphics.setColor(255, 255, 255)
 			end
 			love.graphics.print("Controls type: " .. controlTypes[controlTypei], optionsX + 16 * scale, optionsY + 32 * scale)
 
-			love.graphics.setColor(127, 127, 127)
-			local text = "Tilt left"
+			love.graphics.setColor(0, 255, 0)
+
+			controlsText = "Tilt the device to move; tap to shoot a bullet or use a powerup if one is equipped. Hold tap to use the character's ability."
 			if controlTypei == 2 then
-				text = "Swipe left"
+				controlsText = "Swipe left or right to move in the specified direction; secondary tap to shoot a bullet or use a powerup if one is equipped. Hold the secondary tap to use the character's ability."
 			end
+			love.graphics.printf(controlsText, optionsX, optionsY + 80 * scale, optionsWidth * scale, "center")
 
-			love.graphics.print("Move Left: " .. text, optionsX + 16 * scale, optionsY + 76 * scale)
-
-			local text = "Tilt right"
-			if controlTypei == 2 then
-				text = "Swipe right"
+			if controlTypei == 1 then
+				love.graphics.setColor(127, 127, 127)
+				if optionsSelection == 7 then
+					love.graphics.setColor(255, 255, 255)
+				end
+				love.graphics.print("Calibrate accelerometer", optionsX + 16 * scale, optionsY + 164 * scale)
 			end
-			love.graphics.print("Move Right: " .. text, optionsX + 16 * scale, optionsY + 98 * scale)
-
-			local text = "Tap"
-			if controlTypei == 2 then
-			    text = "Secondary tap"
-			end
-			love.graphics.print("Shoot: " .. text, optionsX + 16 * scale, optionsY + 120 * scale)
-
-			love.graphics.print("Use ability: Hold " .. text:gsub("^%l", string.lower), optionsX + 16 * scale, optionsY + 142 * scale)
 
 			love.graphics.setColor(255, 255, 255)
 
-			controlsText = "Tilt the device to move; tap to shoot (hold for ability)."
-			if controlTypei == 2 then
-				controlsText = "Swipe left or right to move; secondary tap to shoot (hold for ability)."
-			end
+			
 			love.graphics.setScissor(optionsX, optionsY + optionsHeight * scale - mainFont:getHeight(), optionsWidth * scale, mainFont:getHeight())
 
 			love.graphics.print(controlsText, controlsTextX, optionsY + 186 * scale)
@@ -216,6 +266,11 @@ function optionsDraw()
 end
 
 function optionsTouchPressed(id, x, y, pressure)
+	if calibrationMode then
+		calibrationMode = false
+		return
+	end
+
 	if isTapped(optionsX, optionsY + 6 * scale, mainFont:getWidth("General"), 20 * scale) then
 		optionsChangeTab(1)
 	elseif isTapped(optionsX + 98 * scale, optionsY + 6 * scale, mainFont:getWidth("Controls"), 20 * scale) then

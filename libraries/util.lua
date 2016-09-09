@@ -148,6 +148,10 @@ function util.clamp(val, min, max)
 	return math.max(min, math.min(val, max))
 end
 
+function util.checkOrientation() --yep, mobile!
+
+end
+
 function util.colorFade(currenttime, maxtime, c1, c2) --Color function
 	local tp = currenttime/maxtime
 	local ret = {} --return color

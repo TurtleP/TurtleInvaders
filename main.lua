@@ -242,12 +242,19 @@ function love.load()
 		}
 	end
 
+	tapTimer = 0
+	tapIsHeld = false
+
+	accelerometerJoystick = nil
+	currentAxis = 1
+
 	--iOS and its 'highDPI' are a bitch
+	local mathScale = math.max
 	if love.system.getOS() == "iOS" then
-		width, height = love.window.toPixels(love.graphics.getWidth()), love.window.toPixels(love.graphics.getHeight())
+		width, height, mathScale, currentAxis = love.window.toPixels(love.graphics.getWidth()), love.window.toPixels(love.graphics.getHeight()), math.min, 2
 	end
 
-	scale = math.floor( math.max( (width / 400), (height / 240) ) )
+	scale = math.floor( mathScale( (width / 400), (height / 240) ) )
 
 	starFields = {}
 
@@ -260,12 +267,7 @@ function love.load()
 
 	love.graphics.setLineWidth(love.graphics.getLineWidth() * scale)
 
-	--love.audio.setVolume(0)
-
-	tapTimer = 0
-	tapIsHeld = false
-
-	accelerometerJoystick = nil
+	love.audio.setVolume(0)
 
 	util.changeState("intro")
 end
@@ -280,6 +282,8 @@ function love.update(dt)
 	if netplayOnline then
 		client:update(dt)
 	end
+
+	util.checkOrientation()
 	
 	util.updateState(dt)
 
@@ -466,6 +470,8 @@ function loadSettings()
 				controls[split[1]] = split[2]
 			elseif index == "mobile" then
 				controlTypei = tonumber(value)
+			elseif index == "deadzone" then
+				currentDeadZone = tonumber(value)
 			end
 		end
 	end
@@ -494,6 +500,8 @@ function saveSettings()
 
 	string = string .. "mobile:" .. controlTypei .. ";"
 
+	string = string .. "deadzone:" .. currentDeadZone .. ";"
+
 	love.filesystem.write("save.txt", string)
 end
 
@@ -506,6 +514,7 @@ function defaultSettings(remove)
 		ability = "lshift"
 	}
 
+	currentDeadZone = 0.08
 	controlTypei = 1
 
 	highscores = {}

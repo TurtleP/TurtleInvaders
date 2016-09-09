@@ -5,4 +5,5 @@ function love.conf(t)
 	t.window.highdpi = true
 	t.window.width = 400
 	t.window.height = 240
+	t.window.display = 0
 end

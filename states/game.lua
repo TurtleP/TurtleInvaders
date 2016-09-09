@@ -266,9 +266,9 @@ function gameUpdate(dt)
 			return
 		end
 		
-		local axisX = accelerometerJoystick:getAxis(1)
+		local axisX = accelerometerJoystick:getAxis(currentAxis)
 
-		local deadzone = 0.08
+		local deadzone = currentDeadZone
 		if axisX > deadzone then
 			objects["player"][1]:moveRight(true)
 		elseif axisX < -deadzone then
