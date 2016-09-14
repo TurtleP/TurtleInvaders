@@ -127,12 +127,10 @@ function player:update(dt)
 	end
 
 	local speed = 0
-	if self.powerup ~= "freeze" then
-		if self.leftkey then
-			speed = -self.maxSpeedx
-		elseif self.rightkey then
-			speed = self.maxSpeedx
-		end
+	if self.leftkey then
+		speed = -self.maxSpeedx
+	elseif self.rightkey then
+		speed = self.maxSpeedx
 	end
 	self.speedx = speed
 end
@@ -229,7 +227,7 @@ end
 
 function player:shoot()
 	if self.shootingTimer == 0 then
-		if self.powerup == "nobullets" or self.powerup == "freeze" or megaCannonSound:isPlaying() then
+		if self.powerup == "nobullets" or megaCannonSound:isPlaying() then
 			return
 		end
 

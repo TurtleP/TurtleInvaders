@@ -12,7 +12,6 @@ function gameInit(playerData)
 		"shotgun",
 		"shield",
 		"laser",
-		"freeze",
 		"anti",
 		"nobullets",
 		"mega"
@@ -20,8 +19,9 @@ function gameInit(playerData)
 
 	if netplayOnline then
 		table.insert(powerupList, "blindness")
-		table.insert(powerupList, "deflect")
+		table.insert(powerupList, "freeze")
 		table.insert(powerupList, "confusion")
+		table.insert(powerupList, "bomb")
 	end
 
 	megaCannon = nil
@@ -223,12 +223,6 @@ function gameUpdate(dt)
 	if gameOver then
 		if not gameOverSound:isPlaying() then
 			if netplayOnline then
-				if not client.gameOver then
-					table.insert(clientScores, {nickName, score, lobbyCursors[myLobbyID].selection})
-
-					clientSocket:send("gameover;" .. nickName .. ";" .. score .. ";" .. lobbyCursors[myLobbyID].selection .. ";")
-					client.gameOver = true
-				end
 				return
 			end
 			util.changeState("highscore")

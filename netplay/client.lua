@@ -15,12 +15,12 @@ local blindnessTimer = 0
 local clientIsConfused = false
 local confusionTimer = 0
 
+local clientIsFrozen = false
+local frozenTimer = 0
+
 function client:init()
 	clientSocket = socket.udp()
 	clientSocket:settimeout(0)
-
-	self.gameOver = false
-	clientScores = {}
 end
 
 function client:connect(ip, port)
@@ -58,82 +58,69 @@ function client:hasInformation()
 	return self.ip and self.port
 end
 
+local debug = ""
 function client:update(dt)
 	local data = clientSocket:receive()
 	
 	if data then
 		local cmd = data:split(";")
 
-		if cmd[1] == "playerdata" then
-			playerID = tonumber(cmd[3])
-			
-			lobbyCursors[playerID] = newCursor(playerID)
-
-			tabRightSound:play()
-		elseif cmd[1] == "lobbydata" then
-			local clientID, selection, ready, charNumber = tonumber(cmd[2]), tonumber(cmd[3]), util.toBoolean(cmd[4]), tonumber(cmd[5])
-
-			if not lobbyCursors[clientID] then
-				return
-			end
-
-			lobbyCursors[clientID]:setPosition(selection)
-
-			lobbyCharacters[clientID] = charNumber
-
-			lobbyCursors[clientID]:setReady(ready)
-
-			if charNumber ~= nil then
-				charSelections[selection].selected = true
-			else
-				charSelections[selection].selected = false
-			end
-		elseif cmd[1] == "chat" then
-			if cmd[2]:find(client:getUsername()) ~= nil then
-				blipSound:play()
-			end
-			lobbyInsertChat(cmd[2])
-		elseif cmd[1] == "shutdown" then
-			clientSocket:close()
-
-			util.changeState("netplay")
-
-			netplayOnline = false
-		elseif cmd[1] == "gameover" then
-			table.insert(clientScores, {cmd[2], tonumber(cmd[3]), tonumber(cmd[4])})
-		elseif cmd[1] == "blindness" then
-			clientIsBlind = true
-		elseif cmd[1] == "enablebomb" then
-			--[[local pass = true
-
-			for k = 1, #powerupList do
-				if powerupList[k] == "bomb" then
-					pass = false
-					break
-				end
-			end
-
-			if pass then
-				table.insert(powerupList, "bomb")
-			end]]
-		elseif cmd[1] == "disablebomb" then
-			--[[for k = 1, #powerupList do
-				if powerupList[k] == "bomb" then
-					table.remove(powerupList, k)
-					break
-				end
-			end]]
-		elseif cmd[1] == "bomb" then
-			if objects["player"][1] then
-				objects["player"][1]:addLife(-1)
+		if state == "lobby" then
+			if cmd[1] == "playerdata" then
+				playerID = tonumber(cmd[3])
 				
-				local oldScore = score
-				gameAddScore(-(oldScore * 0.10))
+				lobbyCursors[playerID] = newCursor(playerID)
 
-				gameCreateExplosion(objects["player"][1])
+				tabRightSound:play()
+			elseif cmd[1] == "lobbydata" then
+				local clientID, selection, ready, charNumber = tonumber(cmd[2]), tonumber(cmd[3]), util.toBoolean(cmd[4]), tonumber(cmd[5])
+
+				if not lobbyCursors[clientID] then
+					return
+				end
+
+				lobbyCursors[clientID]:setPosition(selection)
+
+				lobbyCharacters[clientID] = charNumber
+
+				lobbyCursors[clientID]:setReady(ready)
+
+				if charNumber ~= nil then
+					charSelections[selection].selected = true
+				else
+					charSelections[selection].selected = false
+				end
+			elseif cmd[1] == "chat" then
+				if cmd[2]:find(client:getUsername()) ~= nil then
+					blipSound:play()
+				end
+				lobbyInsertChat(cmd[2])
 			end
-		elseif cmd[1] == "confusion" then
-			clientIsConfused = true
+		else
+			if cmd[1] == "shutdown" then
+				clientSocket:close()
+
+				util.changeState("netplay")
+
+				netplayOnline = false
+			elseif cmd[1] == "gameover" then
+				table.insert(clientScores, {cmd[2], tonumber(cmd[3]), tonumber(cmd[4])})
+			elseif cmd[1] == "blindness" then
+				clientIsBlind = true
+			elseif cmd[1] == "bomb" then
+				if objects["player"][1] then
+					objects["player"][1]:addLife(-1)
+					
+					local oldScore = score
+					gameAddScore(-(oldScore * 0.10))
+
+					gameCreateExplosion(objects["player"][1])
+				end
+			elseif cmd[1] == "confusion" then
+				clientIsConfused = true
+			elseif cmd[1] == "freeze" then
+				clientIsFrozen = true
+			end
 		end
 	end
 
@@ -145,12 +132,6 @@ function client:update(dt)
 			clientSyncLobbyTimer = 0
 		end
 	end
-	
-	if gameOver then
-		if #clientScores == #lobbyCursors then
-			gameFinished = true
-		end
-	end
 
 	if not gameOver then
 		if state == "game" then
@@ -159,6 +140,18 @@ function client:update(dt)
 			else
 				clientSocket:send("score;" .. myLobbyID .. ";" .. score .. ";")
 				clientSyncScoreTime = 0
+			end
+		end
+	else
+		if not clientGameOver then
+			table.insert(clientScores, {nickName, score, lobbyCursors[myLobbyID].selection})
+
+			clientSocket:send("gameover;" .. nickName .. ";" .. score .. ";" .. lobbyCursors[myLobbyID].selection .. ";")
+			
+			clientGameOver = true
+		else
+			if #clientScores == #lobbyCursors then
+				gameFinished = true
 			end
 		end
 	end
@@ -186,6 +179,10 @@ local oldGameDraw = gameDraw
 local oldGameUpdate = gameUpdate
 
 player.shoot = function(self)
+	if clientIsFrozen then
+		return
+	end
+
 	if self.shootingTimer == 0 then
 		if self.powerup == "blindness" then
 			clientSocket:send("blindness;")
@@ -197,8 +194,8 @@ player.shoot = function(self)
 
 			self:setPowerup("none")
 			return
-		elseif self.powerup == "deflect" then
-			--do a thing
+		elseif self.powerup == "freeze" then
+			clientSocket:send("freeze;")
 
 			self:setPowerup("none")
 			return
@@ -221,6 +218,8 @@ player.moveLeft = function(self, move)
 	if clientIsConfused then
 		self.rightkey = move
 		return
+	elseif clientIsFrozen then
+		return
 	end
 
 	oldPlayerMoveLeft(self, move)
@@ -229,6 +228,8 @@ end
 player.moveRight = function(self, move)
 	if clientIsConfused then
 		self.leftkey = move
+		return
+	elseif clientIsFrozen then
 		return
 	end
 
@@ -257,6 +258,13 @@ function gameUpdate(dt)
 		else
 			clientIsConfused = false
 			confusionTimer = 0
+		end
+	elseif clientIsFrozen then
+		if frozenTimer < 6 then
+			frozenTimer = frozenTimer + dt
+		else
+			clientIsFrozen = false
+			frozenTimer = 0
 		end
 	end
 end

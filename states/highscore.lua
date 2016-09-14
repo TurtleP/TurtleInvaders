@@ -26,7 +26,7 @@ function highscoreInit(menu)
 					lobbyCursors[k]:setPosition(k)
 				end
 				
-				util.changeState("lobby", myLobbyID, nickName)
+				util.changeState("lobby", myLobbyID, nickName, true)
 				return
 			end
 			util.changeState("title", 1)
@@ -218,7 +218,7 @@ function highscoreKeyPressed(key)
 					lobbyCursors[k]:setPosition(k)
 				end
 				
-				util.changeState("lobby", myLobbyID, nickName)
+				util.changeState("lobby", myLobbyID, nickName, true)
 				return
 			end
 			util.changeState("title", 1)

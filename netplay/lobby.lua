@@ -1,13 +1,11 @@
-function lobbyInit(playerID, playerNick)
+function lobbyInit(playerID, playerNick, refresh)
 	charSelections = {}
 	for x = 1, #gameCharacters do
 		charSelections[x] = newCharSelection((love.graphics.getWidth() / scale) / 2 - 170 + (math.mod( (x - 1), 6 ) * 60), ((love.graphics.getHeight() / scale) * 0.57) - 60 + math.floor( (x - 1) / 6 ) * 60, x)
 	end
 
 	lobbyCharacters = {}
-	if not lobbyCursors then
-		lobbyCursors = {}
-	end
+	lobbyCursors = {}
 	
 	chooseFont = love.graphics.newFont("graphics/monofonto.ttf", 40 * scale)
 	mainFont = love.graphics.newFont("graphics/monofonto.ttf", 18 * scale)
@@ -34,6 +32,14 @@ function lobbyInit(playerID, playerNick)
 	chatText = ""
 	chatState = false
 
+	clientScores = {}
+	clientGameOver = false
+	serverScores = {}
+
+	if refresh then
+		clientSocket:send("refresh;")
+	end
+	
 	lobbyInputFade = 0
 end
 
