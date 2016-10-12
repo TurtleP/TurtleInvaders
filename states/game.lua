@@ -509,13 +509,11 @@ function gameTouchPressed(id, x, y, pressure)
 			tapIsHeld = true
 		end
 
-		local player = objects["player"][1]
-
-		if not player then
+		if not objects["player"][1] then
 			return
 		end
 		
-		player:shoot()
+		objects["player"][1]:shoot()
 	end
 end
 
@@ -528,8 +526,10 @@ function gameTouchReleased(id, x, y, pressure)
 			return
 		end
 
-		objects["player"][1]:moveRight(false)
-		objects["player"][1]:moveLeft(false)
+		if objects["player"][1] then
+			objects["player"][1]:moveRight(false)
+			objects["player"][1]:moveLeft(false)
+		end
 
 		swipeID = nil
 	end
