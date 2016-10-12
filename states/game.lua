@@ -98,6 +98,8 @@ function gameInit(playerData)
 	
 	waveFont = love.graphics.newFont("graphics/monofonto.ttf", 32 * scale)
 
+	achievementFont = love.graphics.newFont("graphics/monofonto.ttf", 16 * scale)
+
 	displayInfo = display:new()
 	gamePauseMenu = pausemenu:new()
 
@@ -348,10 +350,6 @@ function gameDraw()
 	love.graphics.setFont(hudFont)
 	if displayInfo then
 		displayInfo:draw()
-	end
-
-	for k, v in pairs(achievements) do
-		v:draw()
 	end
 
 	if paused then

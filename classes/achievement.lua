@@ -6,13 +6,9 @@ function achievement:init(index, niceName)
 	self.unlocked = false
 	self.display = false
 
-	self.lifeTime = 2
-
 	self.title = niceName
-	self.y = -28
-	self.height = 32
-
 	self.reverse = false
+	self.fade = 1
 end
 
 function achievement:update(dt)
@@ -20,23 +16,7 @@ function achievement:update(dt)
 		return
 	end
 
-	if not self.reverse then
-		if self.y < 0 then
-			self.y = math.min(self.y + 80 * dt, 0)
-		else
-			if self.lifeTime > 0 then
-				self.lifeTime = self.lifeTime - dt
-			else
-				self.reverse = true
-			end
-		end
-	else
-		if self.y > -self.height then
-			self.y = math.max(self.y - 80 * dt, -self.height)
-		else
-			self.display = false
-		end
-	end
+	self.fade = math.max(self.fade - dt / 2, 0)
 end
 
 function achievement:draw()
@@ -44,23 +24,13 @@ function achievement:draw()
 		return
 	end
 	
-	love.graphics.push()
-	
-	for k, v in pairs(achievements) do
-		if v.display then
-			love.graphics.translate(0, (k - 1) * self.height)
-		end
-	end
-	
-	local x, width = math.floor(400 - hudFont:getWidth("Unlocked!") - 42), hudFont:getWidth("Unlocked!") + 41
-	love.graphics.setColor(32, 32, 32, 140)
-	love.graphics.rectangle("fill", x, self.y, width, self.height)
+	local x, y = (love.graphics.getWidth() / scale) / 2 - achievementUnlockedImage:getWidth() / 2, (love.graphics.getHeight() / scale) / 2 + achievementUnlockedImage:getHeight()
 
-	love.graphics.setColor(255, 255, 255, 255)
-	love.graphics.draw(achievementImage, achievementQuads[self.index], x + 4, self.y + self.height / 2 - 15)
-	love.graphics.print("Unlocked!", x + 41, self.y + self.height / 2 - hudFont:getHeight() / 2)
-	
-	love.graphics.pop()
+	love.graphics.setColor(255, 255, 255, 255 * self.fade)
+	love.graphics.draw(achievementUnlockedImage, x, y)
+
+	love.graphics.setFont(achievementFont)
+	love.graphics.print(self.title, (x + achievementUnlockedImage:getWidth() / 2) - achievementFont:getWidth(self.title) / 2, y + achievementFont:getHeight())
 end
 
 function achievement:unlock(display)

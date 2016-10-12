@@ -144,6 +144,8 @@ function love.load()
 		shieldShards[k] = love.graphics.newImage("graphics/game/shield/" .. k .. ".png")
 	end
 
+	achievementUnlockedImage = love.graphics.newImage("graphics/etc/unlocked.png")
+
 	readyImage = love.graphics.newImage("graphics/netplay/ready.png")
 
 	platformImage = love.graphics.newImage("graphics/netplay/platform.png")
@@ -268,7 +270,7 @@ function love.load()
 	love.graphics.setLineWidth(love.graphics.getLineWidth() * scale)
 
 	love.audio.setVolume(0)
-
+	
 	util.changeState("intro")
 end
 
@@ -325,6 +327,10 @@ function love.draw()
 
 	util.renderState()
 
+	for k, v in pairs(achievements) do
+		v:draw()
+	end
+	
 	if isSaving then
 		love.graphics.setColor(255, 255, 255, 255)
 		love.graphics.draw(batImage, batQuads[batSaveQuadi][1], love.graphics.getWidth() * .92, love.graphics.getHeight() * .92)
