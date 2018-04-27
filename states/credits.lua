@@ -11,6 +11,12 @@ function creditsInit()
 		"Qwertyman",
 		"Idiot9.0",
 		"Jorichi",
+		"Polybius",
+		"Renhoek",
+		"FuriousHedgehog",
+		"Cake",
+		"SauloFX",
+		"TurretBot"
 		"",
 		"",
 		":: Audio ::",
