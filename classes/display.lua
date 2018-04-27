@@ -119,7 +119,7 @@ function display:draw()
 			color = 2
 		end
 		
-		love.graphics.draw(healthImage, healthQuads[quadi][color], self.x + 2 * scale + math.mod((x - 1), 6) * 9 * scale, self.y + 26 * scale + math.floor((x - 1) / 6) * 9 * scale)
+		love.graphics.draw(healthImage, healthQuads[quadi][color], self.x + 2 * scale + math.fmod((x - 1), 6) * 9 * scale, self.y + 26 * scale + math.floor((x - 1) / 6) * 9 * scale)
 	end
 	love.graphics.setColor(255, 255, 255, 160)
 
@@ -138,7 +138,7 @@ function display:draw()
 			if x > enemy:getHealth() then
 				quadi = 2
 			end
-			love.graphics.draw(healthImage, healthQuads[quadi][1], ( (self.x + self.width) * scale - hudFont:getWidth("Enemy") / 2 - 27 * scale ) + math.mod((x - 1), 6) * 9 * scale, self.y + 26 * scale + math.floor((x - 1) / 6) * 9 * scale)
+			love.graphics.draw(healthImage, healthQuads[quadi][1], ( (self.x + self.width) * scale - hudFont:getWidth("Enemy") / 2 - 27 * scale ) + math.fmod((x - 1), 6) * 9 * scale, self.y + 26 * scale + math.floor((x - 1) / 6) * 9 * scale)
 		end
 	end
 

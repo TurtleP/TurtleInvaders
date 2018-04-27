@@ -228,7 +228,7 @@ function love.load()
 	batSaveTimer = 0
 	batSaveQuadi = 1
 
-	mobileMode = ((love.system.getOS() == "Android") or (love.system.getOS() == "iOS"))
+	mobileMode = true --((love.system.getOS() == "Android") or (love.system.getOS() == "iOS"))
 
 	local width, height = love.graphics.getDimensions()
 	
@@ -253,11 +253,13 @@ function love.load()
 	--iOS and its 'highDPI' are a bitch
 	local mathScale = math.max
 	if love.system.getOS() == "iOS" then
-		width, height, mathScale, currentAxis = love.window.toPixels(love.graphics.getWidth()), love.window.toPixels(love.graphics.getHeight()), math.min, 2
+		local modes = love.window.getFullscreenModes()
+		width, height, mathScale, currentAxis = modes[1].width, modes[1].height, math.min, 2
 	end
 
-	scale = math.floor( mathScale( (width / 400), (height / 240) ) )
-
+	width, height = 1920, 1080
+	scale = util.round(mathScale( (width / 400), (height / 240) ), 2)
+	love.window.setMode(width, height, {borderless = true})
 	starFields = {}
 
 	for fieldCount = 1, 3 do
@@ -268,8 +270,6 @@ function love.load()
 	end
 
 	love.graphics.setLineWidth(love.graphics.getLineWidth() * scale)
-
-	love.audio.setVolume(0)
 	
 	util.changeState("intro")
 end
