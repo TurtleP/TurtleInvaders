@@ -144,6 +144,14 @@ function state:gamepadreleased(joy, button)
 	self.currentState:gamepadreleased(joy, button)
 end
 
+function state:gamepadaxis(joy, axis, value)
+	if not self:hasMethod("gamepadaxis") then
+		return
+	end
+	
+	self.currentState:gamepadaxis(joy, axis, value)
+end
+
 function state:mousepressed(x, y, button)
 	if not self:hasMethod("mousepressed") then
 		return

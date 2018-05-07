@@ -20,6 +20,7 @@ function star:draw()
 	love.graphics.setColor(255, 255, 255)
 
 	love.graphics.circle("fill", self.x, self.y, self.r)
+	love.graphics.circle("line", self.x, self.y, self.r)
 
 	love.graphics.setColor(255, 255, 255)
 end

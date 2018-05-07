@@ -1,7 +1,9 @@
+require 'vars'
+
 class = require 'libraries.middleclass'
 vector = require 'libraries.vector'
-
-require 'vars'
+json = require 'libraries.json'
+require 'libraries.character'
 
 state = require 'libraries.state'
 
@@ -10,17 +12,22 @@ local star = require 'classes.game.star'
 --love.graphics.setDefaultFilter("nearest", "nearest")
 
 function love.load()
-	love.math.setRandomSeed(os.time())
+	math.randomseed(os.time())
 
 	STARFIELDS = {}
 	for fieldIndex = 1, FIELDCOUNT do
 		STARFIELDS[fieldIndex] = {}
 		for starCount = 1, math.floor(STARLIMIT / FIELDCOUNT) do
-			table.insert(STARFIELDS[fieldIndex], star:new(love.math.random(0, WINDOW_WIDTH), love.math.random(0, WINDOW_HEIGHT), fieldIndex))
+			table.insert(STARFIELDS[fieldIndex], star:new(math.random(0, WINDOW_WIDTH), math.random(0, WINDOW_HEIGHT), fieldIndex))
 		end
 	end
 
-	state:change("title")
+	titleSong = love.audio.newSource("audio/music/menu.ogg", "stream")
+	titleSong:setLooping(true)
+
+	love.audio.setVolume(0)
+
+	state:change("charselect")
 end
 
 function love.update(dt)
@@ -59,8 +66,12 @@ end
 
 function love.gamepadpressed(joy, button)
 	state:gamepadpressed(joy, button)
+
+	if button == "start" then
+		love.event.quit()
+	end
 end
 
-function love.gamepadreleased(joy, button)
-
+function love.gamepadaxis(joy, axis, value)
+	state:gamepadaxis(joy, axis, value)
 end

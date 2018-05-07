@@ -87,6 +87,10 @@ function settings:draw()
 end
 
 function settings:gamepadpressed(joy, button)
+	if joy:getID() ~= 1 then
+		return
+	end
+
 	if self.subSelection ~= 0 then
 		local subOption = self.subOptions[self.tabSelection][self.subSelection]
 

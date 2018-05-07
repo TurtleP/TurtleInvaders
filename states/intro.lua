@@ -12,7 +12,7 @@ function intro:load()
 		"between screens."
 	}
 
-	self.font = love.graphics.newFont("graphics/upheval.ttf", 60)
+	self.introFont = love.graphics.newFont("graphics/upheval.ttf", 60)
 
 	self.batImage = love.graphics.newImage("graphics/game/enemies/bat.png")
 	self.batQuads = {}
@@ -28,9 +28,9 @@ function intro:load()
 	self.batPostion = vector((WINDOW_WIDTH - 90) / 2, 456)
 
 	self.loveLogo = love.graphics.newImage("graphics/intro/logo.png")
-	--self.loveJingle = love.audio.newSource("audio/jingle.ogg", "static")
 
-	--self.loveJingle:play()
+	self.loveJingle = love.audio.newSource("audio/jingle.ogg", "static")
+	self.loveJingle:play()
 
 	self.logoFade = 0
 	self.textFade = 0
@@ -64,22 +64,26 @@ function intro:update(dt)
 end
 
 function intro:draw()
-	love.graphics.setFont(self.font)
+	love.graphics.setFont(self.introFont)
 
 	love.graphics.setColor(1, 1, 1, 1 * self.logoFade)
 	love.graphics.draw(self.loveLogo, (WINDOW_WIDTH - self.loveLogo:getWidth()) / 2, (WINDOW_HEIGHT - self.loveLogo:getHeight()) / 2)
 
 	love.graphics.setColor(1, 1, 1, 1 * self.textFade)
 	for i = 1, #self.introText do
-		love.graphics.print(self.introText[i], (WINDOW_WIDTH - self.font:getWidth(self.introText[i])) / 2, 150 + (i - 1) * 60)
+		love.graphics.print(self.introText[i], (WINDOW_WIDTH - self.introFont:getWidth(self.introText[i])) / 2, 150 + (i - 1) * 60)
 	end
 
 	love.graphics.draw(self.batImage, self.batQuads[1][self.batQuad], self.batPostion.x, self.batPostion.y)
 	love.graphics.draw(self.batImage, self.batQuads[2][self.batQuad], self.batPostion.x, self.batPostion.y)
 end
 
-function intro:keypressed(key)
-	--TODO: Skip
+function intro:gamepadpressed(joy)
+	if joy:getID() ~= 1 then
+		return
+	end
+	
+	state:change("title")
 end
 
 function intro:destroy()

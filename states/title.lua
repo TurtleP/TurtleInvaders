@@ -9,6 +9,7 @@ function title:load(item)
 	}
 
 	self.banner = love.graphics.newImage("graphics/title/banner-plain-hi.png")
+
 	self.optionFont = love.graphics.newFont("graphics/upheval.ttf", 80)
 	self.copyrightFont = love.graphics.newFont("graphics/upheval.ttf", 40)
 
@@ -22,7 +23,7 @@ function title:load(item)
 
 	self.optionSelection = item or 1
 
-	print("Loaded everything")
+	titleSong:play()
 end
 
 function title:update(dt)
@@ -47,6 +48,10 @@ function title:draw()
 end
 
 function title:gamepadpressed(joy, button)
+	if joy:getID() ~= 1 then
+		return
+	end
+
 	if button == "a" then
 		if self.optionSelection == 1 then
 			state:change("charselect")

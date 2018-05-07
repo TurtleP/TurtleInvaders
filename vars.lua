@@ -10,6 +10,8 @@ COPYRIGHT = "(C)"--"©"
 SOUND_ENABLED = true
 MUSIC_ENABLED = true
 
+CHAR_DIRECTORY = "data/characters"
+
 DIFFICULTIES = 
 {
 	"Easy",
