@@ -26,9 +26,32 @@ end
 function bullet:draw()
 	love.graphics.setColor(1, 1, 0)
 	love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
+
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 function bullet:upCollide(name, data)
+	if name == "enemy" then
+		data:die()
+		self.remove = true
+	end
+end
+
+function bullet:downCollide(name, data)
+	if name == "enemy" then
+		data:die()
+		self.remove = true
+	end
+end
+
+function bullet:rightCollide(name, data)
+	if name == "enemy" then
+		data:die()
+		self.remove = true
+	end
+end
+
+function bullet:leftCollide(name, data)
 	if name == "enemy" then
 		data:die()
 		self.remove = true

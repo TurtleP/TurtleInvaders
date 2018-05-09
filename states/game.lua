@@ -14,7 +14,7 @@ require 'classes.game.utility.timer'
 
 require 'libraries.physics'
 
-function game:load()
+function game:load(players)
 	self.objects = {}
 
 	self.objects["barrier"] = {}
@@ -24,7 +24,7 @@ function game:load()
 	self.objects["player"] = {}
 
 	--PLAYER SETUP
-	table.insert(self.objects["player"], player:new(640, WINDOW_HEIGHT, characters["turtle"]))
+	table.insert(self.objects["player"], player:new(640, WINDOW_HEIGHT, players[1]))
 
 	--BARRIERS
 	table.insert(self.objects["barrier"], barrier:new(0))

@@ -3,18 +3,17 @@ player = class("player", entity)
 function player:initialize(x, y, character)
 	entity.initialize(self, x, y - character.height, character.width, character.height)
 
-	self.mask = { true, false, true }
+	self.mask = { true, false, true, false }
 
 	self.category = 2
 
-	self.graphic = character.graphic
 	self.DEFAULT_SPEED = 400
 
 	self.lives = 3
-end
 
-function player:update(dt)
-
+	for component, value in pairs(character) do
+		self[component] = value
+	end
 end
 
 function player:draw()

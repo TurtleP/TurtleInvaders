@@ -3,9 +3,11 @@ require 'vars'
 class = require 'libraries.middleclass'
 vector = require 'libraries.vector'
 json = require 'libraries.json'
-require 'libraries.character'
-
 state = require 'libraries.state'
+
+require 'libraries.character'
+local achievements = require 'libraries.achievement'
+
 
 local star = require 'classes.game.star'
 
@@ -25,9 +27,7 @@ function love.load()
 	titleSong = love.audio.newSource("audio/music/menu.ogg", "stream")
 	titleSong:setLooping(true)
 
-	love.audio.setVolume(0)
-
-	state:change("charselect")
+	state:change("intro")
 end
 
 function love.update(dt)
@@ -40,6 +40,7 @@ function love.update(dt)
 	end
 
 	state:update(dt)
+	achievements:update(dt)
 end
 
 function love.draw()
@@ -50,18 +51,7 @@ function love.draw()
 	end
 
 	state:draw()
-end
-
-function love.keypressed(key)
-	state:keypressed(key)
-
-	if key == "q" then
-		love.event.quit()
-	end
-end
-
-function love.keyreleased(key)
-
+	achievements:draw()
 end
 
 function love.gamepadpressed(joy, button)
@@ -75,3 +65,5 @@ end
 function love.gamepadaxis(joy, axis, value)
 	state:gamepadaxis(joy, axis, value)
 end
+
+require 'libraries.horizon'

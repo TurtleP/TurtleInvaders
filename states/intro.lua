@@ -87,6 +87,8 @@ function intro:gamepadpressed(joy)
 end
 
 function intro:destroy()
+	love.audio.stop()
+	
 	self.introText = nil
 	self.loveLogo = nil
 	self.loveJingle = nil

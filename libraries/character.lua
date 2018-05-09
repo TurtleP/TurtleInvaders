@@ -3,23 +3,41 @@ local charloader = class("charloader")
 characters = {}
 function charloader:initialize()
 	local items = love.filesystem.getDirectoryItems(CHAR_DIRECTORY)
+	for index, name in ipairs(items) do
+		if name:sub(-4) == ".png" then
+			table.remove(items, index)
+		end
+	end
 
 	for i = 1, #items do
-		characters[i] = self:loadCharacter(CHAR_DIRECTORY, items[i])
+		local data = self:loadCharacter(CHAR_DIRECTORY, items[i])
+
+		if data then
+			table.insert(characters, data)
+		end 
 	end
 end
 
 function charloader:loadCharacter(path, name)
 	local character = {}
 
-	local config
-	local CONFIG_PATH = path .. "/" .. name .. ".json"
-	if love.filesystem.getInfo(CONFIG_PATH) then
-		config = json:decode(love.filesystem.read(CONFIG_PATH))
+	local config = {}
+	local CONFIG_PATH = path .. "/" .. name .. "/config"
+	if love.filesystem.getInfo(CONFIG_PATH .. ".lua") then
+		config = require(CONFIG_PATH)
 	end
 
-	local graphic = love.graphics.newImage(path .. "/" .. name .. "/ship.png")
-	local portrait = love.graphics.newImage(path .. "/" .. name .. "/portrait.png")
+	local graphic = nil
+	if love.filesystem.getInfo(path .. "/" .. name .. "/ship.png") then
+		graphic = love.graphics.newImage(path .. "/" .. name .. "/ship.png")
+	else
+		return false
+	end
+	
+	local portrait = love.graphics.newImage(path .. "/default.png")
+	if love.filesystem.getInfo(path .. "/" .. name .. "/portrait.png") then
+		portrait = love.graphics.newImage(path .. "/" .. name .. "/portrait.png")
+	end
 
 	character.name = name
 	character.graphic = graphic
@@ -27,6 +45,15 @@ function charloader:loadCharacter(path, name)
 
 	character.width = graphic:getWidth()
 	character.height = graphic:getHeight()
+
+	if not config.init then
+		return character
+	end
+	
+	for field, value in pairs(config) do
+		character[field] = value
+	end
+	character:init()
 
 	return character
 end

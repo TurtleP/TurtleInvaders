@@ -15,7 +15,7 @@ function enemy:initialize(x, y)
 	self.timer = 0
 	self.quadi = 1
 
-	self.mask = { true, true, false }
+	self.mask = { true, true, false, true }
 
 	self.category = 3
 
@@ -44,11 +44,19 @@ function enemy:upCollide(name, data)
 	if name == "player" then
 		return self:playerCollide(data)
 	end
+
+	if name == "bullet" then
+		return false
+	end
 end
 
 function enemy:downCollide(name, data)
 	if name == "player" then
 		return self:playerCollide(data)
+	end
+
+	if name == "bullet" then
+		return false
 	end
 end
 
@@ -60,6 +68,10 @@ function enemy:rightCollide(name, data)
 	if name == "player" then
 		return self:playerCollide(data)
 	end
+
+	if name == "bullet" then
+		return false
+	end
 end
 
 function enemy:leftCollide(name, data)
@@ -69,6 +81,10 @@ function enemy:leftCollide(name, data)
 
 	if name == "player" then
 		return self:playerCollide(data)
+	end
+	
+	if name == "bullet" then
+		return false
 	end
 end
 
