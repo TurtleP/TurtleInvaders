@@ -39,8 +39,18 @@ end
 function state:call(name, ...)
 	local args = {...}
 	if self:hasState() then
-		if self:hasMethod(name) then
-			return self.currentState[name](self.currentState, unpack(args))
+		local t = type(name)
+
+		if t == "string" then
+			if self:hasMethod(name) then
+				return self.currentState[name](self.currentState, unpack(args))
+			end
+		elseif t == "table" then
+			for i = 1, #name do
+				local command, args = name[i][1], name[i][2]
+
+				self:call(command, args)
+			end
 		end
 	end
 end

@@ -23,6 +23,8 @@ function enemy:initialize(x, y)
 
 	local layers = state:get("objects")
 	table.insert(layers["enemy"], self)
+
+	self:setMaxHealth(math.random(1, 3))
 end
 
 function enemy:update(dt)
@@ -30,6 +32,7 @@ function enemy:update(dt)
 	self.quadi = math.floor(self.timer % 3) + 1
 
 	if self.y > WINDOW_HEIGHT then
+		self:clearInfo()
 		self.remove = true
 	end
 end
@@ -88,14 +91,31 @@ function enemy:leftCollide(name, data)
 	end
 end
 
+function enemy:clearInfo()
+	local info = state:get("enemyInfo")
+
+	if info:getEntity() == self then
+		info:setEntity(nil)
+	end
+end
+
 function enemy:die()
-	state:call("addScore", 100)
-	entity.die(self)
+	local info = state:get("enemyInfo")
+
+	if self.health > 1 then
+		info:setEntity(self)
+		self:setHealth(-1)
+	else
+		self:clearInfo()
+		state:call("addScore", 100)
+		entity.die(self)
+	end
 end
 
 function enemy:playerCollide(player)
-	player:addLife(-1)
+	player:setHealth(-1)
 	entity.die(self)
+	self:clearInfo()
 
 	return false
 end

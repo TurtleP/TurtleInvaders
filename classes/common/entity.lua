@@ -11,6 +11,9 @@ function entity:initialize(x, y, width, height)
 	self.active = true
 
 	self.gravity = 0
+
+	self.health = 0
+	self.maxHealth = self.health
 end
 
 function entity:update(dt)
@@ -64,6 +67,23 @@ end
 
 function entity:isMoving()
 	return (self.speed.x ~= 0 or self.speed.y ~= 0)
+end
+
+function entity:setHealth(value)
+	self.health = math.max(0, math.min(self.health + value, self.maxHealth))
+end
+
+function entity:getHealth()
+	return self.health
+end
+
+function entity:setMaxHealth(value)
+	self.maxHealth = value
+	self:setHealth(self.maxHealth)
+end
+
+function entity:getMaxHealth()
+	return self.maxHealth
 end
 
 local oldString = entity.__tostring

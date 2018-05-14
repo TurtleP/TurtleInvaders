@@ -3,32 +3,19 @@ local BINDS =
 {
 	["buttons"] =
 	{
-		["left"] = "dpleft",
-		["right"] = "dpright",
-		["up"] = "dpup",
-		["down"] = "dpdown",
+		["a"] = "dpleft",
+		["d"] = "dpright",
+		["w"] = "dpup",
+		["s"] = "dpdown",
 		["z"] = "a",
 		["x"] = "b"
 	},
 	
 	["axes"] =
 	{
-		["leftx"] = "a|d"
+		["leftx"] = "left|right"
 	}
 }
-
-function string:split(delimiter) --Not by me
-	local result = {}
-	local from   = 1
-	local delim_from, delim_to = string.find( self, delimiter, from   )
-	while delim_from do
-		table.insert( result, string.sub( self, from , delim_from-1 ) )
-		from = delim_to + 1
-		delim_from, delim_to = string.find( self, delimiter, from   )
-	end
-	table.insert( result, string.sub( self, from   ) )
-	return result
-end
 
 local JOYSTICK = {
 	getID = function(self)
@@ -49,14 +36,17 @@ function love.keypressed(key)
 	end
 
 	local split = BINDS["axes"]["leftx"]:split("|")
-	local value = 0
+	local value = nil
 
 	if key == split[1] then
 		value = -1
 	elseif key == split[2] then
 		value = 1
 	end
-	gamepadaxis(JOYSTICK, "leftx", value)
+	
+	if value ~= nil then
+		gamepadaxis(JOYSTICK, "leftx", value)
+	end
 end
 
 function love.keyreleased(key)

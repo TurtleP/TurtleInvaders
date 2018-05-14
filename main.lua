@@ -1,6 +1,7 @@
 require 'vars'
 
 class = require 'libraries.middleclass'
+hook = require 'libraries.hook'
 vector = require 'libraries.vector'
 json = require 'libraries.json'
 state = require 'libraries.state'
@@ -9,10 +10,10 @@ require 'libraries.character'
 local achievements = require 'libraries.achievement'
 
 
-local star = require 'classes.game.star'
+local star = require 'classes.common.star'
 
 --love.graphics.setDefaultFilter("nearest", "nearest")
-
+io.stdout:setvbuf("no")
 function love.load()
 	math.randomseed(os.time())
 

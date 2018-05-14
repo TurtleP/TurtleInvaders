@@ -6,10 +6,9 @@ function player:initialize(x, y, character)
 	self.mask = { true, false, true, false }
 
 	self.category = 2
-
 	self.DEFAULT_SPEED = 400
 
-	self.lives = 3
+	self:setMaxHealth(3)
 
 	for component, value in pairs(character) do
 		self[component] = value

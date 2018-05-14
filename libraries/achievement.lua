@@ -1,7 +1,5 @@
 local achievement = class("achievement")
 
-local hook = require 'libraries.hook'
-
 local unlockSound = love.audio.newSource("audio/unlock.ogg", "static")
 local trophyImage = love.graphics.newImage("data/achievements/trophy.png")
 local TROPHY_COLORS =
