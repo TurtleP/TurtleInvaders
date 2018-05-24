@@ -2,17 +2,19 @@ local CAN_UNLOCK = false
 
 return
 {
-    name = "Hello World!",
+    name = "Risky Battle",
+    description = "Defeat Risky Jacques",
+
     source = 
-	{
-		class = "state",
-		func  = "change"
+    {
+        class = "boss",
+        func  = "die"
     },
 
-    hook = function(self, state)
-		if state == "title" then
-			CAN_UNLOCK = true
-		end
+    hook = function(self)
+        if self.health <= 1 then
+            CAN_UNLOCK = true
+        end
     end,
 
     isValid = function()

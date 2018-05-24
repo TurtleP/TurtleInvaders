@@ -2,17 +2,21 @@ local CAN_UNLOCK = false
 
 return
 {
-    name = "Hello World!",
+    name = "Combo Madness",
+    description = "Get a 7-kill combo",
+
     source = 
-	{
-		class = "state",
-		func  = "change"
+    {
+        class = "enemy",
+        func  = "die"
     },
 
-    hook = function(self, state)
-		if state == "title" then
-			CAN_UNLOCK = true
-		end
+    hook = function(self)
+        local count = state:get("combo")
+
+        if count >= 7 then
+            CAN_UNLOCK = true
+        end
     end,
 
     isValid = function()

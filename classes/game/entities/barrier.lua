@@ -1,11 +1,11 @@
 barrier = class("barrier", entity)
 
 function barrier:initialize(x)
-	entity.initialize(self, x, 0, 1, WINDOW_HEIGHT)
+    entity.initialize(self, x, 0, 1, WINDOW_HEIGHT)
 
-	self.mask = { false }
+    self.mask = { false }
 
-	self.category = 1
+    self.category = 1
 
-	self.static = true
+    self.static = true
 end

@@ -1,70 +1,83 @@
 require 'vars'
 
 class = require 'libraries.middleclass'
-hook = require 'libraries.hook'
-vector = require 'libraries.vector'
-json = require 'libraries.json'
 state = require 'libraries.state'
+hook = require 'libraries.hook'
+
+if love.system.getOS() ~= "HorizonNX" then
+    lovebird = require "libraries.lovebird"
+end
+
+achievements = require 'libraries.achievement'
+
+json = require 'libraries.json'
+save  = require 'libraries.save'
+vector = require 'libraries.vector'
 
 require 'libraries.character'
-local achievements = require 'libraries.achievement'
 
 
 local star = require 'classes.common.star'
 
---love.graphics.setDefaultFilter("nearest", "nearest")
+love.graphics.setDefaultFilter("nearest", "nearest")
 io.stdout:setvbuf("no")
+
 function love.load()
-	math.randomseed(os.time())
+    math.randomseed(os.time())
 
-	STARFIELDS = {}
-	for fieldIndex = 1, FIELDCOUNT do
-		STARFIELDS[fieldIndex] = {}
-		for starCount = 1, math.floor(STARLIMIT / FIELDCOUNT) do
-			table.insert(STARFIELDS[fieldIndex], star:new(math.random(0, WINDOW_WIDTH), math.random(0, WINDOW_HEIGHT), fieldIndex))
-		end
-	end
+    STARFIELDS = {}
+    for fieldIndex = 1, FIELDCOUNT do
+        STARFIELDS[fieldIndex] = {}
+        for starCount = 1, math.floor(STARLIMIT / FIELDCOUNT) do
+            table.insert(STARFIELDS[fieldIndex], star:new(math.random(0, WINDOW_WIDTH), math.random(0, WINDOW_HEIGHT), fieldIndex))
+        end
+    end
 
-	titleSong = love.audio.newSource("audio/music/menu.ogg", "stream")
-	titleSong:setLooping(true)
+    titleSong = love.audio.newSource("audio/music/menu.ogg", "stream")
+    titleSong:setLooping(true)
 
-	state:change("intro")
+    love.audio.setVolume(0)
+    state:change("intro")
 end
 
 function love.update(dt)
-	dt = math.min(1 / 30, dt)
+    dt = math.min(1 / 30, dt)
 
-	for layer, objects in ipairs(STARFIELDS) do
-		for _, star in ipairs(objects) do
-			star:update(dt)
-		end
-	end
+    for layer, objects in ipairs(STARFIELDS) do
+        for _, star in ipairs(objects) do
+            star:update(dt)
+        end
+    end
 
-	state:update(dt)
-	achievements:update(dt)
+    state:update(dt)
+    achievements:update(dt)
+
+    if lovebird then
+        lovebird.update(dt)
+    end
 end
 
 function love.draw()
-	for layer, objects in ipairs(STARFIELDS) do
-		for _, star in ipairs(objects) do
-			star:draw()
-		end
-	end
+    for layer, objects in ipairs(STARFIELDS) do
+        for _, star in ipairs(objects) do
+            star:draw()
+        end
+    end
 
-	state:draw()
-	achievements:draw()
+    state:draw()
+    achievements:draw()
 end
 
 function love.gamepadpressed(joy, button)
-	state:gamepadpressed(joy, button)
+    state:gamepadpressed(joy, button)
 
-	if button == "start" then
-		love.event.quit()
-	end
+    if button == "start" then
+        love.event.quit()
+    end
 end
 
 function love.gamepadaxis(joy, axis, value)
-	state:gamepadaxis(joy, axis, value)
+    state:gamepadaxis(joy, axis, value)
 end
 
 require 'libraries.horizon'
