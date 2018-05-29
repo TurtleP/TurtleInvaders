@@ -14,6 +14,8 @@ function entity:initialize(x, y, width, height)
 
     self.health = 0
     self.maxHealth = self.health
+
+    self.locked = false
 end
 
 function entity:update(dt)
@@ -22,6 +24,27 @@ end
 
 function entity:draw()
     --TEMPLATE
+end
+
+function entity:getWidth()
+    return self.width
+end
+
+function entity:getHeight()
+    return self.height
+end
+
+function entity:resize(width, height)
+	if not width then
+		return
+	end
+	self.width = width
+
+	if not height then
+		return
+	end
+
+	self.height = height
 end
 
 function entity:setSpeed(x, y)
@@ -42,13 +65,34 @@ function entity:setSpeedY(velocityY)
     self.speed.y = velocityY
 end
 
-function entity:unlock()
-    self.freeze = false
-    self.active = true
+function entity:offset(x, y)
+    if not x then
+        x = 0
+    end
+
+    self.x = self.x + x
+    
+    if not y then
+        y = 0
+    end
+    self.y = self.y + y
 end
 
 function entity:getCenter()
     return vector(self.x + (self.width / 2), self.y + (self.height / 2))
+end
+
+function entity:freeze()
+    self.locked = true
+    self:setSpeed(0, 0)
+end
+
+function entity:unFreeze()
+    self.locked = false
+end
+
+function entity:isFrozen()
+    return self.locked
 end
 
 function entity:die(reason)
@@ -70,7 +114,7 @@ function entity:isMoving()
 end
 
 function entity:isDead()
-	return self.health == 0
+    return self.health == 0
 end
 
 function entity:setHealth(value)

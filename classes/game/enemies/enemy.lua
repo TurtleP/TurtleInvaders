@@ -99,15 +99,25 @@ function enemy:clearInfo()
     end
 end
 
-function enemy:die()
+function enemy:die(force)
     local info = state:get("enemyInfo")
 
-    if self.health > 1 then
+    if self.health >= 1 then
         info:setEntity(self)
-        self:setHealth(-1)
-    else
+        self:setHealth(-1, force)
+    end
+end
+
+function enemy:setHealth(value, force)
+    entity.setHealth(self, value)
+
+    if self.health <= 0 or force then
         self:clearInfo()
         state:call("addScore", 100)
+        
+        if math.random() < 0.3 then
+            state:call("newRoulette")
+        end
         entity.die(self)
     end
 end

@@ -12,13 +12,13 @@ return
     },
 
     hook = function(self)
-		if GAME_DIFFICULTY == 1 then
-			if state:get("wave") == MAX_WAVES then
-				if self.health <= 1 then
-					CAN_UNLOCK = true
-				end
-			end
-		end
+        if GAME_DIFFICULTY == 1 then
+            if state:get("wave") == MAX_WAVES then
+                if self.health <= 1 then
+                    CAN_UNLOCK = true
+                end
+            end
+        end
     end,
 
     isValid = function()

@@ -15,6 +15,15 @@ function player:initialize(x, y, character)
     for component, value in pairs(character) do
         self[component] = value
     end
+    
+    self.powerup = {obj = nil, class = nil}
+    self.canShoot = true
+
+    self.shootTimer = timer:new(0.4, function()
+        self.canShoot = true
+    end, nil, self)
+
+    self.powerupTimer = nil
 end
 
 function player:update(dt)
@@ -26,6 +35,16 @@ function player:update(dt)
         end
     end
     self:animate(dt)
+    
+    self.shootTimer:update(dt)
+
+    if self.powerupTimer then
+        self.powerupTimer:update(dt)
+    end
+
+    if self.powerup.obj then
+        self.powerup.obj:update(dt)
+    end
 end
 
 function player:draw()
@@ -90,8 +109,59 @@ function player:isInvincible()
     return math.floor(self.invincibleTimer) % 2 == 0 and self.invincibleTimer > 0
 end
 
-function player:shoot()
-    local center = self:getCenter()
+function player:setPowerup(powerupClass)
+    if not powerupClass then
+        self.powerup.obj = nil
+        self.powerup.class = nil
+        return
+    else
+        if self:getPowerup() then
+            return
+        end
+    end
+    
+    self.powerup.class = powerupClass
 
-    bullet:new(center.x - 3, self.y)
+    if not powerupClass.isBullet then --function check
+        self.powerup.obj = powerupClass:new(self.x, self.y, self)
+    end
+
+    local time = powerupClass.time
+    self.powerupTimer = timer:new(time, function(self)
+        if self.powerup.obj then
+            self.powerup.obj:delete()
+        end
+        self.powerup.class = nil
+        self.powerupTimer = nil
+    end, nil, self)
+end
+
+function player:getPowerup(attribute)
+    return self.powerup.class ~= nil
+end
+
+function player:firePowerup(center)
+    local bullets = state:get("objects")["bullet"]
+    local tmp = self.powerup.class:new(center.x, self.y)
+    tmp:offset(-tmp:getWidth() / 2, 0)
+
+    self.powerup.obj = tmp
+    
+    table.insert(bullets, tmp)
+end
+
+function player:shoot()
+    if not self.canShoot then
+        return
+    end
+
+    local center = self:getCenter()
+    if self:getPowerup() then
+        if self.powerup.class.isBullet then
+            self:firePowerup(center)
+        end
+    else
+        bullet:new(center.x - 3, self.y)
+    end
+    self.canShoot = false
 end

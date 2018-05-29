@@ -2,9 +2,9 @@ local CAN_UNLOCK = true
 
 return
 {
-    name = "",
+    name = "is this a hacker?",
     description = "Finish the game without losing a life",
-	hidden = true,
+    hidden = true,
 
     source = 
     {
@@ -12,27 +12,27 @@ return
         func  = "die"
     },
 
-	hook = function(self)
-		if GAME_DIFFICULTY == 3 then
-			if state:get("wave") == MAX_WAVES then
-				if self.health <= 1 then
-					CAN_UNLOCK = true
-				end
-			end
-		end
+    hook = function(self)
+        if GAME_DIFFICULTY == 3 then
+            if state:get("wave") == MAX_WAVES then
+                if self.health <= 1 then
+                    CAN_UNLOCK = true
+                end
+            end
+        end
     end,
 
-	isValid = function()
-		if not state:is("game") then
-			return
-		end
+    isValid = function()
+        if not state:is("game") then
+            return
+        end
 
-		local player = state:get("objects").player[1]
-		local endgame = state:get("wave") == MAX_WAVES
+        local player = state:get("objects").player[1]
+        local endgame = state:get("wave") == MAX_WAVES
 
-		if player:getHealth() < player:getMaxHealth() then
-			CAN_UNLOCK = false
-		end
+        if player:getHealth() < player:getMaxHealth() then
+            CAN_UNLOCK = false
+        end
 
         return CAN_UNLOCK and endgame
     end

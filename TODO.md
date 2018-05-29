@@ -1,0 +1,8 @@
+- Powerup Roulette ✓
+    - Remaining powerups
+- Bosses
+- Enemies with powerups
+    - Or abilities
+- Sort highscores by score function ✓
+    - Character portrait instead of rank number?
+    - Test "keyboard" input on Switch

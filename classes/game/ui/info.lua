@@ -30,6 +30,10 @@ function info:getEntity()
     return self.entity
 end
 
+function info:getWidth(font)
+    return self.x + font:getWidth(self.text)
+end
+
 function info:draw(font)
     love.graphics.setColor(1, 1, 1, 0.5)
     love.graphics.print(self.text, self.x, self.y)

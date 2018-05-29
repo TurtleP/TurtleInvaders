@@ -16,33 +16,13 @@ function highscores:load(from_game, score)
             if #self.text == 0 then
                 return false
             end
-            state:call("setHighscoreName", self.text)
+            state:call("sortHighscores", score, self.text)
+
             save:write()
             state:change("title")
             return true
         end)
         self.keyboard:setOpen(true)
-
-        local highi = nil 
-        for i = 1, #HIGHSCORES do
-            if type(HIGHSCORES[i][1]) ~= "string" then
-                if tonumber(score) > HIGHSCORES[i][1] then
-                    highi = i
-                    break
-                end
-            else
-                highi = 1
-                break
-            end
-        end
-
-        for i = highi, #HIGHSCORES do
-            if i < #HIGHSCORES then
-                HIGHSCORES[i + 2] = {HIGHSCORES[i + 1][1], HIGHSCORES[i + 1][2]}
-            else
-                break
-            end
-        end
 
         HIGHSCORES[highi] = {score, ""}
         self.highi = highi
@@ -67,8 +47,8 @@ function highscores:draw()
         local x = self.rankPosition.x + (self.headerFont:getWidth("Rank") / 2) - self.headerFont:getWidth(i .. ".") / 2
         love.graphics.print(i .. ".", x, self.headerY + self.headerFont:getHeight() + (i - 1) * 80)
 
-        x = self.scorePosition.x + (self.headerFont:getWidth("Score") / 2) - self.headerFont:getWidth(HIGHSCORES[i][1]) / 2
-        love.graphics.print(HIGHSCORES[i][1], x, self.headerY + self.headerFont:getHeight() + (i - 1) * 80)
+        x = self.scorePosition.x + (self.headerFont:getWidth("Score") / 2) - self.headerFont:getWidth(padText(HIGHSCORES[i][1], "0", 6)) / 2
+        love.graphics.print(padText(HIGHSCORES[i][1], "0", 6), x, self.headerY + self.headerFont:getHeight() + (i - 1) * 80)
         
         x = self.namePosition.x + (self.headerFont:getWidth("Name") / 2) - self.headerFont:getWidth(HIGHSCORES[i][2]) / 2
         love.graphics.print(HIGHSCORES[i][2], x, self.headerY + self.headerFont:getHeight() + (i - 1) * 80)
@@ -97,8 +77,35 @@ function highscores:gamepadpressed(joy, button)
     
 end
 
-function highscores:setHighscoreName(name)
-    HIGHSCORES[self.highi][2] = name
+function highscores:sortHighscores(highscore, name)
+    --push unknowns to bottom
+    local set = false
+    table.sort(HIGHSCORES, function(a, b)
+        if not tonumber(a[1]) then
+            a[1] = -1
+        end
+        
+        if not tonumber(b[1]) then
+            b[1] = -1
+        end
+
+        if highscore and not set then
+            if highscore > a[1] then
+                a[1] = highscore
+                a[2] = name
+                set = true
+            end
+        end
+        return a[1] > b[1]
+    end)
+
+        --those -1's are just for sorting
+        --reset them to six ?'s
+    for i = 1, #HIGHSCORES do
+        if HIGHSCORES[i][1] == -1 then
+            HIGHSCORES[i][1] = padText("", "?", 6)
+        end
+    end
 end
 
 return highscores

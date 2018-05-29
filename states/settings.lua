@@ -49,7 +49,7 @@ function settings:update(dt)
     if self.subSelection > #self.subOptions[2] - 4 then
         value = #self.subOptions[2] - 5
     end
-	achievementScroll.y = achievementScroll.y + ((value * 100) - achievementScroll.y) * self.scrollrate * dt	
+    achievementScroll.y = achievementScroll.y + ((value * 100) - achievementScroll.y) * self.scrollrate * dt    
 end
 
 function settings:drawSection(i)

@@ -8,7 +8,8 @@ local BINDS =
         ["w"] = "dpup",
         ["s"] = "dpdown",
         ["z"] = "a",
-        ["x"] = "b"
+        ["x"] = "b",
+        ["return"] = "plus"
     },
     
     ["axes"] =

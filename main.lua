@@ -4,10 +4,6 @@ class = require 'libraries.middleclass'
 state = require 'libraries.state'
 hook = require 'libraries.hook'
 
-if love.system.getOS() ~= "HorizonNX" then
-    lovebird = require "libraries.lovebird"
-end
-
 achievements = require 'libraries.achievement'
 
 json = require 'libraries.json'
@@ -15,7 +11,6 @@ save  = require 'libraries.save'
 vector = require 'libraries.vector'
 
 require 'libraries.character'
-
 
 local star = require 'classes.common.star'
 
@@ -36,7 +31,6 @@ function love.load()
     titleSong = love.audio.newSource("audio/music/menu.ogg", "stream")
     titleSong:setLooping(true)
 
-    love.audio.setVolume(0)
     state:change("intro")
 end
 
@@ -44,17 +38,15 @@ function love.update(dt)
     dt = math.min(1 / 30, dt)
 
     for layer, objects in ipairs(STARFIELDS) do
-        for _, star in ipairs(objects) do
-            star:update(dt)
+		for _, star in ipairs(objects) do
+			if not state:get("paused") then
+				star:update(dt)
+			end
         end
     end
 
     state:update(dt)
     achievements:update(dt)
-
-    if lovebird then
-        lovebird.update(dt)
-    end
 end
 
 function love.draw()

@@ -11,14 +11,14 @@ return
         func  = "die"
     },
 
-	hook = function(self)
-		if GAME_DIFFICULTY == 3 then
-			if state:get("wave") == MAX_WAVES then
-				if self.health <= 1 then
-					CAN_UNLOCK = true
-				end
-			end
-		end
+    hook = function(self)
+        if GAME_DIFFICULTY == 3 then
+            if state:get("wave") == MAX_WAVES then
+                if self.health <= 1 then
+                    CAN_UNLOCK = true
+                end
+            end
+        end
     end,
 
     isValid = function()

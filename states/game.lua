@@ -10,6 +10,7 @@ require 'classes.game.entities.barrier'
 require 'classes.game.entities.bullet'
 require 'classes.game.entities.player'
 
+require 'classes.game.utility.roulette'
 require 'classes.game.utility.timer'
 
 require 'classes.game.ui.info'
@@ -48,7 +49,12 @@ function game:load(players)
     self.playerInfo = info:new(players[1].name, 24, 4, self.objects["player"][1])
     self.scoreInfo = info:new("Score", (WINDOW_WIDTH - self.infoFont:getWidth("Score")) / 2, 4)
     self.enemyInfo = info:new("Enemy", WINDOW_WIDTH - self.infoFont:getWidth("Enemy") - 20, 4)
-    
+
+    self.powerups = require 'data.powerups'
+    self.roulette = nil
+
+    --self:newRoulette()
+
     self.score = 0
     self.combo = 0
     self.wave = 0
@@ -73,8 +79,9 @@ function game:load(players)
 
     self:newWave(true)
     self.waveFade = 1
-	
-	self.gameover = false
+    
+    self.gameover = false
+    self.paused = false
 end
 
 function game:generateSpawnCount(wave_number)
@@ -103,12 +110,24 @@ function game:canNewWave()
 end
 
 function game:update(dt)
-	if self.gameover then
-		if not gameoverSound:isPlaying() then
-			state:change("highscores", true, padText(self.score, "0", 6))
-		end
-		return
-	end
+    if self.gameover then
+        if not gameoverSound:isPlaying() then
+            state:change("highscores", true, padText(self.score, "0", 6))
+        end
+        return
+    end
+
+    if self.paused then
+        return
+    end
+
+    if self.roulette then
+        self.roulette:update(dt)
+
+        if self.roulette.remove then
+            self.roulette = nil
+        end
+    end
 
     self.enemyTimer:update(dt)
 
@@ -131,13 +150,25 @@ function game:draw()
     self.enemyInfo:draw(self.infoFont)
     self.playerInfo:draw(self.infoFont)
 
-	if self.gameover then
-		love.graphics.print("GAME OVER", (WINDOW_WIDTH - self.infoFont:getWidth("GAME OVER")) / 2, (WINDOW_HEIGHT - self.infoFont:getHeight()) / 2)
-		return
-	end
+    if self.roulette then
+        self.roulette:draw()
+    end
+
+    if self.gameover then
+        love.graphics.print("GAME OVER", (WINDOW_WIDTH - self.infoFont:getWidth("GAME OVER")) / 2, (WINDOW_HEIGHT - self.infoFont:getHeight()) / 2)
+        return
+    end
 
     love.graphics.setColor(1, 1, 1, 1 * self.waveFade)
     love.graphics.print("WAVE " .. self.wave, (WINDOW_WIDTH - self.infoFont:getWidth("WAVE " .. self.wave)) / 2, (WINDOW_HEIGHT - self.infoFont:getHeight()) / 2)
+
+    if self.paused then
+        love.graphics.setColor(0, 0, 0, 0.8)
+        love.graphics.rectangle("fill", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
+
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.print("GAME PAUSED", (WINDOW_WIDTH - self.infoFont:getWidth("GAME PAUSED")) / 2, (WINDOW_HEIGHT - self.infoFont:getHeight()) / 2)
+    end
 end
 
 function game:gamepadpressed(joy, button)
@@ -145,11 +176,19 @@ function game:gamepadpressed(joy, button)
 
     if button == "b" then
         self.objects["player"][_id]:shoot()
+    elseif button == "plus" then
+		if self.waveFade == 0 then
+			self.paused = not self.paused
+		end
     end
 end
 
 function game:gamepadaxis(joy, axis, value)
     local _id = joy:getID()
+
+    if self.objects["player"][1]:isFrozen() then
+        return
+    end
 
     if axis == "leftx" then
         if value > 0.5 then
@@ -163,8 +202,8 @@ function game:gamepadaxis(joy, axis, value)
 end
 
 function game:addCombo(value)
-	self.combo = self.combo + value
-	self.comboTimer:reset()
+    self.combo = self.combo + value
+    self.comboTimer:reset()
 end
 
 function game:addKills(value)
@@ -176,11 +215,23 @@ function game:addScore(score)
 end
 
 function game:setGameover(value)
-	self.gameover = value
+    self.gameover = value
 
-	if value then
-		gameoverSound:play()
-	end
+    if value then
+        gameoverSound:play()
+    end
 end
+
+function game:newRoulette(clear)
+    if clear then
+        self.roulette = nil
+        return
+    end
+
+    if self.roulette then
+        return
+    end
+    self.roulette = roulette:new(self.powerups, self.playerInfo:getWidth(self.infoFont) + 8, 20)
+end 
 
 return game

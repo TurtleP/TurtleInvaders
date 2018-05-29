@@ -23,10 +23,10 @@ function button:initialize(text, x, y, ...)
     
     local config = {...}
     
-    self.width 	= config[1] or 85
+    self.width     = config[1] or 85
     self.height = config[2] or 56
 
-    self.color	= COLORS[config[3]] or COLORS.general
+    self.color    = COLORS[config[3]] or COLORS.general
     self.textColor = COLORS[config[4]] or COLORS.button_text
     self.iconColor = COLORS[config[5]] or COLORS.general
 

@@ -46,12 +46,12 @@ function charloader:loadCharacter(path, name)
     character.width = graphic:getWidth()
     character.height = graphic:getHeight()
 
-	character.animate = function(self, dt)
-	end
+    character.animate = function(self, dt)
+    end
 
-	character.render = function(self)
-		love.graphics.draw(self.graphic, self.x, self.y)
-	end
+    character.render = function(self)
+        love.graphics.draw(self.graphic, self.x, self.y)
+    end
 
     if not config.init then
         return character

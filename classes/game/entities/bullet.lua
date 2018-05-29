@@ -2,10 +2,14 @@ bullet = class("bullet", entity)
 
 local bulletSound = love.audio.newSource("audio/bullet.ogg", "static")
 
-function bullet:initialize(x, y)
-    entity.initialize(self, x, y, 4, 4)
+function bullet:initialize(x, y, speed)
+    entity.initialize(self, x, y, 6, 6)
 
-    self:setSpeedY(-600)
+    if not speed then
+        self:setSpeedY(-600)
+    else
+        self:setSpeed(unpack(speed))
+    end
 
     self.mask = { false, false, true }
 
@@ -18,13 +22,13 @@ function bullet:initialize(x, y)
 end
 
 function bullet:update(dt)
-    if self.y + self.height < 0 then
+    if self.y + self.height < 0 or self.y > WINDOW_HEIGHT then
         self.remove = true
     end
 end
 
 function bullet:draw()
-    love.graphics.setColor(1, 1, 0)
+    love.graphics.setColor(1, 0.922, 0.231)
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
 
     love.graphics.setColor(1, 1, 1, 1)
