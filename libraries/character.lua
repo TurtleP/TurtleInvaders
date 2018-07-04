@@ -33,6 +33,11 @@ function charloader:loadCharacter(path, name)
     else
         return false
     end
+
+    local shield = nil
+    if love.filesystem.getInfo(path .. "/" .. name .. "/shield.png") then
+        shield = love.graphics.newImage(path .. "/" .. name .. "/shield.png")
+    end
     
     local portrait = love.graphics.newImage(path .. "/default.png")
     if love.filesystem.getInfo(path .. "/" .. name .. "/portrait.png") then
@@ -41,12 +46,25 @@ function charloader:loadCharacter(path, name)
 
     character.name = name
     character.graphic = graphic
+    character.shield = shield
     character.portrait = portrait
 
     character.width = graphic:getWidth()
     character.height = graphic:getHeight()
 
     character.animate = function(self, dt)
+    end
+
+    character.shieldUpdate = function(self, dt)
+    end
+
+    character.shieldDraw = function(self)
+        local center = self:getCenter()
+
+        local x = center.x - (self.shield:getWidth() / 2)
+        local y = center.y - (self.shield:getHeight() / 2)
+
+        love.graphics.draw(self.shield, x, y)
     end
 
     character.render = function(self)

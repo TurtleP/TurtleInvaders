@@ -14,7 +14,7 @@ function timer:update(dt)
         return
     end
 
-    if self.condition() then
+    if self.condition(unpack(self.args)) then
         self.timer = self.timer + dt
         if self.timer >= self.maxTime then
             self.callback(unpack(self.args))
@@ -33,6 +33,11 @@ end
 
 function timer:getMaxTime()
     return self.maxTime
+end
+
+function timer:setMaxTime(amount)
+    self.maxTime = amount
+    self:reset()
 end
 
 function timer:addMaxTime(amount, dontAllowReset)

@@ -16,8 +16,8 @@ function explosion:initialize(x, y)
 
     explosionSound:play()
 
-    local layers = state:get("objects")
-    table.insert(layers["effect"], self)
+    local layers = state:get("layers")
+    table.insert(layers[3], self)
 end
 
 function explosion:update(dt)

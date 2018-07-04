@@ -28,7 +28,7 @@ function roulette:initialize(data, x, y)
                 self.timer:addMaxTime(0.3, true)
             end
         else
-            local player = state:get("objects")["player"][1]
+            local player = state:get("player")
             
             if player:getPowerup() then
                 return

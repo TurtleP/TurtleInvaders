@@ -1,8 +1,16 @@
 - Powerup Roulette ✓
-    - Remaining powerups
+    - Remaining powerups ✓
 - Bosses
+    - Rewards
+        - Health+
+        - Speed+
 - Enemies with powerups
-    - Or abilities
+    - Shoot
+        - Bullets ✓
+        - Lasers ✓
+        - Frost Bullets ✓
+        - Shotgun ✓
+    - Circle
 - Sort highscores by score function ✓
     - Character portrait instead of rank number?
     - Test "keyboard" input on Switch

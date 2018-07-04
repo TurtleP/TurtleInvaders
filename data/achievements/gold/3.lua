@@ -27,7 +27,7 @@ return
             return
         end
 
-        local player = state:get("objects").player[1]
+        local player = state:get("player")
         local endgame = state:get("wave") == MAX_WAVES
 
         if player:getHealth() < player:getMaxHealth() then

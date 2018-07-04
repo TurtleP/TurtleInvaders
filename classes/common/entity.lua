@@ -109,6 +109,13 @@ function entity:die(reason)
     end
 end
 
+function entity:setMask(index, value)
+    assert(self.mask[index] ~= nil and type(value) == "boolean", "Invalid index or non-bool value")
+
+    print(index, tostring(value))
+    self.mask[index] = value
+end
+
 function entity:isMoving()
     return (self.speed.x ~= 0 or self.speed.y ~= 0)
 end

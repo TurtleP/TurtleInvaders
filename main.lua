@@ -31,6 +31,7 @@ function love.load()
     titleSong = love.audio.newSource("audio/music/menu.ogg", "stream")
     titleSong:setLooping(true)
 
+    --love.audio.setVolume(0)
     state:change("intro")
 end
 
@@ -72,4 +73,4 @@ function love.gamepadaxis(joy, axis, value)
     state:gamepadaxis(joy, axis, value)
 end
 
-require 'libraries.horizon'
+require 'libraries.HorizonNX'

@@ -4,13 +4,18 @@ local laserSound = love.audio.newSource("audio/laser.ogg", "static")
 
 laser.time = 5
 laser.isBullet = true
-function laser:initialize(x, y)
+function laser:initialize(x, y, speed)
     powerup.initialize(self, x, y, 4, 12)
     
     laserSound:play()
-    self:setSpeedY(-600)
 
-    self.mask = { false, false, true }
+    local speed = speed
+    if type(speed) ~= "number" then
+        speed = -600
+    end
+    self:setSpeedY(speed)
+
+    self.mask = { false, true, true }
 end
 
 function laser:draw()
@@ -19,35 +24,39 @@ function laser:draw()
 end
 
 function laser:upCollide(name, data)
-    if name == "enemy" then
-        self:enemyCollide(data)
-        return false
+    if name == "enemy" and self.speed.y < 0 then
+        data:die(true)
+    elseif name == "player" then
+        data:setHealth(-1)
     end
+    return false
 end
 
 function laser:downCollide(name, data)
-    if name == "enemy" then
-        self:enemyCollide(data)
-        return false
+    if name == "enemy" and self.speed.y < 0 then
+        data:die(true)
+    elseif name == "player" then
+        data:setHealth(-1)
     end
+    return false
 end
 
 function laser:leftCollide(name, data)
-    if name == "enemy" then
-        self:enemyCollide(data)
-        return false
+    if name == "enemy" and self.speed.y < 0 then
+        data:die(true)
+    elseif name == "player" then
+        data:setHealth(-1)
     end
+    return false
 end
 
 function laser:rightCollide(name, data)
-    if name == "enemy" then
-        self:enemyCollide(data)
-        return false
+    if name == "enemy" and self.speed.y < 0 then
+        data:die(true)
+    elseif name == "player" then
+        data:setHealth(-1)
     end
-end
-
-function laser:enemyCollide(data)
-    data:die(true)
+    return false
 end
 
 return laser

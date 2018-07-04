@@ -23,9 +23,6 @@ function highscores:load(from_game, score)
             return true
         end)
         self.keyboard:setOpen(true)
-
-        HIGHSCORES[highi] = {score, ""}
-        self.highi = highi
     end
 end
 

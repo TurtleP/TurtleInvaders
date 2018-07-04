@@ -249,3 +249,13 @@ end
 function aabb(x, y, width, height, otherX, otherY, otherWidth, otherHeight)
     return x + width > otherX and x < otherX + otherWidth and y + height > otherY and y < otherY + otherHeight
 end
+
+function findInTable(t, find)
+	local found = false
+	for k, v in pairs(t) do
+		if v == find then
+			found = true
+		end
+	end
+	return found
+end
