@@ -5,6 +5,7 @@ function timer:initialize(max, callback, condition, ...)
     self.maxTime = max
 
     self.args = {...}
+
     self.callback = callback or function() end
     self.condition = condition or function() return true end
 end

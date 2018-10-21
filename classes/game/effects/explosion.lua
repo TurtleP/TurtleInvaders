@@ -16,8 +16,7 @@ function explosion:initialize(x, y)
 
     explosionSound:play()
 
-    local layers = state:get("layers")
-    table.insert(layers[3], self)
+    physics:pushEntity(self, 3)
 end
 
 function explosion:update(dt)

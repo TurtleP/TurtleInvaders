@@ -5,15 +5,11 @@ local laserSound = love.audio.newSource("audio/laser.ogg", "static")
 laser.time = 5
 laser.isBullet = true
 function laser:initialize(x, y, speed)
-    powerup.initialize(self, x, y, 4, 12)
+    powerup.initialize(self, nil, x, y, 4, 12)
     
     laserSound:play()
 
-    local speed = speed
-    if type(speed) ~= "number" then
-        speed = -600
-    end
-    self:setSpeedY(speed)
+    self:setSpeedY(-600)
 
     self.mask = { false, true, true }
 end
@@ -23,7 +19,7 @@ function laser:draw()
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
 end
 
-function laser:upCollide(name, data)
+function laser:ceil(name, data)
     if name == "enemy" and self.speed.y < 0 then
         data:die(true)
     elseif name == "player" then
@@ -32,7 +28,7 @@ function laser:upCollide(name, data)
     return false
 end
 
-function laser:downCollide(name, data)
+function laser:down(name, data)
     if name == "enemy" and self.speed.y < 0 then
         data:die(true)
     elseif name == "player" then
@@ -41,7 +37,7 @@ function laser:downCollide(name, data)
     return false
 end
 
-function laser:leftCollide(name, data)
+function laser:left(name, data)
     if name == "enemy" and self.speed.y < 0 then
         data:die(true)
     elseif name == "player" then
@@ -50,7 +46,7 @@ function laser:leftCollide(name, data)
     return false
 end
 
-function laser:rightCollide(name, data)
+function laser:right(name, data)
     if name == "enemy" and self.speed.y < 0 then
         data:die(true)
     elseif name == "player" then

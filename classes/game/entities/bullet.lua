@@ -1,9 +1,11 @@
-bullet = class("bullet", entity)
+bullet = class("bullet", powerup)
 
 local bulletSound = love.audio.newSource("audio/bullet.ogg", "static")
 
+bullet.time = -1
+bullet.isBullet = true
 function bullet:initialize(x, y, speed, ...)
-    entity.initialize(self, x, y, 6, 6)
+    powerup.initialize(self, nil, x, y, 6, 6)
 
     if not speed then
         self:setSpeedY(-600)
@@ -11,7 +13,7 @@ function bullet:initialize(x, y, speed, ...)
         self:setSpeed(unpack(speed))
     end
 
-    self.mask = { false, false, true }
+    self.mask = { false, false, true, false, true }
     if self.speed.y > 0 then
         self.mask[2] = true
         self.mask[3] = false
@@ -20,9 +22,6 @@ function bullet:initialize(x, y, speed, ...)
     self.category = 4
 
     bulletSound:play()
-
-    local layer = state:get("layers")
-    table.insert(layer[2], self)
 end
 
 function bullet:update(dt)
@@ -38,8 +37,8 @@ function bullet:draw()
     love.graphics.setColor(1, 1, 1, 1)
 end
 
-function bullet:upCollide(name, data)
-    if name == "enemy" and self.speed.y < 0 then
+function bullet:ceil(name, data)
+    if self.enemyFilter[name] and self.speed.y < 0 then
         data:die()
         self.remove = true
     elseif name == "player" then
@@ -50,8 +49,8 @@ function bullet:upCollide(name, data)
     return false
 end
 
-function bullet:downCollide(name, data)
-    if name == "enemy" and self.speed.y < 0 then
+function bullet:floor(name, data)
+    if self.enemyFilter[name] and self.speed.y < 0 then
         data:die()
         self.remove = true
     elseif name == "player" then
@@ -62,8 +61,8 @@ function bullet:downCollide(name, data)
     return false
 end
 
-function bullet:rightCollide(name, data)
-    if name == "enemy" and self.speed.y < 0 then
+function bullet:right(name, data)
+    if self.enemyFilter[name] and self.speed.y < 0 then
         data:die()
         self.remove = true
     elseif name == "player" then
@@ -74,8 +73,8 @@ function bullet:rightCollide(name, data)
     return false
 end
 
-function bullet:leftCollide(name, data)
-    if name == "enemy" and self.speed.y < 0 then
+function bullet:left(name, data)
+    if self.enemyFilter[name] and self.speed.y < 0 then
         data:die()
         self.remove = true
     elseif name == "player" then

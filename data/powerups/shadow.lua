@@ -6,9 +6,6 @@ function shadow:initialize()
 
     self.fade = 0
     self.timer = 0
-
-    local layers = state:get("layers")
-    table.insert(layers[3], self)
 end
 
 function shadow:update(dt)
@@ -24,6 +21,7 @@ end
 function shadow:draw()
     love.graphics.setColor(0, 0, 0, self.fade)
     love.graphics.rectangle("fill", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
+    love.graphics.setColor(1, 1, 1, 1)
 end
 
 return shadow

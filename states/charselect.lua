@@ -1,7 +1,6 @@
 local charselect = class("charselect")
 
 local portrait = require 'classes.charselect.portrait'
-local card = require 'classes.charselect.card'
 
 local CSS_WIDTH = 4
 local CSS_HEIGHT = 3

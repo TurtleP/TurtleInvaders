@@ -1,23 +1,27 @@
 local game = class("game")
 
-require 'classes.common.entity'
-
 require 'classes.game.effects.explosion'
 
 game.powerups = require 'data.powerups'
 
+require 'classes.game.entities.bullet'
+require 'classes.game.enemies.rocket'
+
 require 'classes.game.enemies.enemy'
 
+require 'classes.game.enemies.boss'
+require 'classes.game.enemies.megabat'
+require 'classes.game.enemies.raccoon'
+
 require 'classes.game.entities.barrier'
-require 'classes.game.entities.bullet'
+
 require 'classes.game.entities.player'
 
 require 'classes.game.utility.roulette'
 require 'classes.game.utility.timer'
+local hook = require 'libraries.core.libraries.hook'
 
 require 'classes.game.ui.info'
-
-require 'libraries.physics'
 
 local waveSound = love.audio.newSource("audio/wave.ogg", "static")
 local gameoverSound = love.audio.newSource("audio/gameover.ogg", "static")
@@ -37,9 +41,9 @@ function game:load(players)
     table.insert(self.layers[1], barrier:new(0))
     table.insert(self.layers[1], barrier:new(WINDOW_WIDTH))
 
-    physics_load(self.layers)
+    physics:initialize(self.layers)
 
-    self.enemyTimer = timer:new(1, function()
+    self.enemyTimer = timer:new(love.math.random(1.5, 3), function()
         enemy:new(math.random(0, WINDOW_WIDTH - 90), -42)
     end)
 
@@ -56,7 +60,7 @@ function game:load(players)
 
     self.score = 0
     self.combo = 1
-    self.wave = 0
+    self.wave = 19
 
     self.kills = 0
     self.baseKills = 10
@@ -70,6 +74,10 @@ function game:load(players)
                 {"addKills", 1}, 
                 {"newWave"} 
             }
+
+            if BOSS_WAVES[state:get("wave")] then
+                table.remove(calls, #calls)
+            end
 
             state:call(calls)
         end
@@ -107,6 +115,10 @@ function game:newWave(force)
     self.wave = self.wave + 1
     self.waveFade = 1
     self.kills = 0
+
+    if BOSS_WAVES[self.wave] then
+        _G[BOSS_WAVES[self.wave]]:new()
+    end
 end
 
 function game:canNewWave()
@@ -122,7 +134,7 @@ function game:update(dt)
             state:change("highscores", true, self.score)
         end
 
-        for k, v in ipairs(self.layers) do
+        for k, v in ipairs(self.layers[3]) do
             if tostring(v):find("explosion") then
                 v:update(dt)
             end
@@ -152,7 +164,7 @@ function game:update(dt)
 
     self.waveFade = math.max(self.waveFade - dt * 0.9, 0)
 
-    physicsupdate(dt)
+    physics:update(dt)
 end
 
 function game:draw()
@@ -162,11 +174,7 @@ function game:draw()
         love.graphics.translate(self.shakeValue * math.random(-1.5, 1.5), 0)
     end
 
-    for _, objectLayer in ipairs(self.layers) do
-        for _, object in ipairs(objectLayer) do
-            object:draw()
-        end
-    end
+    physics:draw()
     
     love.graphics.setFont(self.infoFont)
     self.scoreInfo:draw(self.infoFont)
@@ -201,11 +209,9 @@ function game:gamepadpressed(joy, button)
         if self.waveFade == 0 then
             self.paused = not self.paused
         end
-    elseif button == "a" then
-        self.player:setPowerup(self.powerups[4])
     end
     
-    if self.player:isFrozen() then
+    if self.player:isFrozen() or self.paused then
         return
     end
 

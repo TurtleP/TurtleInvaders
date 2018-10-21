@@ -27,7 +27,6 @@ function popup:initialize(name, tier, data)
         numTier = 3
     end
     self.tier = numTier
-    print(name, tier)
 
     self.name = name
     self.description = data.description or ""
@@ -117,7 +116,7 @@ function popup:unlock(forced, unlocked, date)
 
     if not forced and not unlocked then
         unlockSound:play()
-        save:write(true)
+        save:write()
     end
 end
 

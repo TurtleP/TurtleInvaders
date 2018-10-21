@@ -7,7 +7,7 @@ return
 
     source = 
     {
-        class = "boss",
+        class = "racoon",
         func  = "die"
     },
 

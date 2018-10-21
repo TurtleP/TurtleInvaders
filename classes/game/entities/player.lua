@@ -16,7 +16,9 @@ function player:initialize(x, y, character)
     end
 
     self:setMaxHealth(self.health)
-    self.powerup = {obj = nil, class = nil}
+    
+    self.powerup = powerup:new()
+
     self.canShoot = true
 
     self.shootTimer = timer:new(0.4, function(self)
@@ -34,16 +36,13 @@ function player:update(dt)
             self.invincible = false
         end
     end
+
     self:animate(dt)
 
     self.shootTimer:update(dt)
 
-    if self.powerupTimer then
-        self.powerupTimer:update(dt)
-    end
-
-    if self.powerup.obj then
-        self.powerup.obj:update(dt)
+    if self.powerup.update then
+        self.powerup:update(dt)
     end
 end
 
@@ -54,25 +53,25 @@ function player:draw()
     self:render()
 end
 
-function player:upCollide(name, data)
+function player:ceil(name, data)
     if name == "enemy" then
         return false
     end
 end
 
-function player:downCollide(name, data)
+function player:floor(name, data)
     if name == "enemy" then
         return false
     end
 end
 
-function player:rightCollide(name, data)
+function player:right(name, data)
     if name == "enemy" then
         return false
     end
 end
 
-function player:leftCollide(name, data)
+function player:left(name, data)
     if name == "enemy" then
         return false
     end
@@ -110,48 +109,10 @@ function player:isInvincible()
 end
 
 function player:setPowerup(powerupClass)
-    if not powerupClass then
-        self.powerup.obj = nil
-        self.powerup.class = nil
-        return
-    else
-        if self:getPowerup() then
-            return
-        end
-    end
+    self.powerup:setData(powerupClass)
 
-    self.powerup.class = powerupClass
-
-    if not powerupClass.isBullet then --variable check
-        self.powerup.obj = powerupClass:new(self.x, self.y, self)
-    end
-
-    self:createTimer()
-end
-
-function player:createTimer()
-    local time = self.powerup.class.time
-
-    if time ~= 0 then
-        self.powerupTimer = timer:new(time, function(self)
-            if self.powerup.obj then
-                self.powerup.obj:delete()
-            end
-            self.powerup.class = nil
-            self.powerupTimer = nil
-        end, function(self)
-            if self.powerup.obj then
-                if self.powerup.obj.isBullet then
-                    if self.powerup.obj.shouldTimeout then
-                        return true
-                    else
-                        return true
-                    end
-                else
-                    return true
-                end
-            end
-        end, self)
+    if not self.powerup.child:isShootable() then
+        self.powerup:enable()
     end
 end
 
@@ -159,22 +120,7 @@ function player:getPowerup(name)
     if name then
         return tostring(self.powerup.class):find(name)
     end
-    return self.powerup.class
-end
-
-function player:firePowerup(center)
-    local layers = state:get("layers")
-    local tmp = self.powerup.class:new(center.x, self.y, self)
-
-    local offset = -(tmp:getHeight() + 6)
-    if tostring(tmp) == "megacannon" then
-        offset = 0
-    end
-    tmp:offset(-tmp:getWidth() / 2, offset)
-
-    self.powerup.obj = tmp
-
-    table.insert(layers[2], tmp)
+    return self.powerup.child ~= nil
 end
 
 function player:shoot()
@@ -182,14 +128,15 @@ function player:shoot()
         return
     end
 
-    local center = self:getCenter()
+    if not self.powerup.child then
+        self.powerup.child = bullet
+    end
+
     if self:getPowerup() then
-        if self.powerup.class.isBullet then
-            self:firePowerup(center)
-            return
+        if self.powerup.child:isShootable() then
+            self.powerup:shoot(self.x + (self.width / 2), self.y - 2)
         end
     end
 
-    bullet:new(center.x - 3, self.y - 6)
     self.canShoot = false
 end

@@ -16,7 +16,7 @@ function frostbullet:draw()
 	love.graphics.setColor(1, 1, 1)
 end
 
-function frostbullet:downCollide(name, data)
+function frostbullet:floor(name, data)
 	if name == "player" then
 		local powerups = state:get("powerups")
 		data:setPowerup(powerups[2])

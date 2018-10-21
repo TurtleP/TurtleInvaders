@@ -35,14 +35,13 @@ function enemy:initialize(x, y)
     self.timer = 0
     self.quadi = 1
 
-    self.mask = { true, true, false, true, true }
+    self.mask = { true, true, false, true, false }
 
     self.category = 3
 
     self:setSpeed(math.random(-150, 150), 120)
 
-    local layers = state:get("layers")
-    table.insert(layers[2], self)
+    physics:pushEntity(self, 2)
 
     self:setMaxHealth(math.random(1, 3))
 
@@ -52,7 +51,7 @@ function enemy:initialize(x, y)
         if abilities[randomAbility][2] <= state:get("wave") then
             self.powerup = abilities[randomAbility][1]
             
-            if self.powerup ~= "cirlce" then
+            if self.powerup ~= "circle" then
                 self.shootTimer = timer:new(math.random(1, 3), function(self)
                     self:shoot()
                     self.shootTimer:setMaxTime(math.random(1, 3))
@@ -83,8 +82,8 @@ function enemy:update(dt)
     if self.powerup == "circle" then
         self.angle = self.angle + 5 * dt
 
-        --[[self.x = self.x + math.cos(self.angle) * 4
-        self.y = self.y + math.sin(self.angle) * 4]]
+        self.x = self.x + math.cos(self.angle) * 4
+        self.y = self.y + math.sin(self.angle) * 4
     end
 end
 
@@ -98,7 +97,7 @@ function enemy:draw()
     love.graphics.setColor(1, 1, 1)
 end
 
-function enemy:upCollide(name, data)
+function enemy:ceil(name, data)
     if name == "shield" then
         self:die(true)
     end
@@ -112,7 +111,7 @@ function enemy:upCollide(name, data)
     end
 end
 
-function enemy:downCollide(name, data)
+function enemy:floor(name, data)
     if name == "shield" then
         self:die(true)
     end
@@ -126,13 +125,14 @@ function enemy:downCollide(name, data)
     end
 end
 
-function enemy:rightCollide(name, data)
+function enemy:right(name, data)
     if name == "shield" then
         self:die(true)
     end
 
     if name == "barrier" then
         self:setSpeedX(-self.speed.x)
+        return false
     end
 
     if name == "player" then
@@ -144,13 +144,14 @@ function enemy:rightCollide(name, data)
     end
 end
 
-function enemy:leftCollide(name, data)
+function enemy:left(name, data)
     if name == "shield" then
         self:die(true)
     end
 
     if name == "barrier" then
         self:setSpeedX(-self.speed.x)
+        return false
     end
 
     if name == "player" then

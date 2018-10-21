@@ -1,14 +1,8 @@
 require 'vars'
+require "libraries.core"
 
-class = require 'libraries.middleclass'
 state = require 'libraries.state'
-hook = require 'libraries.hook'
-
 achievements = require 'libraries.achievement'
-
-json = require 'libraries.json'
-save  = require 'libraries.save'
-vector = require 'libraries.vector'
 
 require 'libraries.character'
 
@@ -17,7 +11,44 @@ local star = require 'classes.common.star'
 love.graphics.setDefaultFilter("nearest", "nearest")
 io.stdout:setvbuf("no")
 
+local function saveData()
+    local achievmentData = {}
+    for k, v in ipairs(achievements.achievements) do
+        achievmentData[v.name] = {unlocked = v.unlocked, date = v.date}
+    end
+
+    local input = 
+    {
+        highscores = HIGHSCORES, 
+        achievements = achievmentData, 
+        controls = CONTROLS
+    }
+
+    local out = save:format(input)
+    save:encode(out)
+end
+
 function love.load()
+    core.init("Switch")
+
+    --save/load data
+
+    save.write = saveData
+    if save:hasData() and save:get("date") then
+        HIGHSCORES = save:get("highscores")
+        CONTROLS = save:get("controls")
+
+        local achievementSave = save:get("achievements") or {}
+        for k, v in ipairs(achievements.achievements) do
+            for j, w in pairs(achievementSave) do
+                if v.name == j then
+                    print(w.unlocked, j)
+                    v:unlock(true, w.unlocked, w.date)
+                end
+            end
+        end
+    end
+
     math.randomseed(os.time())
 
     STARFIELDS = {}
@@ -28,10 +59,11 @@ function love.load()
         end
     end
 
+    love.audio.setVolume(0)
+
     titleSong = love.audio.newSource("audio/music/menu.ogg", "stream")
     titleSong:setLooping(true)
 
-    --love.audio.setVolume(0)
     state:change("intro")
 end
 
@@ -39,10 +71,10 @@ function love.update(dt)
     dt = math.min(1 / 30, dt)
 
     for layer, objects in ipairs(STARFIELDS) do
-		for _, star in ipairs(objects) do
-			if not state:get("paused") then
-				star:update(dt)
-			end
+        for _, star in ipairs(objects) do
+            if not state:get("paused") then
+                star:update(dt)
+            end
         end
     end
 
@@ -63,14 +95,8 @@ end
 
 function love.gamepadpressed(joy, button)
     state:gamepadpressed(joy, button)
-
-    if button == "start" then
-        love.event.quit()
-    end
 end
 
 function love.gamepadaxis(joy, axis, value)
     state:gamepadaxis(joy, axis, value)
 end
-
-require 'libraries.HorizonNX'

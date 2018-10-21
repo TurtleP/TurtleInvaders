@@ -44,7 +44,8 @@ function info:draw(font)
             if x > self.entity:getHealth() then
                 i = 2
             end
-            love.graphics.draw(heartImage, heartQuads[i][1], self.x + (x - 1) * 28, self.y + font:getHeight() + 8)
+            local startx = (self.x + font:getWidth(self.text) / 2) - (28 * math.min(self.entity:getMaxHealth(), 6)) / 2
+            love.graphics.draw(heartImage, heartQuads[i][1], startx + math.fmod((x - 1), 6) * 28, self.y + font:getHeight() + 8 + math.floor((x - 1) / 6) * 28)
         end
     else
         if self.text:find("score") then

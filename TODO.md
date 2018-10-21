@@ -1,9 +1,10 @@
 - Powerup Roulette ✓
     - Remaining powerups ✓
 - Bosses
-    - Rewards
-        - Health+
-        - Speed+
+    - Mega Space Bat ✓
+    - Raccoon ✓
+    - Phoenix
+        - Health +
 - Enemies with powerups
     - Shoot
         - Bullets ✓

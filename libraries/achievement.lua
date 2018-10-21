@@ -1,5 +1,6 @@
 local achievement = class("achievement")
 local popup = require 'data.achievements.popup'
+local hook = require 'libraries.core.libraries.hook'
 
 function achievement:initialize()
     local items = love.filesystem.getDirectoryItems("data/achievements")

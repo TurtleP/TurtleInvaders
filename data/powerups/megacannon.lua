@@ -27,28 +27,21 @@ for y = 1, 5 do
     end
 end
 
-function megacannon:initialize(x, y, player)
-    powerup.initialize(self, x, y, 240, 240)
-
-    self.player = player
+function megacannon:initialize(x, y)
+    powerup.initialize(self, nil, x, y, 240, 186)
 
     self.timer = 0
     self.quadi = vector(1, 1)
 
     self.shouldTimeout = true
-
-    local layers = state:get("layers")
-    table.insert(layers[3], self)
 end
 
 function megacannon:update(dt)
-    powerup.update(self, dt)
-
-    self.timer = self.timer + 6 * dt
+    self.timer = self.timer + 10 * dt
     self.quadi.y = math.floor(self.timer % #megaLaserBaseQuads) + 1
     self.quadi.x = math.floor(self.timer % #megaLaserQuads) + 1
 
-    local ret = checkrectangle(self.x + (120 - 33), 0, 66, 462, {"enemy"})
+    local ret = physics:checkBounds(self.x + (120 - 33), 0, 66, 462, {"enemy"})
     
     for k, v in ipairs(ret) do
         v:die(true)
@@ -57,11 +50,10 @@ function megacannon:update(dt)
 end
 
 function megacannon:draw()
-    local y = self.height - 54
-    for i = 1, 7 do
-        love.graphics.draw(megaLaserImage, megaLaserQuads[self.quadi.x], self.x + (120 - 33), (self.y - megaLaserImage:getHeight() - 54) - (i + 1) * 66)
+    for i = 1, math.floor(self.y / 66) + 1 do
+        love.graphics.draw(megaLaserImage, megaLaserQuads[self.quadi.x], self.x + (120 - 33), self.y - (i * 66))
     end
-    love.graphics.draw(megaLaserBaseImage, megaLaserBaseQuads[self.quadi.y], self.x, self.y - y)
+    love.graphics.draw(megaLaserBaseImage, megaLaserBaseQuads[self.quadi.y], self.x, self.y)
 end
 
 return megacannon
