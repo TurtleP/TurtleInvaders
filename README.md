@@ -1,22 +1,22 @@
-# Turtle_Invaders
+# Turtle Invaders
 A fixed-axis shooter with netplay
 
 # What is this
-A game over a year in the making using Lua and Löve to create a fun multiplayer game
+This new version is a complete overhaul. It will redefine how things are done, mainly with a fresh coat of paint for several menus, gameplay, and sprites.
+
 
 # License
 See http://creativecommons.org/licenses/by-nc-sa/4.0/ for details
 
 # How to compile
-Right now as of August 2015, these are beta files. The game may or may not be stable.
-As a result, put in a bug request and I'll look over it.
+## Windows/macOS/Linux
 
 1. Be sure to download Löve from www.love2d.org/
 2. Make sure 'hide extensions of known file types' is unchecked (in Windows)
-3. Clone it in your desktop or download the .zip. 
+3. Clone it in your desktop or download the .zip.
 4. Make sure you extract it and zip the contents so that the main.lua file is on the top.
 5. Rename the extension to .love.
- 
+
 It should look like this when you view the .zip:
 
 Turtle Invaders/main.lua
@@ -25,5 +25,5 @@ NOT
 
 Turtle Invaders/Turtle Invaders/main.lua
 
-
-
+## Nintendo Switch (Homebrew)
+Pleae view the [Löve Potion wiki for details](https://turtlep.github.io/LovePotion/wiki/#/packaging). Right now the remake is a WIP--and likely won't be for mobile devices. Why? Because mobile games aren't my thing, never really were.

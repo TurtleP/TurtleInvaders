@@ -1,7 +1,0 @@
-{
-	"ability": "quickstep",
-	"shieldwidth": 50,
-	"shieldheight": 50,
-	"shieldquadcount": 10,
-	"shieldanimspeed": 0.15
-}

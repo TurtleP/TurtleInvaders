@@ -1,0 +1,23 @@
+{
+    "body":
+    [
+        [null, "A System Update is ready."],
+        null,
+        [null, "You must upgrade before using online"],
+        [null, "play functions. Would you like to update?"],
+        null,
+        [2,    "Any unsaved progress will be lost."]
+    ],
+    "buttons":
+    [
+        {
+            "text": "Cancel",
+            "width": 0.5,
+            "callback": "close"
+        },
+        {
+            "text": "System Settings",
+            "width": 0.5
+        }
+    ]
+}

@@ -1,156 +1,76 @@
-function menu_load(fromsettings, fromhighscore, fromcoop)
-	state = "menu"
-	
-	menuscrolly = 0
-	menu_batquadi = 1
-	score = 0
+local menu = class("menu")
 
-	suspended = false 
+local FONT_SIZE = 48
+local TEXT_PADD = FONT_SIZE
 
-	menu_selectioni = 1
-	minselecti = 1
+require 'data.classes.player'
+function menu:load()
+    self.menuFont = love.graphics.newFont("graphics/BMArmy.ttf", FONT_SIZE * _env.SCALE)
+    self.logoFont = love.graphics.newFont("graphics/BMArmy.ttf", (FONT_SIZE + 16) * _env.SCALE)
+    
+    self.fade = 0
 
-	if fromcoop then
-		saveData("netplay")
+    self.items =
+    {
+        { "START GAME" },
+        { "SETTINGS" },
+        { "ONLINE RIVALS" }
+    }
 
-		menu_selectioni = 2
-	elseif fromsettings then
-	--	savesettings()
-		saveData("settings")
+    for i = 1, #self.items do
+        table.insert(self.items[i], vector(((_env.WINDOW_W * _env.SCALE) - self.menuFont:getWidth(self.items[i][1])) / 2, (204 + (i - 1) * TEXT_PADD) * _env.SCALE))
+    end
 
-		menu_selectioni = 3
-	elseif fromhighscore then
-		saveData("highscores")
+    self.selection = 1
 
-		menu_selectioni = 4
-	end
-
-	gameData = {}
-
-	loadData("highscores")
-
-	settings_selectioni = 1
-
-	if audio["menu"]:isStopped() then
-		playsound("menu")
-	end
-
-	love.audio.stop(audio["boss"])
-	love.audio.stop(audio["finalboss"])
-
-	menu_battimer = 0
-
-	gameover = false
-
-	menu_items = 
-	{
-		{t = "New Game", func = partymode_load},
-		{t = "Online Co-Op", func = netplay_load},
-		{t = "Options Menu", func = settings_load},
-		{t = "Highscores", func = function() highscoredisplay_load(true) end},
-	}
+    self.banner = { image = love.graphics.newImage("graphics/menu/banner-plain-hi.png") }
+    self.banner.position = vector(((_env.WINDOW_W - self.banner.image:getWidth()) / 2) * _env.SCALE, (_env.WINDOW_H * 0.06) * _env.SCALE)
 end
 
-function menu_draw(alpha)
-	local a = alpha or 255
-
-	love.graphics.setColor(255, 0, 0, a)
-
-	love.graphics.setFont(font1.lrg)
-
-	x = (600 * scale) / 2
-
-	love.graphics.print("Turtle:", x-font1.lrg:getWidth("Turtle:")/2, 36*scale)
-
-	love.graphics.setColor(0, 255, 0, a)
-	love.graphics.setFont(font1.xl)
-	love.graphics.print("Invaders", x-font1.xl:getWidth("Invaders")/2, 76*scale)
-
-	love.graphics.setColor(255, 255, 255, a)
-		
-	love.graphics.setFont(font3)
-	love.graphics.print("(C) 2015 Tiny Turtle Industries", x-font3:getWidth("(C) 2014 Tiny Turtle Industries")/2, 120*scale)
-
-	
-	love.graphics.setFont(menubuttonfont)
-	
-	local batx = math.floor(x-menubuttonfont:getWidth(menu_items[menu_selectioni].t)/2)
-			
-	love.graphics.draw(graphics["bat"], batquads[menu_batquadi], batx-32*scale, (182 + (menu_selectioni - 1) * 30) * scale,0, scale, scale)
-	love.graphics.draw(graphics["bateyes"], batquads[menu_batquadi], batx-32*scale, (182 + (menu_selectioni - 1) * 30) * scale,0, scale, scale)
-
-	for k = 1, #menu_items do
-		love.graphics.print(menu_items[k].t, x - menubuttonfont:getWidth(menu_items[k].t) / 2, (182 + (k - 1) * 30) * scale)
-	end
+function menu:update(dt)
+    self.fade = math.min(self.fade + dt / 0.8, 1)
 end
 
-function menu_update(dt)
-	menu_battimer = math.min(menu_battimer + 8*dt)
-	menu_batquadi = math.floor(menu_battimer%3)+1
+function menu:highlightSelection(text, x, y)
+    love.graphics.setColor(0.99, 0.85, 0.21)
+
+    -- left dot
+    love.graphics.circle("line", x - 18 * _env.SCALE, y + (self.menuFont:getHeight(text) / 2) - 3 * _env.SCALE, 6 * _env.SCALE)
+    love.graphics.circle("fill", x - 18 * _env.SCALE, y + (self.menuFont:getHeight(text) / 2) - 3 * _env.SCALE, 6 * _env.SCALE)
+
+    --right dot
+    love.graphics.circle("line", x + self.menuFont:getWidth(text) + 14 * _env.SCALE, y + (self.menuFont:getHeight(text) / 2) - 3 * _env.SCALE, 6 * _env.SCALE)
+    love.graphics.circle("fill", x + self.menuFont:getWidth(text) + 14 * _env.SCALE, y + (self.menuFont:getHeight(text) / 2) - 3 * _env.SCALE, 6 * _env.SCALE)
 end
 
-function menu_keypressed(k)
-	if k == "s" or k == "down" then
-		menu_movecursor(true)
-	end
+function menu:draw()
+    love.graphics.setFont(self.menuFont)
+    
+    for i = 1, #self.items do
+        if self.selection == i then
+            self:highlightSelection(self.items[i][1], self.items[i][2].x, self.items[i][2].y)
+            love.graphics.setColor(0.93, 0.93, 0.93, self.fade)
+        else
+            love.graphics.setColor(0.62, 0.62, 0.62, self.fade)
+        end
 
-	if k == "w" or k == "up" then
-		menu_movecursor(false)
-	end
+        love.graphics.print(self.items[i][1], self.items[i][2].x, self.items[i][2].y)
+    end
 
-	if k == "return" or k == " " then
-		menu_movecursor(nil, nil, true)
-	end
-		
-	if k == "escape" then
-		menu_movecursor(nil, nil, false)
-	end
+    love.graphics.setColor(1, 1, 1, self.fade)
+    love.graphics.draw(self.banner.image, self.banner.position.x, self.banner.position.y, 0, _env.SCALE, _env.SCALE)
 end
 
-function menu_joystickaxis(joystick, axis, value)
-
+function menu:gamepadpressed(joy, button)
+    if button == "dpdown" then
+        self.selection = math.min(self.selection + 1, #self.items)
+    elseif button == "dpup" then
+        self.selection = math.max(1, self.selection - 1)
+    end
 end
 
-function menu_joystickpressed(joystick, button)
-	if button == "a" then
-		menu_movecursor(nil, nil, true)
-	end
-
-	if button == "dpdown" then
-		menu_movecursor(true)
-	elseif button == "dpup" then
-		menu_movecursor(false)
-	end
-
-	if button == "b" then 
-		love.event.push("quit")
-	end
+function menu:gamepadaxis(joy, axis, value)
+    
 end
 
-function menu_movecursor(down, right, enter)
-	if  down ~= nil then
-		if down then
-			if menu_selectioni < #menu_items then
-				menu_selectioni = menu_selectioni + 1
-			end
-		else --up
-			if menu_selectioni > minselecti then
-				menu_selectioni = menu_selectioni - 1
-			end
-		end
-	end
-
-	if enter ~= nil then
-		if enter then
-			if menu_items[menu_selectioni].func then
-				menu_items[menu_selectioni].func()
-			end
-		else
-			local button = love.window.showMessageBox(love.window.getTitle(), "Are you sure you want to quit?", {"No", "Yes"}, "info", true )
-
-			if button == 2 then
-				love.event.quit()
-			end
-		end
-	end
-end
+return menu

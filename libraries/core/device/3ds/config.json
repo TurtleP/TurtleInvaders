@@ -1,0 +1,25 @@
+{
+    "z": "a",
+    "x": "b",
+    "c": "y",
+    "v": "x",
+
+    "return": "start",
+    "rshift": "select",
+
+    "a": "l",
+    "f": "r",
+
+    "s": "zl",
+    "d": "zr",
+
+    "left": "dpleft",
+    "right": "dpright",
+    "down": "dpdown",
+    "up": "dpup",
+
+    "y": "axis:2:up",
+    "g": "axis:1:left",
+    "h": "axis:2:down",
+    "j": "axis:1:right"
+}

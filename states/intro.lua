@@ -1,47 +1,43 @@
-function intro_load()
-	state = "intro"
+local intro = class("intro")
 
-	updateBox = util.fancyBox(300, 150, 300, 120, 0.25, nil, nil, "An update for Turtle: Invaders is available. Would you like to download the update?")
+local MAX_TIME = 3
+local TIME_SPEED = 1.45
 
-	updateBox.onMax = function()
-		laterButton = gui:new("button", (updateBox.x + 30) * scale, (updateBox.y + updateBox.maxHeight) * scale - 30 * scale, "Later", function() updatePrompt = false end)
-		laterButton:setUnHoverColor({255, 0, 0})
+function intro:load()
+    self.fade = 0
+    self.time = 0
 
-		confirmButton = gui:new("button", (updateBox.x + updateBox.maxWidth - 100) * scale, (updateBox.y + updateBox.maxHeight) * scale - 30 * scale, "Okay", function() love.system.openURL(updateURL) updatePrompt = false end)
-		confirmButton:setUnHoverColor({0, 255, 0})
-	end
-	
-	updatePrompt = true
+    self.splash = { image = love.graphics.newImage("graphics/intro/logo.png") } 
+    self.splash.position = vector((_env.WINDOW_W - self.splash.image:getWidth()) / 2, ((_env.WINDOW_H - self.splash.image:getHeight()) / 2))
+
+    self.audio = love.audio.newSource("audio/intro.ogg", "static")
+
+    self.audio:play()
 end
 
-function intro_update(dt)
-	if newVersion and updatePrompt then
-		updateBox:update(dt)
-		return
-	end
+function intro:update(dt)
+    self.time = math.min(self.time + dt / TIME_SPEED, MAX_TIME)
+
+    -- quad in -> quad out (0 -> 1 -> 0) for fade
+    self.fade = math.max(0, -math.pow(self.time - 1, 2) + 1)
+
+    if self.time == MAX_TIME then
+        state:change("menu")
+    end
 end
 
-function intro_draw()
-
-	if newVersion and updatePrompt then
-		updateBox:draw()
-
-		if laterButton then
-			laterButton:draw()
-			confirmButton:draw()
-		end
-
-		return
-	end
+function intro:draw()
+    love.graphics.setColor(1, 1, 1, self.fade)
+    love.graphics.draw(self.splash.image, self.splash.position.x * _env.SCALE,  self.splash.position.y * _env.SCALE, 0, _env.SCALE, _env.SCALE)
 end
 
-function intro_mousepressed(x, y, b)
-	if newVersion and updatePrompt then
-
-		if laterButton then
-			laterButton:mousepressed(x, y, b)
-			confirmButton:mousepressed(x, y, b)
-		end
-		return
-	end
+function intro:gamepadpressed(joystick, button)
+    state:change("menu")
 end
+
+function intro:destroy()
+    self.splash = nil
+    self.audio = nil
+end
+
+return intro
