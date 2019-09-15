@@ -65,6 +65,12 @@ function game:gamepadpressed(joy, button)
         end
     end
 
+    if button == "dpup" then
+        DebugRenderer:Zoom(1)
+    elseif button == "dpdown" then
+        DebugRenderer:Zoom(-1)
+    end
+
     if button == "y" then
         self:spawnEntity("bat", {love.math.random(0, 600), love.math.random(0, 80)})
     end
