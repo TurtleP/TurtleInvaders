@@ -5,7 +5,7 @@ return
     WINDOW_W  = 640,
     WINDOW_H  = 360,
     SCALE     = (scale.x == scale.y and scale.x) or scale,
-    VOLUME    = 0,
+    VOLUME    = 0.5,
 
     COPYRIGHT = "(c) 2019 TurtleP",
 

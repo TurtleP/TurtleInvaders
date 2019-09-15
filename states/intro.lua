@@ -7,12 +7,10 @@ function intro:load()
     self.fade = 0
     self.time = 0
 
-    self.splash = { image = love.graphics.newImage("graphics/intro/logo.png") } 
+    self.splash = { image = love.graphics.newImage("graphics/intro/logo.png") }
     self.splash.position = vector((_env.WINDOW_W - self.splash.image:getWidth()) / 2, ((_env.WINDOW_H - self.splash.image:getHeight()) / 2))
 
-    self.audio = love.audio.newSource("audio/intro.ogg", "static")
-
-    self.audio:play()
+    audio:play("intro")
 end
 
 function intro:update(dt)
@@ -37,7 +35,8 @@ end
 
 function intro:destroy()
     self.splash = nil
-    self.audio = nil
+
+    audio:stop("intro")
 end
 
 return intro

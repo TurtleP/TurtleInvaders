@@ -1,31 +1,37 @@
+require 'libraries.core'
+core.init("switch")
+
+require 'data.classes.global.star'
+require 'libraries.dialog'
+
+local concord = require 'libraries.concord'
+concord.init({useEvents = false})
+
+Entity    = concord.entity
+Component = concord.component
+System    = concord.system
+Instance  = concord.instance
+
+require 'data.components'
+require 'data.entities'
+require 'data.systems'
+
+_env  = require 'data.environment'
+audio = require 'data.musicloader'
+state = require 'libraries.state'
+
 function love.load()
-    require 'libraries.core'
-    core.init("switch")
-
-    require 'data.classes.global.star'
-    require 'libraries.dialog'
-
-    _env  = require 'data.environment'
-    state = require 'libraries.state'
-
-    local concord = require 'libraries.concord'
-    concord.init({useEvents = false})
-
-    Entity    = concord.entity
-    Component = concord.component
-    System    = concord.system
-    Instance  = concord.instance
-
     love.math.setRandomSeed(os.time())
     love.math.random(); love.math.random()
- 
+
     stars = {}
     dialogs = {}
     for i = 1, 384 do
         stars[i] = star:new(love.math.random(0, _env.WINDOW_W), love.math.random(0, _env.WINDOW_H), love.math.random(0.25, 0.50))
     end
-    
+
     love.audio.setVolume(_env.VOLUME)
+
     state:change("intro")
 end
 

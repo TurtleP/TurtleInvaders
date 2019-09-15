@@ -22,7 +22,7 @@ function star:update(dt)
 
     self.y = self.y + self.velocity.y * dt
     if self.y + self.velocity.y * dt > _env.WINDOW_H then
-        self.y = 0
+        self.y = -self.maxSpeed.y
     end
 end
 
