@@ -46,7 +46,7 @@ function Physics:update(dt)
 
                 position:Set(ax, ay)
 
-                if ay < 0 or ay > _env.WINDOW_H then
+                if (ay < 0 and entity.removeOnUpperScreen) or ay > _env.WINDOW_H then
                     state:call("removeEntity", entity)
                 end
             end

@@ -20,6 +20,8 @@ _env  = require 'data.environment'
 audio = require 'data.musicloader'
 state = require 'libraries.state'
 
+require 'data.fonts'
+
 function love.load()
     love.math.setRandomSeed(os.time())
     love.math.random(); love.math.random()
@@ -58,7 +60,7 @@ function love.gamepadpressed(joystick, button)
 
     state:gamepadpressed(joystick, button)
 
-    if button == "start" or button == "plus" then
+    if button == "back" or button == "minus" then
         love.event.quit()
     end
 end

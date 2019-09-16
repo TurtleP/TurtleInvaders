@@ -6,6 +6,7 @@ return function(entity, x, y)
     return entity
     :give(Components.Collision)
     :give(Components.Controls)
+    :give(Components.Health, 3)
     :give(Components.Mask, function(player, item)
         if item.isPassive then
             return nil

@@ -1,5 +1,10 @@
 local game = class("game")
 
+require "data.classes.game.display"
+local SCORE = require "data.classes.game.score"
+local PAUSE = require "data.classes.game.pause"
+require 'data.classes.game.timer'
+
 local WORLD = Instance()
 
 function game:load()
@@ -24,12 +29,22 @@ function game:load()
     WORLD:addSystem(PrimitiveSystem, "draw")
 
     -- SINGLE INSTANCED PLAYER
-    WORLD:addEntity(Entities.Player(Entity(), 40, 299))
+    local player = Entities.Player(Entity(), 40, 299)
+    WORLD:addEntity(player)
+    self.display = display:new(player)
 
     -- DUMB BARRIERS
     --WORLD:addEntity(Entities.Barrier(Entity(), 0, _env.WINDOW_H, _env.WINDOW_W, 1))
     WORLD:addEntity(Entities.Barrier(Entity(), -1, 0, 1, _env.WINDOW_H))
     WORLD:addEntity(Entities.Barrier(Entity(), _env.WINDOW_W, 0, 1, _env.WINDOW_H))
+
+    self.enemyTimer = timer:new(2, function()
+        self:spawnEntity("bat", {love.math.random(0, 600), -28})
+    end)
+end
+
+function game:addScore(amount)
+    SCORE:add(amount)
 end
 
 function game:spawnEntity(name, args)
@@ -47,11 +62,25 @@ function game:removeEntity(entity)
 end
 
 function game:update(dt)
+    if PAUSE:isActive() then
+        return
+    end
+
     WORLD:emit("update", dt)
+
+    self.enemyTimer:update(dt)
 end
 
 function game:draw()
     WORLD:emit("draw")
+
+    self.display:draw()
+
+    SCORE:draw()
+
+    if PAUSE:isActive() then
+        PAUSE:draw()
+    end
 end
 
 function game:gamepadpressed(joy, button)
@@ -71,8 +100,8 @@ function game:gamepadpressed(joy, button)
         DebugRenderer:Zoom(-1)
     end
 
-    if button == "y" then
-        self:spawnEntity("bat", {love.math.random(0, 600), love.math.random(0, 80)})
+    if button == "start" or button == "plus" then
+        PAUSE:toggle()
     end
 
     WORLD:emit("gamepadpressed", joy, button)
