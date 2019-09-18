@@ -21,7 +21,6 @@ function timer:update(dt)
     end
 
     if self.condition(unpack(self.args)) then
-        print("yeet")
         self.timer = self.timer + dt
         if self.timer >= self.maxTime then
             self.callback(unpack(self.args))

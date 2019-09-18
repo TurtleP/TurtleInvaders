@@ -26,7 +26,7 @@ function settings:draw()
     love.graphics.setFont(self.smallFont)
 
     love.graphics.setColor(0.5, 0.5, 0.5)
-    love.graphics.print(_env.VERSION, (_env.WINDOW_W - 80) * _env.SCALE, (_env.WINDOW_H - 40) * _env.SCALE)
+    love.graphics.print(_env.VERSION, (_env.WINDOW_W * _env.SCALE) - self.smallFont:getWidth(_env.VERSION)  -40 * _env.SCALE, (_env.WINDOW_H - 40) * _env.SCALE)
 end
 
 function settings:gamepadpressed(joy, button)

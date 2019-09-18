@@ -6,6 +6,7 @@ return
     WINDOW_H  = 360,
     SCALE     = (scale.x == scale.y and scale.x) or scale,
     VOLUME    = 0.5,
+    VERSION   = "0.1.0 (ALPHA)",
 
     COPYRIGHT = "(c) 2019 TurtleP",
 

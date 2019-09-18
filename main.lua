@@ -29,7 +29,7 @@ function love.load()
     stars = {}
     dialogs = {}
     for i = 1, 384 do
-        stars[i] = star:new(love.math.random(0, _env.WINDOW_W), love.math.random(0, _env.WINDOW_H), love.math.random(0.25, 0.50))
+        stars[i] = star:new()
     end
 
     love.audio.setVolume(_env.VOLUME)

@@ -3,11 +3,11 @@ star = class("star")
 local YEET_FACTOR = 2.50
 local SLOW_DOWN_RATE = 128
 
-function star:initialize(x, y, r)
-    self.x = x
-    self.y = y
+function star:initialize()
+    self.x = love.math.random(0, _env.WINDOW_W)
+    self.y = love.math.random(0, _env.WINDOW_H)
 
-    self.r = r
+    self.r = love.math.random(0.25, 0.50)
 
     self.opacity = love.math.random(0.50, 0.75)
 
