@@ -13,79 +13,84 @@ _CONFIG_PATH = _CONFIG_PATH:sub(1, ends)
 local _BUTTONS_CONFIG = love.filesystem.read(_CONFIG_PATH .. "/config.json")
 
 local input = {}
-input.buttons = json:decode(_BUTTONS_CONFIG)
 
-local JOY = {}
-JOY.getID = function(self)
-    return 1
-end
+function input.activate()
+    input.buttons = json:decode(_BUTTONS_CONFIG)
 
---Hooks
-local oldGamepadPressed = nil
-if not love.gamepadpressed then
-    function love.gamepadpressed(joystick, button) 
-    
+    local JOY = {}
+    JOY.getID = function(self)
+        return 1
     end
-end
-oldGamepadPressed = love.gamepadpressed
 
-local oldGamepadReleased = nil
-if not love.gamepadreleased then
-    function love.gamepadreleased(joystick, button) 
-    
+    --Hooks
+    local oldGamepadPressed = nil
+    if not love.gamepadpressed then
+        function love.gamepadpressed(joystick, button) 
+        
+        end
     end
-end
-oldGamepadReleased = love.gamepadreleased
+    oldGamepadPressed = love.gamepadpressed
 
-local oldGamepadAxis = nil
-if not love.gamepadaxis then
-    function love.gamepadaxis(joystick, axis, value)
-
+    local oldGamepadReleased = nil
+    if not love.gamepadreleased then
+        function love.gamepadreleased(joystick, button) 
+        
+        end
     end
-end
-oldGamepadAxis = love.gamepadaxis
+    oldGamepadReleased = love.gamepadreleased
 
-local oldKeyPressed = nil
-if not love.keypressed then
-    function love.keypressed(key) 
-    
+    local oldGamepadAxis = nil
+    if not love.gamepadaxis then
+        function love.gamepadaxis(joystick, axis, value)
+
+        end
     end
-end
-oldKeyPressed = love.keypressed
+    oldGamepadAxis = love.gamepadaxis
 
-local oldKeyReleased = nil
-if not love.keyreleased then
-    function love.keyreleased(key) 
-    
+    local oldKeyPressed = nil
+    if not love.keypressed then
+        function love.keypressed(key) 
+        
+        end
     end
-end
-oldKeyReleased = love.keypressed
+    oldKeyPressed = love.keypressed
 
-function input.keypressed(key)
-    for check, value in pairs(input.buttons) do
-        if key == check then
-            if not value:find(":") then
-                oldGamepadPressed(JOY, value)
-            else
-                local axis = value:split(":")
-                oldGamepadAxis(JOY, axis[3], tonumber(axis[2]))
+    local oldKeyReleased = nil
+    if not love.keyreleased then
+        function love.keyreleased(key) 
+        
+        end
+    end
+    oldKeyReleased = love.keypressed
+
+    function input.keypressed(key)
+        for check, value in pairs(input.buttons) do
+            if key == check then
+                if not value:find(":") then
+                    oldGamepadPressed(JOY, value)
+                else
+                    local axis = value:split(":")
+                    oldGamepadAxis(JOY, axis[3], tonumber(axis[2]))
+                end
             end
         end
     end
-end
 
-function input.keyreleased(key)
-    for check, value in pairs(input.buttons) do
-        if key == check then
-            if not value:find("axis") then
-                oldGamepadReleased(JOY, value)
-            else
-                local axis = value:split(":")
-                oldGamepadAxis(JOY, axis[3], 0)
+    function input.keyreleased(key)
+        for check, value in pairs(input.buttons) do
+            if key == check then
+                if not value:find("axis") then
+                    oldGamepadReleased(JOY, value)
+                else
+                    local axis = value:split(":")
+                    oldGamepadAxis(JOY, axis[3], 0)
+                end
             end
         end
     end
+
+    love.keypressed  = hook.add(oldKeyPressed, input.keypressed)
+    love.keyreleased = hook.add(oldKeyReleased, input.keyreleased)
 end
 
-love.keypressed  = hook.add(oldKeyPressed, input.keypressed)
-love.keyreleased = hook.add(oldKeyReleased, input.keyreleased)
+return input

@@ -1,0 +1,9 @@
+{
+    "left": "leftx:-0.5",
+    "right": "leftx:0.5",
+
+    "accept": "a",
+    "cancel": "b",
+
+    "shoot": "a"
+}

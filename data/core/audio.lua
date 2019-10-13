@@ -1,4 +1,4 @@
-local audio = {}
+audio = {}
 
 function audio:_load()
     self.sources = {}
@@ -64,4 +64,3 @@ function audio:isPlaying(name)
 end
 
 audio:_load()
-return audio

@@ -1,13 +1,13 @@
 star = class("star")
 
 local YEET_FACTOR = 2.50
-local SLOW_DOWN_RATE = 128
+local SLOW_DOWN_RATE = 200
 
 function star:initialize()
     self.x = love.math.random(0, _env.WINDOW_W)
     self.y = love.math.random(0, _env.WINDOW_H)
 
-    self.r = love.math.random(0.25, 0.50)
+    self.r = love.math.random(0.75, 1)
 
     self.opacity = love.math.random(0.50, 0.75)
 
@@ -24,6 +24,8 @@ function star:update(dt)
     if self.y + self.velocity.y * dt > _env.WINDOW_H then
         self.y = -self.maxSpeed.y
     end
+
+    return false
 end
 
 function star:setVelocity(x, y)
@@ -32,7 +34,8 @@ end
 
 function star:draw()
     love.graphics.setColor(1, 1, 1, self.opacity)
-    love.graphics.circle("fill", self.x * _env.SCALE, self.y * _env.SCALE, self.r * _env.SCALE)
+    
+    love.graphics.circle("fill", self.x * _env.SCALE, self.y * _env.SCALE, self.r * _env.SCALE, 10)
 
     love.graphics.setColor(1, 1, 1, 1)
 end

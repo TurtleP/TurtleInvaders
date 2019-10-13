@@ -1,25 +1,25 @@
 {
-    "z": "a",
-    "x": "b",
-    "c": "y",
-    "v": "x",
+    "k": "a",
+    "j": "b",
+    "h": "y",
+    "u": "x",
 
     "return": "plus",
     "rshift": "minus",
 
-    "a": "l",
-    "f": "r",
+    "q": "l",
+    "e": "r",
 
-    "s": "zl",
-    "d": "zr",
+    "1": "zl",
+    "4": "zr",
 
     "left": "dpleft",
     "right": "dpright",
     "down": "dpdown",
     "up": "dpup",
 
-    "y": "axis:-1:lefty",
-    "g": "axis:-1:leftx",
-    "h": "axis:1:lefty",
-    "j": "axis:1:leftx"
+    "w": "axis:-1:lefty",
+    "a": "axis:-1:leftx",
+    "s": "axis:1:lefty",
+    "d": "axis:1:leftx"
 }

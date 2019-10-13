@@ -17,18 +17,22 @@ require 'data.entities'
 require 'data.systems'
 
 _env  = require 'data.environment'
-audio = require 'data.musicloader'
 state = require 'libraries.state'
 
-require 'data.fonts'
+require 'data.core'
 
 function love.load()
+    core.input.activate()
+    logger.info("Game scale set to %d", _env.SCALE)
+
     love.math.setRandomSeed(os.time())
     love.math.random(); love.math.random()
 
     stars = {}
     dialogs = {}
-    for i = 1, 384 do
+
+    local STAR_COUNT = 256
+    for i = 1, STAR_COUNT do
         stars[i] = star:new()
     end
 

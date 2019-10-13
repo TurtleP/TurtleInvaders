@@ -7,4 +7,4 @@ end
 local _PACKAGE = (...)
 
 require(_PACKAGE .. ".video.graphics")
-require(_PACKAGE .. ".hid.input")
+core.input = require(_PACKAGE .. ".hid.input")

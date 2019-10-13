@@ -10,6 +10,14 @@ return
 
     COPYRIGHT = "(c) 2019 TurtleP",
 
+    MEASURE_TIME = function(func)
+        assert(type(func) ~= nil and type(func) == "function", "bad arg #1 function expected got " .. type(func))
+
+        local start = love.timer.getTime()
+        pcall(func)
+        return (love.timer.getTime() - start) * 1000
+    end,
+
     UPDATEGROUP = function(t, dt)
         for index, value in ipairs(t) do
             if value:update(dt) then

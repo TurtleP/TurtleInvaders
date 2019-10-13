@@ -20,5 +20,10 @@ function core.init(device)
     --check if folder exists
     if love.filesystem.getInfo(FIX_PATH) then
         require(PATH)
+
+        local oldOS = love.system.getOS
+        function love.system.getOS()
+            return "Horizon"
+        end
     end
 end
